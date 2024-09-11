@@ -1,11 +1,11 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Feather from '@expo/vector-icons/Feather';
 import { StyleSheet } from 'react-native';
 
 export const TabBarIcon = (props: {
-  name: React.ComponentProps<typeof Ionicons>['name'];
+  name: React.ComponentProps<typeof Feather>['name'];
   color: string;
 }) => {
-  return <Ionicons size={28} style={styles.tabBarIcon} {...props} />;
+  return <Feather size={28} style={styles.tabBarIcon} {...props} />;
 };
 
 export const styles = StyleSheet.create({

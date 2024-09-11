@@ -1,13 +1,19 @@
 import { Stack } from 'expo-router';
-import { StyleSheet, View, Text } from 'react-native';
-import tw from 'twrnc';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import tw, { useAppColorScheme } from 'twrnc';
 
 export default function Home() {
+  const [colorScheme, toggleColorScheme, setColorScheme] = useAppColorScheme(tw);
   return (
     <>
       <Stack.Screen options={{ title: 'Tab One' }} />
       <View style={styles.container}>
-        <Text style={tw`text-lg text-red-500 p-4 bg-red-100 rounded-2xl`}>Tab One</Text>
+        <TouchableOpacity onPress={()=> toggleColorScheme()}>
+          <Text style={tw`text-lg text-red-500 p-4 bg-red-100 dark:bg-red-950 rounded-2xl`}>lilow la rebaile
+            
+          </Text>
+        </TouchableOpacity>
+        
       </View>
     </>
   );

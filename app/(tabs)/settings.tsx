@@ -4,7 +4,7 @@ import tw, { useAppColorScheme } from "twrnc";
 
 const Settings = () => {
 
-  const [colorScheme, toggleColorScheme, setColorScheme] = useAppColorScheme(tw);
+  const [colorScheme, toggleColorScheme] = useAppColorScheme(tw);
   return (
     <View>
       <Text style={tw`text-lg text-red-500 p-4 bg-red-100 dark:bg-red-950 rounded-2xl`}>Settings page</Text>

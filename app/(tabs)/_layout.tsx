@@ -1,9 +1,11 @@
 import { Tabs } from 'expo-router';
 import { TabBarIcon } from '../../components/TabBarIcon';
+import tw, { useDeviceContext, useAppColorScheme } from 'twrnc';
 
 export default function TabLayout() {
   return (
     <Tabs
+      key={tw.memoBuster}
       screenOptions={{
         tabBarActiveTintColor: 'black',
         tabBarStyle: {
@@ -11,8 +13,9 @@ export default function TabLayout() {
         },
         tabBarLabelStyle: {
           marginBottom: 7,
-        }
-      }}>
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{

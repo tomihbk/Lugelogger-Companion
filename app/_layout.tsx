@@ -7,18 +7,11 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
-  useDeviceContext(tw, {
-    observeDeviceColorSchemeChanges: false,
-    initialColorScheme: `device`,
-  });
-
-  const [colorScheme, toggleColorScheme, setColorScheme] = useAppColorScheme(tw);
   return (
     <Stack
       screenOptions={{
         contentStyle: { backgroundColor: '#125' },
-      }}
-      key={tw.memoBuster}>
+      }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>
   );

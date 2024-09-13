@@ -1,5 +1,5 @@
+import React from "react"
 import { Stack } from 'expo-router';
-import tw, { useDeviceContext, useAppColorScheme } from 'twrnc';
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
@@ -10,7 +10,7 @@ export default function RootLayout() {
   return (
     <Stack
       screenOptions={{
-        contentStyle: { backgroundColor: '#125' },
+        contentStyle: { backgroundColor: '#000' },
       }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>

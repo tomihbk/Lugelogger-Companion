@@ -1,13 +1,13 @@
+import React from "react"
 import { Stack } from 'expo-router';
 import { StyleSheet, View, Text } from 'react-native';
-import tw,{ useDeviceContext, useAppColorScheme } from 'twrnc';
+import tw from 'twrnc';
 
 
 export default function Home() {
-  const [colorScheme, toggleColorScheme, setColorScheme] = useAppColorScheme(tw);
   return (
     <>
-      <Stack.Screen options={{ title: 'Tab Two' }} />
+      <Stack.Screen options={{ title: 'Garage' }} />
       <View style={styles.container}>
       <Text>Tab two</Text>
       <Text style={tw`text-black dark:text-white`}>Switch Color Scheme</Text>

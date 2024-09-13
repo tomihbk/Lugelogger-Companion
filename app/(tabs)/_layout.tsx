@@ -1,13 +1,17 @@
-import { Tabs } from 'expo-router';
-import { TabBarIcon } from '../../components/TabBarIcon';
-import tw, { useDeviceContext, useAppColorScheme } from 'twrnc';
+import React from "react"
+import { Tabs } from "expo-router";
+import tw from "twrnc";
+
+import "../../i18n/i18n.config";
+
+import { Home, Warehouse, Settings } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
     <Tabs
       key={tw.memoBuster}
       screenOptions={{
-        tabBarActiveTintColor: 'black',
+        tabBarActiveTintColor: "black",
         tabBarStyle: {
           height: 58,
         },
@@ -19,22 +23,22 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          title: "Home",
+          tabBarIcon: ({ color }) => <Home color={color} />,
         }}
       />
       <Tabs.Screen
         name="two"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="truck" color={color} />,
+          title: "Garage",
+          tabBarIcon: ({ color }) => <Warehouse color={color} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
-          tabBarIcon: ({ color }) => <TabBarIcon name="settings" color={color} />,
+          title: "Settings",
+          tabBarIcon: ({ color }) => <Settings color={color} />,
         }}
       />
     </Tabs>

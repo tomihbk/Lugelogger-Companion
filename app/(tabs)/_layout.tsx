@@ -11,19 +11,23 @@ export default function TabLayout() {
     <Tabs
       key={tw.memoBuster}
       screenOptions={{
-        tabBarActiveTintColor: "black",
+        headerShadowVisible: false,
         tabBarStyle: {
           height: 58,
+          
+          backgroundColor: '#fafafa' // Bottom bar color
         },
         tabBarLabelStyle: {
           marginBottom: 7,
         },
+        headerStyle: { backgroundColor: '#fafafa' } // Header background color
       }}
+      sceneContainerStyle={{ backgroundColor: '#fafafa' }} // Body background color
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Hi Thomas",
           tabBarIcon: ({ color }) => <Home color={color} />,
         }}
       />

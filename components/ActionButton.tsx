@@ -14,17 +14,17 @@ const ServiceButton = (props: ServiceButtonProps) => {
     const IconSet = () => {
         switch (props.LucideIconName) {
             case 'construction':
-                return <Construction style={tw`mb-3 self-start`} color={props.ThemeHexColor} size={25} />
+                return <Construction style={tw`self-start`} color={props.ThemeHexColor} size={25} />
             case 'clipboard-check':
-                return <ClipboardCheck style={tw`mb-3 self-start`} color={props.ThemeHexColor} size={25} />
+                return <ClipboardCheck style={tw`self-start`} color={props.ThemeHexColor} size={25} />
             case 'fuel':
-                return <Fuel style={tw`mb-3 self-start`} color={props.ThemeHexColor} size={25} />
+                return <Fuel style={tw`self-start`} color={props.ThemeHexColor} size={25} />
             case 'package-plus':
-                return <PackagePlus style={tw`mb-3 self-start`} color={props.ThemeHexColor} size={25} />
+                return <PackagePlus style={tw`self-start`} color={props.ThemeHexColor} size={25} />
             case 'notepad-text':
-                return <NotepadText style={tw`mb-3 self-start`} color={props.ThemeHexColor} size={25} />
+                return <NotepadText style={tw`self-start`} color={props.ThemeHexColor} size={25} />
             case 'landmark':
-                return <Landmark style={tw`mb-3 self-start`} color={props.ThemeHexColor} size={25} />
+                return <Landmark style={tw`self-start`} color={props.ThemeHexColor} size={25} />
         }
     }
 

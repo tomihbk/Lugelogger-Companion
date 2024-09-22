@@ -1,12 +1,17 @@
 import React from "react"
 import { Tabs } from "expo-router";
-import tw from "twrnc";
+import tw, { useAppColorScheme, useDeviceContext } from "twrnc";
 
 import "../../i18n/i18n.config";
 
 import { Home, Warehouse, Settings } from 'lucide-react-native';
 
 export default function TabLayout() {
+  useDeviceContext(tw, {
+    observeDeviceColorSchemeChanges: false,
+    initialColorScheme: "light", // 'light' | 'dark' | 'device'
+  })  
+  const [colorScheme] = useAppColorScheme(tw)
   return (
     <Tabs
       key={tw.memoBuster}
@@ -14,25 +19,24 @@ export default function TabLayout() {
         headerShadowVisible: false,
         tabBarStyle: {
           height: 58,
-          
-          backgroundColor: '#fafafa' // Bottom bar color
+          backgroundColor: colorScheme == 'light' ? '#fafafa' : '#0d1117' // Bottom bar color
         },
         tabBarLabelStyle: {
           marginBottom: 7,
         },
-        headerStyle: { backgroundColor: '#fafafa' } // Header background color
+        headerStyle: { backgroundColor: colorScheme == 'light' ? '#fafafa' : '#0d1117' } // Header background color
       }}
-      sceneContainerStyle={{ backgroundColor: '#fafafa' }} // Body background color
+      sceneContainerStyle={{ backgroundColor: colorScheme == 'light' ? '#fafafa' : '#0d1117' }} // Body background color
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Hi Thomas",
+          title: "Home",
           tabBarIcon: ({ color }) => <Home color={color} />,
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="garage"
         options={{
           title: "Garage",
           tabBarIcon: ({ color }) => <Warehouse color={color} />,

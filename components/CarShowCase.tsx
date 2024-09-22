@@ -1,6 +1,6 @@
 import { View, Text, ImageBackground, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
-import tw from 'twrnc';
+import tw from '~/tw.config';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Heart } from 'lucide-react-native';
 import { router } from 'expo-router';
@@ -17,10 +17,10 @@ const CarShowCase = (props: CarShowCaseProps) => {
     const [isFavoriteCar, setIsFavoriteCar] = useState(true);
 
     return (
-        <TouchableOpacity style={tw`mb-5`} onPress={()=>router.push({
+        <TouchableOpacity style={tw`mb-5`} onPress={() => router.push({
             pathname: "/car/[id]",
             params: { id: props.Name }
-          })}>
+        })}>
             <ImageBackground source={{ uri: props.CarPhotoUri }} resizeMode="cover" style={tw`w-full h-52 rounded-2xl overflow-hidden`}>
                 <LinearGradient
                     colors={['rgba(0,5,55,1)', 'transparent']}

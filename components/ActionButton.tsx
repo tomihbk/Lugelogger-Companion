@@ -1,7 +1,7 @@
 import { GestureResponderEvent, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Construction, ClipboardCheck, Fuel, PackagePlus, NotepadText, Landmark } from 'lucide-react-native'
-import tw from 'twrnc';
+import tw from '~/tw.config';
 
 type ServiceButtonProps = {
     ButtonTitle: string;

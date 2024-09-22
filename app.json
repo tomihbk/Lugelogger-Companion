@@ -16,6 +16,25 @@
         {
           "launchMode": "most-recent"
         }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/HankenGrotesk-Black.ttf",
+            "./assets/fonts/HankenGrotesk-BlackItalic.ttf",
+            "./assets/fonts/HankenGrotesk-Bold.ttf",
+            "./assets/fonts/HankenGrotesk-BoldItalic.ttf",
+            "./assets/fonts/HankenGrotesk-Italic.ttf",
+            "./assets/fonts/HankenGrotesk-Light.ttf",
+            "./assets/fonts/HankenGrotesk-LightItalic.ttf",
+            "./assets/fonts/HankenGrotesk-Medium.ttf",
+            "./assets/fonts/HankenGrotesk-MediumItalic.ttf",
+            "./assets/fonts/HankenGrotesk-Regular.ttf",
+            "./assets/fonts/HankenGrotesk-SemiBold.ttf",
+            "./assets/fonts/HankenGrotesk-SemiBoldItalic.ttf"
+          ]
+        }
       ]
     ],
     "experiments": {
@@ -24,15 +43,13 @@
     },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#dd0a0a"
+      "backgroundColor": "#2d2b55"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.berinfo.carmainlog"
@@ -40,7 +57,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#dd0a0a"
+        "backgroundColor": "#2d2b55"
       },
       "package": "com.berinfo.carmainlog"
     },

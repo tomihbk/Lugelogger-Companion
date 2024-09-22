@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import tw from "twrnc";
-import { useTranslation } from 'react-i18next';
+import tw from "~/tw.config"
+import { useTranslation } from 'react-i18next'
 
 type NextReminderProp = {
   Description: string;

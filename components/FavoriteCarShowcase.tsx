@@ -1,16 +1,16 @@
 import { View, Text, Image } from 'react-native'
 import React from 'react'
-import tw from 'twrnc';
+import tw from '~/tw.config';
 
 type FavoriteCarShowCaseProps = {
     Year: string;
-    PlateNumber:string;
-    Mileage:string;
-    Name:string;
-    CarPhotoUri:string;
+    PlateNumber: string;
+    Mileage: string;
+    Name: string;
+    CarPhotoUri: string;
 }
 
-const FavoriteCarShowcase = (props:FavoriteCarShowCaseProps) => {
+const FavoriteCarShowcase = (props: FavoriteCarShowCaseProps) => {
     return (
         <View>
             <Image

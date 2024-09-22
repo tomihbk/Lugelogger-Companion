@@ -1,7 +1,7 @@
 import { View } from 'react-native'
 import React from 'react'
 import ActionButton from './ActionButton'
-import tw from 'twrnc';
+import tw from '~/tw.config';
 
 
 export default function GroupActionButtons() {

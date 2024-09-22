@@ -2,7 +2,7 @@ import { View, Text, Image } from 'react-native'
 import React from 'react'
 import tw from 'twrnc';
 
-type CarShowCaseProps = {
+type FavoriteCarShowCaseProps = {
     Year: string;
     PlateNumber:string;
     Mileage:string;
@@ -10,7 +10,7 @@ type CarShowCaseProps = {
     CarPhotoUri:string;
 }
 
-const FavoriteCarShowcase = (props:CarShowCaseProps) => {
+const FavoriteCarShowcase = (props:FavoriteCarShowCaseProps) => {
     return (
         <View>
             <Image

@@ -12,6 +12,7 @@ export default function TabLayout() {
     initialColorScheme: "light", // 'light' | 'dark' | 'device'
   })  
   const [colorScheme] = useAppColorScheme(tw)
+  
   return (
     <Tabs
       key={tw.memoBuster}

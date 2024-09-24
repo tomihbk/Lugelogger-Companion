@@ -31,7 +31,7 @@ const ServiceButton = (props: ServiceButtonProps) => {
     return (
         <TouchableOpacity onPress={props.OnPress} style={tw`flex flex-col size-24 p-3 rounded-2xl bg-white dark:bg-[${props.ThemeHexColor}]/40 justify-between shadow-md shadow-[${props.ThemeHexColor}]/40 `}>
             {IconSet()}
-            <Text style={tw`text-base text-[${props.ThemeHexColor}] font-bold`} >{props.ButtonTitle || 'Repairs'}</Text>
+            <Text style={tw`text-base text-[${props.ThemeHexColor}] font-HKGrotesk-Bold`} >{props.ButtonTitle || 'Repairs'}</Text>
         </TouchableOpacity>
     )
 }

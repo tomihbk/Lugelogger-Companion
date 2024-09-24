@@ -26,16 +26,16 @@ const CarShowCase = (props: CarShowCaseProps) => {
                     colors={['rgba(0,5,55,1)', 'transparent']}
                     style={tw`flex flex-col w-full h-full`}
                     start={{ x: 0, y: 1 }}
-                    end={{ x: 0, y: .5 }}>
+                    end={{ x: 0, y: .3 }}>
                     <View style={tw`flex flex-col h-full justify-between`}>
                         <TouchableOpacity style={tw`self-end p-5`} onPress={() => setIsFavoriteCar(!isFavoriteCar)}>
                             <Heart color={isFavoriteCar ? "white" : "red"} size={24} />
                         </TouchableOpacity>
                         <View style={tw`flex-row flex-wrap w-full pb-5 px-5`}>
-                            <Text style={tw`w-4/6 font-semibold text-white`}>{props.Name}</Text>
-                            <Text style={tw`w-2/6 font-semibold text-white text-right pb-2`}>{props.Mileage}</Text>
-                            <Text style={tw`w-1/2 font-semibold text-white`}>{props.PlateNumber}</Text>
-                            <Text style={tw`w-1/2 font-semibold text-white text-right`}>{props.Year}</Text>
+                            <Text style={tw`w-4/6 text-white text-base font-HKGrotesk-Bold`}>{props.Name}</Text>
+                            <Text style={tw`w-2/6 text-white text-right pb-1 text-base font-HKGrotesk-Bold`}>{props.Mileage}</Text>
+                            <Text style={tw`w-1/2 text-white text-base font-HKGrotesk-Bold`}>{props.PlateNumber}</Text>
+                            <Text style={tw`w-1/2 text-white text-right text-base font-HKGrotesk-Bold`}>{props.Year}</Text>
                         </View>
                     </View>
 

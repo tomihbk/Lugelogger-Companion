@@ -11,7 +11,7 @@ export default function garage() {
     <ScrollView showsVerticalScrollIndicator={false} style={tw`flex flex-col p-5`}>
       <Stack.Screen options={{ title: 'Garage', headerShown: false }} />
       <View style={tw`flex flex-row flex-wrap`}>
-        <Text style={tw`w-5/12 text-2xl mt-4 font-bold mb-5 dark:text-white font-HKGrotesk-Black`}>{t("Garage")}</Text>
+        <Text style={tw`w-5/12 text-2xl mt-4 mb-5 dark:text-white font-HKGrotesk-Black`}>{t("Garage")}</Text>
         {/* <TouchableOpacity style={tw`flex flex-row w-7/12 text-2xl mt-4 font-bold bg-blue-500 p-2 rounded-xl`} onPress={() => router.push({
           pathname: "/car/NewCarForm"
         })}> // Function not supported by API yet

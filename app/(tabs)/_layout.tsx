@@ -15,13 +15,14 @@ export default function TabLayout() {
 
   return (
     <>
-     <StatusBar style={colorScheme == 'light' ? 'dark' : 'light'}/>
+      <StatusBar style={colorScheme == 'light' ? 'dark' : 'light'} />
       <Tabs
         key={tw.memoBuster}
         screenOptions={{
           headerShadowVisible: false,
           tabBarStyle: {
             height: 58,
+            shadowColor: 'white',
             borderTopEndRadius: 16,
             borderTopStartRadius: 16,
             marginRight: 18,

@@ -9,6 +9,12 @@ module.exports = {
         lightText: "#000000",
         darkText: "#FFFFFF",
       },
+      screens: {
+        sm: '380px',
+        md: '420px',
+        lg: '680px',
+        tablet: '1024px',
+      },
     },
     fontFamily: {
       "HKGrotesk-Black": ["HankenGrotesk-Black"],

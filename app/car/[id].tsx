@@ -4,6 +4,7 @@ import { Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { FlashList } from '@shopify/flash-list'
 import { useServiceRecords } from '~/features/api/use-get-servicerecords'
+import { RecordBase } from '~/api/records-base.types'
 
 const CarDetail = () => {
   const { id } = useLocalSearchParams()
@@ -11,7 +12,7 @@ const CarDetail = () => {
   const { data: ServiceRecords_2 } = useServiceRecords(2)
 
   const [selectedButton, setSelectedButton] = useState<string>("Repairs")
-  const [selectedDataSet, setSelectedDataSet] = useState<any>(ServiceRecords)
+  const [selectedDataSet, setSelectedDataSet] = useState<RecordBase | undefined>(ServiceRecords)
   const [selectedButtonColor, setSelectedButtonColor] = useState<string>("#00892B")
 
   const ActionButtons = [

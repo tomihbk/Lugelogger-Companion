@@ -1,6 +1,6 @@
 import { ApiTypeEnum } from "./api-enum"
 import { axios } from "./axios"
-import type { ServiceRecord } from "./service-record.types"
+import type { ServiceRecord } from "./index-records.types"
 
 const ENDPOINT = "/servicerecords"
 
@@ -15,18 +15,9 @@ export const addServiceRecord = async (
   _vehicleId: number,
   _serviceRecordData: ServiceRecord
 ) => {
-  console.log(
-    `${ENDPOINT}/${ApiTypeEnum.ADD} : ` +
-      JSON.stringify({
-        vehicleId: _vehicleId,
-        ..._serviceRecordData[0],
-      })
-  )
-
   const { data } = await axios.post(`${ENDPOINT}/${ApiTypeEnum.ADD}`, {
     vehicleId: _vehicleId,
     ..._serviceRecordData[0],
   })
-
   return data
 }

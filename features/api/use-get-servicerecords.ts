@@ -4,7 +4,7 @@ import {
   useQuery,
 } from "@tanstack/react-query"
 import { getServiceRecords, addServiceRecord } from "~/api/service-records"
-import type { ServiceRecord } from "~/api/service-record.types"
+import type { ServiceRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 
 const QUERY_KEY = "servicerecords"

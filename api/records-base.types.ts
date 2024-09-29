@@ -1,4 +1,4 @@
-export type ServiceRecord = {
+export type RecordBase = {
   date: string
   odometer: string
   description: string

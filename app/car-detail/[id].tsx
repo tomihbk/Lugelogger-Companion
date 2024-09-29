@@ -1,36 +1,41 @@
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
-import { Stack, useLocalSearchParams } from 'expo-router'
+import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { FlashList } from '@shopify/flash-list'
-import { useServiceRecords } from '~/features/api/use-get-servicerecords'
+import { useAddServiceRecord, useServiceRecords } from '~/hooks/api/use-get-servicerecords'
 import { RecordBase } from '~/api/records-base.types'
+import { useOdometerRecords } from '~/hooks/api/use-get-odometerrecords'
+import { GasRecordAdd, OdometerRecord } from '~/api/index-records.types'
+import { PlusIcon } from 'lucide-react-native'
 
 const CarDetail = () => {
-  const { id } = useLocalSearchParams()
+  const { id: CarTitle } = useLocalSearchParams()
   const { data: ServiceRecords } = useServiceRecords(1)
-  const { data: ServiceRecords_2 } = useServiceRecords(2)
-
-  const [selectedButton, setSelectedButton] = useState<string>("Repairs")
-  const [selectedDataSet, setSelectedDataSet] = useState<RecordBase | undefined>(ServiceRecords)
-  const [selectedButtonColor, setSelectedButtonColor] = useState<string>("#00892B")
+  const { data: OdometerRecords } = useOdometerRecords(1)
 
   const ActionButtons = [
-    { label: 'Repairs', color: '#00892B' },
+    { label: 'Home', color: '#f28900' },
+    { label: 'Odometer', color: '#C09F1A' },
     { label: 'Service', color: '#1C06DC' },
-    { label: 'Fuel', color: '#BF0296' },
+    { label: 'Repairs', color: '#00892B' },
     { label: 'Upgrades', color: '#E00004' },
+    { label: 'Fuel', color: '#BF0296' },
+    { label: 'Taxes', color: '#5e636e' },
     { label: 'Notes', color: '#009476' },
-    { label: 'Taxes', color: '#C09F1A' },
   ]
 
-  const chageDataSet = (serviceName: string) => {
+  const [selectedButton, setSelectedButton] = useState<string>("Repairs")
+  const [selectedDataSet, setSelectedDataSet] = useState<RecordBase | OdometerRecord | GasRecordAdd | undefined>(OdometerRecords)
+  const [selectedButtonColor, setSelectedButtonColor] = useState<string>(ActionButtons.filter((button) => button.label == selectedButton)[0].color)
+
+  const changeDataSet = (serviceName: string) => {
     switch (serviceName) {
-      case "Repairs":
+      case "Service":
         setSelectedDataSet(ServiceRecords)
         break;
-      case "Service":
-        setSelectedDataSet(ServiceRecords_2)
+      case "Odometer":
+        setSelectedDataSet(OdometerRecords)
         break;
       default:
         setSelectedDataSet([])
@@ -38,16 +43,21 @@ const CarDetail = () => {
     }
   }
 
+  const dateHandler = (date: string) => {
+    const [MM, DD, YYYY] = date.split('/')
+    return new Date(parseInt(YYYY), parseInt(MM), parseInt(DD)).toLocaleDateString('de-DE', { year: 'numeric', month: 'numeric', day: '2-digit' })
+  }
+
   return (
-    <View style={tw`flex flex-col p-5 w-full h-full`}>
-      <Stack.Screen options={{ title: id as string, headerShown: false }} />
-      <Text style={tw`text-2xl mt-4 font-HKGrotesk-Bold`}>{id}</Text>
+    <View style={tw`flex flex-col p-5 w-full h-full dark:bg-slate-900`}>
+      <Stack.Screen options={{ title: CarTitle as string, headerShown: false }} />
+      <Text style={tw`text-2xl mt-4 font-HKGrotesk-Bold`}>{CarTitle}</Text>
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}
         style={tw`flex flex-row flex-wrap flex-grow-0 p-2 -mx-5 mb-2 md:mx-auto`}>
         {ActionButtons.map((button, index) => (
           <TouchableOpacity key={index} onPress={() => {
             setSelectedButton(button.label)
-            chageDataSet(button.label)
+            changeDataSet(button.label)
             setSelectedButtonColor(button.color)
           }}>
             <Text
@@ -58,6 +68,7 @@ const CarDetail = () => {
               {button.label}
             </Text>
           </TouchableOpacity>
+
         ))}
       </ScrollView>
       <FlashList
@@ -67,7 +78,7 @@ const CarDetail = () => {
           return (
             <View style={tw`p-4 pb-0 mb-2 bg-white dark:bg-green-950 rounded-3xl`}>
               <View style={tw`flex flex-row flex-wrap justify-between`}>
-                <Text style={tw`font-HKGrotesk-Medium text-base`}>{item.date}</Text>
+                <Text style={tw`font-HKGrotesk-Medium text-base`}>{dateHandler(item.date)}</Text>
                 <Text style={tw`font-HKGrotesk-Medium text-base`}>{item.odometer}</Text>
                 <Text style={tw`font-HKGrotesk-Medium text-base`}>${item.cost}</Text>
               </View>
@@ -76,8 +87,16 @@ const CarDetail = () => {
             </View>
           )
         }}
-        estimatedItemSize={10}
+        estimatedItemSize={15}
       />
+      <TouchableOpacity style={tw`rounded-full right-5 bottom-4 p-3 bg-[${selectedButtonColor}] ${selectedButton == "Home" ? 'hidden' : 'absolute'}`} onPress={() =>
+        router.push({
+          pathname: "/new-record/[id]",
+          params: { id: CarTitle as string, actionType: selectedButton }
+        })
+      }>
+        <PlusIcon size={35} color="white" />
+      </TouchableOpacity>
     </View>
   )
 }

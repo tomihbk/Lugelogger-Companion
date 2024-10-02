@@ -1,23 +1,40 @@
 import React from "react"
 import { Redirect, Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
 import tw from '~/tw.config';
 import GroupActionButtons from "~/components/GroupActionButtons";
 import NextReminder from "~/components/NextReminder";
 import FavoriteCarShowcase from "~/components/FavoriteCarShowcase";
+import { useAddServiceRecord } from "~/hooks/api/use-get-servicerecords";
 
 export default function Home() {
   const { t } = useTranslation();
 
+  //console.log(`--------- ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: '2-digit', minute: "numeric" })}------------- \n` + JSON.stringify(gilbert.data))
+
+  const { mutateAsync: addServiceRecord } = useAddServiceRecord(1, [{ cost: "69", date: "9/28/2024", description: "Worakls Orechstre", odometer: "111111" }])
+
   return (
-    
     <ScrollView showsVerticalScrollIndicator={false}>
       {/* <Redirect href="/(tabs)/garage" /> */}
       <Stack.Screen options={{ title: 'Home', headerShown: false }} />
       <View style={tw`flex p-5`}>
-        <Text style={tw`text-2xl mt-4 font-HKGrotesk-Bold`}>Hi Thomas</Text>
+        <Text style={tw`text-2xl mt-4 font-HKGrotesk-Black`}>Hi Thomas</Text>
         <Text style={tw`text-sm mb-4 font-HKGrotesk-Regular`}>How&apos;s the car doing ?</Text>
+        <View style={tw`rounded-full overflow-hidden mb-4`}>
+          <Pressable android_ripple={{ color: '#f87171', borderless: false, foreground: true }}
+            style={tw`rounded-full`} onPress={() => {
+              try {
+                addServiceRecord()
+                console.log("trying to add new data...")
+              } catch (Err) { console.error(Err) }
+            }}>
+            <Text style={tw`p-4 bg-red-200 font-HKGrotesk-Medium rounded-full text-center`}>
+              Add New Service Record
+            </Text>
+          </Pressable>
+        </View>
 
         <FavoriteCarShowcase Name="Porsche 911 Carrera 3.2" Mileage="320125km" PlateNumber="ZH47589" Year="1985" CarPhotoUri="https://www.williamscrawford.co.uk/wp-content/uploads/2023/09/Porsche-911-carrera-3.2-polo-red-for-sale-williams-crawford-40.jpg" />
 

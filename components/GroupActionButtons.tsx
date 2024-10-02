@@ -7,7 +7,12 @@ import tw from '~/tw.config';
 export default function GroupActionButtons() {
     return (
         <View style={tw`flex flex-wrap flex-row justify-between gap-3 my-5`}>
-            <ActionButton ButtonTitle="Odo" LucideIconName="gauge" ThemeHexColor="#C09F1A" OnPress={() => { }} />
+            <ActionButton ButtonTitle="Odo" LucideIconName="gauge" ThemeHexColor="#C09F1A" OnPress={() => { 
+                //  router.push({
+                //             pathname: "/car-detail/[id]",
+                //             params: { id: reactqueryfavoriteCar.ID, actionType : (ev:React.JSX.Element)=>ev.props }
+                //         })
+            }} />
             <ActionButton ButtonTitle="Service" LucideIconName="clipboard-check" ThemeHexColor="#1C06DC" OnPress={() => { }} />
             <ActionButton ButtonTitle="Repairs" LucideIconName="construction" ThemeHexColor="#00892B" OnPress={() => { }} />
             <ActionButton ButtonTitle="Upgrades" LucideIconName="package-plus" ThemeHexColor="#E00004" OnPress={() => { }} />

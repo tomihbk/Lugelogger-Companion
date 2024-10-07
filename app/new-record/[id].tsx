@@ -4,8 +4,10 @@ import { Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { useForm, Controller } from "react-hook-form"
 import { useAddServiceRecord } from '~/hooks/api/use-get-servicerecords'
+import { OdometerButtonStore } from '~/stores/RecordButtons'
 
 const NewRecord = () => {
+    const OdometerButton = OdometerButtonStore((state) => state)
     const { mutateAsync: addServiceRecord } = useAddServiceRecord(1, [{ cost: "69", date: "9/28/2024", description: "Worakls Orechstre", odometer: "111111" }])
 
     const date = new Date().toLocaleDateString('de-DE', { year: '2-digit', month: '2-digit', day: '2-digit' })
@@ -52,7 +54,7 @@ const NewRecord = () => {
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 value={value} />)} name="Odometer" />
-                    <Text style={tw`font-HKGrotesk-SemiBold text-base`}>Odometer *</Text>
+                    <Text style={tw`font-HKGrotesk-SemiBold text-base`}>Description *</Text>
                     <Controller control={control} rules={{ required: true }}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput

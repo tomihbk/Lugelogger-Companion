@@ -5,8 +5,15 @@ import "../../i18n/i18n.config"
 import { StatusBar } from "expo-status-bar"
 import useThemeStore from "~/stores/themeStore"
 import tw from "~/tw.config"
+import { useDeviceContext } from "twrnc"
 
 export default function TabLayout() {
+  const globalStoreThemeColor = useThemeStore((color)=> color.colorScheme)
+
+  useDeviceContext(tw, {
+    observeDeviceColorSchemeChanges: false,
+    initialColorScheme: globalStoreThemeColor,
+  });
 
   const { colorScheme: colorSchemeStore } = useThemeStore()
 

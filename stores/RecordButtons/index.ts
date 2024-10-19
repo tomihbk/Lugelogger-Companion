@@ -1,1 +1,1 @@
-export { default as OdometerButtonStore } from "./OdometerButtonStore"
+export { default as OdometerButtonStore } from "./odometerButtonStore"

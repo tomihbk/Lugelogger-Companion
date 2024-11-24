@@ -17,13 +17,13 @@ const NewRecord = () => {
     const { id: CarId, actionType } = useLocalSearchParams()
     const OdometerButton = OdometerFunctionStore((state) => state)
     const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>(OdometerButton)
-    const { mutateAsync: addServiceRecord } = useAddServiceRecord(parseInt(CarId.toString()), [{ cost: "45", date: "10/29/2024", description: `Car ID ${CarId} - ${new Date().toISOString()}`, odometer: "458", notes:"nani" }])
+    const { mutateAsync: addServiceRecord } = useAddServiceRecord()
     const isReturnFromForms = GlobalStateStore((state) => state.setIsReturnFromForms)
     const returnFromForms = GlobalStateStore((state) => state.isReturnFromForms)
 
     const date = new Date().toLocaleDateString('de-DE', { year: '2-digit', month: '2-digit', day: '2-digit' })
 
-    const { control, handleSubmit, formState: { errors }, } = useForm({
+    const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
             Date: date,
             Odometer: "456",
@@ -40,13 +40,30 @@ const NewRecord = () => {
     })
 
     useEffect(() => {
-       if(returnFromForms) router.dismiss()
+        if (returnFromForms) router.dismiss()
     }, [returnFromForms])
 
-    const handleForm = (formData) => {
+    type formDataType = {
+        Date: string;
+        Odometer: string;
+        InitialOdometer: string;
+        Cost: string;
+        Notes: string;
+        Description: string;
+        ConsumedFuel: string;
+        IsFulltoFull: string;
+        MissedFuelUp: string;
+        Tags: string;
+    }
+    const handleForm = (formData:formDataType) => {
         //console.log("formData : " + JSON.stringify(formData))
-        addServiceRecord()
+        // TODO this will not work because we're making a service request on an odometer form
+        addServiceRecord({
+            vehicleId: parseInt(CarId.toString()),
+            serviceRecord: [{ cost: formData.Cost, date: "10/29/2024", description: `Car ID ${CarId} - ${new Date().toISOString()}`, odometer: formData.Odometer, notes: formData.Notes }]
+        })
         isReturnFromForms(true)
+        console.log(!!errors)
     }
 
     console.log("Error odo Type : " + JSON.stringify(errors))

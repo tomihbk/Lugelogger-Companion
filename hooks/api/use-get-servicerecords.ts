@@ -26,14 +26,18 @@ export const useServiceRecords = (vehicleId: number) => {
   return query
 }
 
-export const useAddServiceRecord = (
-  vehicleId: number,
-  serviceRecord: ServiceRecord
-) => {
-  const query = useMutation<ServiceRecord>({
-    mutationFn: async () => await addServiceRecord(vehicleId, serviceRecord),
-    //onError: (err) => console.error(err),
-    onSuccess: () => {
+export const useAddServiceRecord = () => {
+  const query = useMutation({
+    mutationFn: async ({
+      vehicleId,
+      serviceRecord,
+    }: {
+      vehicleId: number
+      serviceRecord: ServiceRecord
+    }) => await addServiceRecord(vehicleId, serviceRecord),
+    onError: (err) => console.error(err),
+    onSuccess: (_, variables) => {
+      const { vehicleId, serviceRecord } = variables
       _queryClient.invalidateQueries(
         getQueryKey(vehicleId, serviceRecord) as InvalidateQueryFilters
       )

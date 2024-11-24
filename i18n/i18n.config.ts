@@ -1,10 +1,10 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import { en, fr } from "./lang";
+import { en, fr, app_en } from "./lang";
 
 const resources = {
     en: {
-      translation: en
+      translation: {...en, ...app_en}
     },
     fr: {
       translation: fr

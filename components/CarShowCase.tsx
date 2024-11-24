@@ -1,5 +1,5 @@
 import { View, Text, ImageBackground, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React from 'react'
 import tw from '~/tw.config'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Heart } from 'lucide-react-native'
@@ -22,7 +22,7 @@ const CarShowCase = (props: CarShowCaseProps) => {
     return (
         <TouchableOpacity style={tw`mb-5`} onPress={() => router.push({
             pathname: "/car-detail/[id]",
-            params: { id: props.Name }
+            params: { id: props.carId as number }
         })}>
             <ImageBackground source={{ uri: props.CarPhotoUri }} resizeMode="cover" style={tw`w-full h-52 rounded-2xl overflow-hidden`}>
                 <LinearGradient
@@ -31,7 +31,7 @@ const CarShowCase = (props: CarShowCaseProps) => {
                     start={{ x: 0, y: 1 }}
                     end={{ x: 0, y: .3 }}>
                     <View style={tw`flex flex-col h-full justify-between`}>
-                        <TouchableOpacity style={tw`self-end p-5`} onPress={() => setFavoriteCar(1)}>
+                        <TouchableOpacity style={tw`self-end p-5`} onPress={() => setFavoriteCar(props.carId)}>
                             <Heart color={getFavoriteCar != props.carId ? "white" : "red"} size={24} />
                         </TouchableOpacity>
                         <View style={tw`flex-row flex-wrap w-full pb-5 px-5`}>

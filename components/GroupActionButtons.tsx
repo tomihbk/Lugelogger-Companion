@@ -2,16 +2,19 @@ import { View } from 'react-native'
 import React from 'react'
 import ActionButton from './ActionButton'
 import tw from '~/tw.config';
+import GlobalStateStore from '~/stores/globalStateStore';
+import { router } from 'expo-router';
 
 
 export default function GroupActionButtons() {
+    const favoriteCarID = GlobalStateStore((state) => state.favoriteCarId)
     return (
         <View style={tw`flex flex-wrap flex-row justify-between gap-3 my-5`}>
-            <ActionButton ButtonTitle="Odo" LucideIconName="gauge" ThemeHexColor="#C09F1A" OnPress={() => { 
-                //  router.push({
-                //             pathname: "/car-detail/[id]",
-                //             params: { id: reactqueryfavoriteCar.ID, actionType : (ev:React.JSX.Element)=>ev.props }
-                //         })
+            <ActionButton ButtonTitle="Odo" LucideIconName="gauge" ThemeHexColor="#C09F1A" OnPress={() => {
+                router.push({
+                    pathname: "/car-detail/[id]",
+                    params: { id: favoriteCarID, actionType: "actionType" } // actionType: (ev: React.JSX.Element) => ev.props
+                })
             }} />
             <ActionButton ButtonTitle="Service" LucideIconName="clipboard-check" ThemeHexColor="#1C06DC" OnPress={() => { }} />
             <ActionButton ButtonTitle="Repairs" LucideIconName="construction" ThemeHexColor="#00892B" OnPress={() => { }} />

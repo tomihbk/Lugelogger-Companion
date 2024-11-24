@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import CarShowCase from "~/components/CarShowCase";
 
 export default function garage() {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={tw`flex flex-col p-5`}>
       <Stack.Screen options={{ title: 'Garage', headerShown: false }} />

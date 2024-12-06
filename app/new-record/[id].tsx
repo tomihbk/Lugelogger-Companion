@@ -4,7 +4,8 @@ import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { useForm, Controller } from "react-hook-form"
 import { useAddServiceRecord } from '~/hooks/api/use-get-servicerecords'
-import { OdometerFunctionStore } from '~/stores/RecordButtons'
+import { useAddOdometerRecord, useLastOdometerRecord } from '~/hooks/api/use-get-odometerrecords'
+import { OdometerFunctionStore, ServiceFunctionStore } from '~/stores/RecordButtons'
 import { OdometerRecord, GasRecordAdd } from '~/api/index-records.types'
 import { RecordBase } from '~/api/records-base.types'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
@@ -14,12 +15,12 @@ import GlobalStateStore from '~/stores/globalStateStore'
 
 const NewRecord = () => {
     const { t } = useTranslation()
-    const { id: CarId, actionType } = useLocalSearchParams()
-    const OdometerButton = OdometerFunctionStore((state) => state)
-    const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>(OdometerButton)
+    const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
+    const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>()
     const { mutateAsync: addServiceRecord } = useAddServiceRecord()
-    const isReturnFromForms = GlobalStateStore((state) => state.setIsReturnFromForms)
-    const returnFromForms = GlobalStateStore((state) => state.isReturnFromForms)
+    const { mutateAsync: addOdometerRecord } = useAddOdometerRecord()
+    const { data: getLastOdometerRecord } = useLastOdometerRecord(parseInt(CarId))
+    const { setIsReturnFromForms: isReturnFromForms, isReturnFromForms: returnFromForms } = GlobalStateStore((state) => state)
 
     const date = new Date().toLocaleDateString('de-DE', { year: '2-digit', month: '2-digit', day: '2-digit' })
 
@@ -41,6 +42,11 @@ const NewRecord = () => {
 
     useEffect(() => {
         if (returnFromForms) router.dismiss()
+
+        //     router.replace({
+        //         pathname: "/car-detail/[id]",
+        //         params: { id: CarId, actionType }
+        // })
     }, [returnFromForms])
 
     type formDataType = {
@@ -55,15 +61,31 @@ const NewRecord = () => {
         MissedFuelUp: string;
         Tags: string;
     }
-    const handleForm = (formData:formDataType) => {
+    const handleForm = (formData: formDataType) => {
         //console.log("formData : " + JSON.stringify(formData))
-        // TODO this will not work because we're making a service request on an odometer form
-        addServiceRecord({
-            vehicleId: parseInt(CarId.toString()),
-            serviceRecord: [{ cost: formData.Cost, date: "10/29/2024", description: `Car ID ${CarId} - ${new Date().toISOString()}`, odometer: formData.Odometer, notes: formData.Notes }]
-        })
+        // TODO this will not work because we're making a service request on an odometer form and there are missing mandatory fields
+
+        switch (actionType) {
+            case "service":
+                addServiceRecord({
+                    vehicleId: parseInt(CarId.toString()),
+                    serviceRecord: [{ cost: formData.Cost, date: "10/29/2024", description: `Car ID ${CarId} - ${new Date().toISOString()}`, odometer: formData.Odometer, notes: formData.Notes }]
+                })
+                break;
+
+            case "odometer":
+                addOdometerRecord({
+                    vehicleId: parseInt(CarId.toString()),
+                    odometerRecord: [{ date: "10/29/2024", initialOdometer: formData.InitialOdometer, odometer: formData.Odometer, notes: formData.Notes }]
+                })
+                break;
+
+            default:
+                break;
+        }
+
         isReturnFromForms(true)
-        console.log(!!errors)
+        //console.log(!!errors)
     }
 
     console.log("Error odo Type : " + JSON.stringify(errors))
@@ -71,29 +93,31 @@ const NewRecord = () => {
     useEffect(() => {
         switch (actionType) {
             case "odometer":
-                setCurrentActionType(OdometerButton)
+                setCurrentActionType(OdometerFunctionStore)
                 break;
             case "service":
-                setCurrentActionType(OdometerButton)
+                setCurrentActionType(ServiceFunctionStore)
                 break;
             case "repairs":
-                setCurrentActionType(OdometerButton)
+                setCurrentActionType(OdometerFunctionStore)
                 break;
             case "upgrades":
-                setCurrentActionType(OdometerButton)
+                setCurrentActionType(OdometerFunctionStore)
                 break;
             case "fuel":
-                setCurrentActionType(OdometerButton)
+                setCurrentActionType(OdometerFunctionStore)
                 break;
             case "taxes":
-                setCurrentActionType(OdometerButton)
+                setCurrentActionType(OdometerFunctionStore)
                 break;
             case "notes":
-                setCurrentActionType(OdometerButton)
+                setCurrentActionType(OdometerFunctionStore)
                 break;
             default:
                 break;
         }
+
+        // TODO needs optimization with "actionTypeMap: Record<string, any> ="" type
     }, [actionType])
 
 
@@ -177,6 +201,20 @@ const NewRecord = () => {
                         }
                         {errors.Cost && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
 
+                        {currentActionType?.visibleFields.description &&
+                            <>
+                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>{t("Description")}
+                                    {!currentActionType.mandatoryFields.description && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
+                                <Controller control={control} rules={{ required: currentActionType.mandatoryFields.description }}
+                                    render={({ field: { onChange, onBlur, value } }) => (
+                                        <TextInput
+                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/10 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Description && 'border-red-700' || ''}`}
+                                            onBlur={onBlur}
+                                            onChangeText={onChange}
+                                            value={value} />)} name="Description" />
+                            </>}
+                        {errors.Description && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
+
                         {currentActionType?.visibleFields.notes &&
                             <>
                                 <Text style={tw`font-HKGrotesk-SemiBold text-base`}>{t("Notes")}
@@ -191,20 +229,6 @@ const NewRecord = () => {
                             </>
                         }
                         {errors.Notes && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
-
-                        {currentActionType?.visibleFields.description &&
-                            <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>{t("Description")}
-                                    {!currentActionType.mandatoryFields.description && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
-                                <Controller control={control} rules={{ required: currentActionType.mandatoryFields.description }}
-                                    render={({ field: { onChange, onBlur, value } }) => (
-                                        <TextInput
-                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/10 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Description && 'border-red-700' || ''}`}
-                                            onBlur={onBlur}
-                                            onChangeText={onChange}
-                                            value={value} />)} name="Description" />
-                            </>}
-                        {errors.Description && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
 
                         {currentActionType?.visibleFields.fuelConsumed &&
                             <>

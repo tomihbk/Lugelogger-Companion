@@ -4,7 +4,6 @@ export type ServiceRecord = RecordBase
 export type OdometerRecord = {
   date: string
   initialOdometer: string
-  reading?: string
   odometer: string
   notes?: string
 }[]

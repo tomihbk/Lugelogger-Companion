@@ -27,7 +27,7 @@ export const addOdometerRecord = async (
 ) => {
   const { data } = await axios.post(`${ENDPOINT}/${ApiTypeEnum.ADD}`, {
     vehicleId: _vehicleId,
-    ..._odometerRecordData,
+    ..._odometerRecordData[0],
   })
   return data
 }

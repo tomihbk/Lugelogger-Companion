@@ -3,7 +3,11 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query"
-import { getOdometerRecords, addOdometerRecord, getLastOdometerRecord } from "~/api/odometer-records"
+import {
+  getOdometerRecords,
+  addOdometerRecord,
+  getLastOdometerRecord,
+} from "~/api/odometer-records"
 import type { OdometerRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 
@@ -12,9 +16,9 @@ const _queryClient = queryClient
 
 export const getQueryKey = (
   vehicleId: number,
-  serviceRecord?: OdometerRecord
+  odometerRecord?: OdometerRecord
 ) => {
-  if (serviceRecord) return ["QUERY_KEY", vehicleId, serviceRecord]
+  if (odometerRecord) return ["QUERY_KEY", vehicleId, odometerRecord]
   return [QUERY_KEY, vehicleId]
 }
 
@@ -34,16 +38,19 @@ export const useLastOdometerRecord = (vehicleId: number) => {
   return query
 }
 
-
-export const useAddOdometerRecord = (
-  vehicleId: number,
-  serviceRecord: OdometerRecord
-) => {
-  const query = useMutation<OdometerRecord>({
-    mutationFn: async () => await addOdometerRecord(vehicleId, serviceRecord),
-    onSuccess: () => {
+export const useAddOdometerRecord = () => {
+  const query = useMutation({
+    mutationFn: async ({
+      vehicleId,
+      odometerRecord,
+    }: {
+      vehicleId: number
+      odometerRecord: OdometerRecord
+    }) => await addOdometerRecord(vehicleId, odometerRecord),
+    onSuccess: (_, variables) => {
+      const { vehicleId, odometerRecord } = variables
       _queryClient.invalidateQueries(
-        getQueryKey(vehicleId, serviceRecord) as InvalidateQueryFilters
+        getQueryKey(vehicleId, odometerRecord) as InvalidateQueryFilters
       )
     },
   })

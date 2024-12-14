@@ -1,6 +1,6 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
-import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router'
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { FlashList } from '@shopify/flash-list'
 import { useServiceRecords } from '~/hooks/api/use-get-servicerecords'
@@ -13,11 +13,10 @@ import GlobalStateStore from '~/stores/globalStateStore'
 import StatsComponent from '~/components/StatsComponent'
 
 const CarDetail = () => {
-  const { id: CarId , actionType}: { id: string, actionType: string } = useLocalSearchParams()
-  const { data: ServiceRecords } = useServiceRecords(parseInt(CarId.toString()))
-  const { data: OdometerRecords } = useOdometerRecords(parseInt(CarId.toString()))
-
-  const { setSelectedTabName, isReturnFromForms, setIsReturnFromForms, selectedTabName, preferredCurrencySymbol } = GlobalStateStore((state) => state)
+  const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
+  const { data: ServiceRecords, isLoading: isServiceRecordsFetching } = useServiceRecords(parseInt(CarId.toString()))
+  const { data: OdometerRecords, isLoading: isOdometerRecordsFetching } = useOdometerRecords(parseInt(CarId.toString()))
+  const { setSelectedTabName, setIsReturnFromForms, selectedTabName, preferredCurrencySymbol } = GlobalStateStore((state) => state)
 
   const ActionButtons = [
     { key: 'home', label: 'Home', color: '#f28900' },
@@ -30,85 +29,60 @@ const CarDetail = () => {
     { key: 'notes', label: 'Notes', color: '#009476' },
   ]
 
-  const [selectedDataSet, setSelectedDataSet] = useState<RecordBase | OdometerRecord | GasRecordAdd | undefined>(undefined)
-  const [selectedButtonHexColor, setSelectedButtonHexColor] = useState<string>(ActionButtons.filter((button) => button.key == selectedTabName)[0].color)
+  const [selectedDataSet, setSelectedDataSet] = useState<RecordBase | OdometerRecord | GasRecordAdd | undefined>([])
+  const [selectedButtonHexColor, setSelectedButtonHexColor] = useState<string>(ActionButtons.filter((button) => button.key == actionType)[0].color)
   const [totalExpense, setTotalExpense] = useState<number>(0)
 
 
   const changeDataSet = async (serviceName: string) => {
-    let dataSource: RecordBase | OdometerRecord | undefined ;
-    switch (serviceName) {
-      case "service":
-        dataSource = ServiceRecords
-        break
-      case "odometer":
-        dataSource = OdometerRecords
-        break
-      default:
-        dataSource = []
-        break
+    try {
+      let dataSource: RecordBase | OdometerRecord | GasRecordAdd | undefined;
+
+      switch (serviceName) {
+        case "service":
+          dataSource = ServiceRecords
+          break
+        case "odometer":
+          dataSource = OdometerRecords
+          break
+        default:
+          dataSource = []
+          break
+      }
+
+      if (Array.isArray(dataSource)) {
+        const orderedDataByLatestDate = dataSource.slice().reverse()
+        setSelectedDataSet(orderedDataByLatestDate)
+      } else {
+        setSelectedDataSet([])
+      }
+    } catch (error) {
+      console.error("Error changing dataset: ", error)
     }
-    
-    const orderedDataByLatestDate = dataSource?.slice().reverse();
-    setSelectedDataSet(orderedDataByLatestDate)
-    // The received date doesn't contain min, sec, millisec thus sorting by date unusefull because you cannot compare two same dates
-    //setSelectedDataSet(sortDataByDate(dataSource, DATEORDER.DES))
   }
 
-  // enum DATEORDER {
-  //   ASC, DES
-  // }
-
-  // const sortDataByDate = (dataSource, orderByASCDES: DATEORDER) => {
-  //   return dataSource?.sort((a, b) => {
-  //     const dateA = dateHandler(a.date, true)
-  //     const dateB = dateHandler(b.date, true)
-
-  //     if (!dateA || !dateB) {
-  //       console.warn("Unable to sort due to invalid date:", a.date, b.date);
-  //       return 0 // Keep original order if dates are invalid
-  //     }
-  //     switch (orderByASCDES) {
-  //       case DATEORDER.ASC:
-  //         return dateA - dateB
-  //       case DATEORDER.DES:
-  //         return dateB - dateA
-  //     }
-  //   })
-  // }
+  useEffect(() => {
+    setSelectedTabName(actionType)
+    changeDataSet(actionType)
+  }, [])
 
   useEffect(() => {
-    console.log("Return from forsm : " + isReturnFromForms)
-    if (isReturnFromForms) {
-      changeDataSet(selectedTabName)
-    } else {
-      setSelectedTabName('home')
-      changeDataSet('home')
+    if (Array.isArray(selectedDataSet) && selectedDataSet.every(item => 'cost' in item)) {
+      calculateTotalExpense(selectedDataSet as RecordBase)
     }
-  }, [ServiceRecords, OdometerRecords]) // TODO Add other records services 
-
-  useEffect(() => {
-    if (selectedDataSet) getTotalExpense(selectedDataSet as RecordBase)
-    // TODO check if the given record is type RecordBase ONLY, other types don't have cost variables
   }, [selectedDataSet])
 
-  useFocusEffect(
-    useCallback(() => {
-      if (isReturnFromForms) {
-        changeDataSet(selectedTabName)
-      } else {
-        setSelectedTabName('home')
-        changeDataSet('home')
-      }
-      return () => {
-        setIsReturnFromForms(false)
-      }
-    }, [isReturnFromForms])
-  )
+  useEffect(() => {
+    if (OdometerRecords || ServiceRecords) {
+      changeDataSet(selectedTabName)
+    }
+    return () => {
+      setSelectedTabName(actionType)
+    }
+  }, [OdometerRecords, ServiceRecords]) // TODO Add other records services with time
 
-  const getTotalExpense = (recordDataObject: RecordBase) => {
+  const calculateTotalExpense = (recordDataObject: RecordBase) => {
     let totalCost = 0
-    //console.log(JSON.stringify(recordDataObject))
     for (const record of recordDataObject) totalCost += parseFloat(record.cost)
     setTotalExpense(totalCost)
   }
@@ -123,8 +97,6 @@ const CarDetail = () => {
       return new Date(YYYY, MM - 1, DD)
     }
   }
-
-
 
   return (
     <View style={tw`flex flex-col p-5 pb-0 w-full h-full dark:bg-slate-900`}>
@@ -150,7 +122,12 @@ const CarDetail = () => {
         ))}
       </ScrollView>
 
-      {
+      {(isOdometerRecordsFetching || isServiceRecordsFetching) ? (
+        <>
+          <Text>Loading...</Text>
+          <ActivityIndicator size="large" color={selectedButtonHexColor} />
+        </>
+      ) : (
         selectedTabName != 'home' && selectedTabName != 'notes' &&
         <>
           <FlashList
@@ -190,7 +167,7 @@ const CarDetail = () => {
             <PlusIcon size={35} color="white" />
           </TouchableOpacity>
         </>
-      }
+      )}
     </View>
   )
 }

@@ -12,15 +12,16 @@ const _queryClient = queryClient
 
 export const getQueryKey = (
   vehicleId: number,
+  requestType?: string,
   serviceRecord?: ServiceRecord
 ) => {
-  if (serviceRecord) return ["QUERY_KEY", vehicleId, serviceRecord]
-  return [QUERY_KEY, vehicleId]
+  if (serviceRecord) return [QUERY_KEY, vehicleId, serviceRecord]
+  return [QUERY_KEY, requestType, vehicleId]
 }
 
 export const useServiceRecords = (vehicleId: number) => {
   const query = useQuery<ServiceRecord>({
-    queryKey: getQueryKey(vehicleId),
+    queryKey: getQueryKey(vehicleId, "all-service-data"),
     queryFn: async () => await getServiceRecords(vehicleId),
   })
   return query
@@ -35,11 +36,11 @@ export const useAddServiceRecord = () => {
       vehicleId: number
       serviceRecord: ServiceRecord
     }) => await addServiceRecord(vehicleId, serviceRecord),
-    onError: (err) => console.error(err),
+    onError: (err) => console.error("useAddServiceRecord error : " + err),
     onSuccess: (_, variables) => {
       const { vehicleId, serviceRecord } = variables
       _queryClient.invalidateQueries(
-        getQueryKey(vehicleId, serviceRecord) as InvalidateQueryFilters
+        getQueryKey(vehicleId, undefined, serviceRecord) as InvalidateQueryFilters
       )
     },
   })

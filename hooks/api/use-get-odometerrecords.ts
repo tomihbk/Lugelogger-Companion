@@ -16,15 +16,16 @@ const _queryClient = queryClient
 
 export const getQueryKey = (
   vehicleId: number,
+  requestType?: string,
   odometerRecord?: OdometerRecord
 ) => {
-  if (odometerRecord) return ["QUERY_KEY", vehicleId, odometerRecord]
-  return [QUERY_KEY, vehicleId]
+  if (odometerRecord) return [QUERY_KEY, vehicleId, odometerRecord]
+  return [QUERY_KEY, requestType,vehicleId]
 }
 
 export const useOdometerRecords = (vehicleId: number) => {
   const query = useQuery<OdometerRecord>({
-    queryKey: getQueryKey(vehicleId),
+    queryKey: getQueryKey(vehicleId, "all-odometer-data"),
     queryFn: async () => await getOdometerRecords(vehicleId),
   })
   return query
@@ -32,7 +33,7 @@ export const useOdometerRecords = (vehicleId: number) => {
 
 export const useLastOdometerRecord = (vehicleId: number) => {
   const query = useQuery<OdometerRecord>({
-    queryKey: getQueryKey(vehicleId),
+    queryKey: getQueryKey(vehicleId, "last-odometer-data"),
     queryFn: async () => await getLastOdometerRecord(vehicleId),
   })
   return query
@@ -50,8 +51,9 @@ export const useAddOdometerRecord = () => {
     onSuccess: (_, variables) => {
       const { vehicleId, odometerRecord } = variables
       _queryClient.invalidateQueries(
-        getQueryKey(vehicleId, odometerRecord) as InvalidateQueryFilters
+        getQueryKey(vehicleId, undefined, odometerRecord) as InvalidateQueryFilters
       )
+
     },
   })
   return query

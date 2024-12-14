@@ -22,7 +22,7 @@ const CarShowCase = (props: CarShowCaseProps) => {
     return (
         <TouchableOpacity style={tw`mb-5`} onPress={() => router.push({
             pathname: "/car-detail/[id]",
-            params: { id: props.carId as number }
+            params: { id: props.carId as number, actionType: "service" } // TODO: change to "home" for production
         })}>
             <ImageBackground source={{ uri: props.CarPhotoUri }} resizeMode="cover" style={tw`w-full h-52 rounded-2xl overflow-hidden`}>
                 <LinearGradient

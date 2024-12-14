@@ -6,12 +6,9 @@ import { useForm, Controller } from "react-hook-form"
 import { useAddServiceRecord } from '~/hooks/api/use-get-servicerecords'
 import { useAddOdometerRecord, useLastOdometerRecord } from '~/hooks/api/use-get-odometerrecords'
 import { OdometerFunctionStore, ServiceFunctionStore } from '~/stores/RecordButtons'
-import { OdometerRecord, GasRecordAdd } from '~/api/index-records.types'
-import { RecordBase } from '~/api/records-base.types'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
 import GlobalStateStore from '~/stores/globalStateStore'
-
 
 const NewRecord = () => {
     const { t } = useTranslation()
@@ -42,11 +39,6 @@ const NewRecord = () => {
 
     useEffect(() => {
         if (returnFromForms) router.dismiss()
-
-        //     router.replace({
-        //         pathname: "/car-detail/[id]",
-        //         params: { id: CarId, actionType }
-        // })
     }, [returnFromForms])
 
     type formDataType = {
@@ -61,34 +53,37 @@ const NewRecord = () => {
         MissedFuelUp: string;
         Tags: string;
     }
-    const handleForm = (formData: formDataType) => {
+    const handleForm = async (formData: formDataType) => {
         //console.log("formData : " + JSON.stringify(formData))
         // TODO this will not work because we're making a service request on an odometer form and there are missing mandatory fields
 
-        switch (actionType) {
-            case "service":
-                addServiceRecord({
-                    vehicleId: parseInt(CarId.toString()),
-                    serviceRecord: [{ cost: formData.Cost, date: "10/29/2024", description: `Car ID ${CarId} - ${new Date().toISOString()}`, odometer: formData.Odometer, notes: formData.Notes }]
-                })
-                break;
+        try {
+            switch (actionType) {
+                case "service":
+                    await addServiceRecord({
+                        vehicleId: parseInt(CarId.toString()),
+                        serviceRecord: [{ cost: formData.Cost, date: "10/29/2024", description: `Car ID ${CarId} - ${new Date().toISOString()}`, odometer: formData.Odometer, notes: formData.Notes }]
+                    });
+                    break;
 
-            case "odometer":
-                addOdometerRecord({
-                    vehicleId: parseInt(CarId.toString()),
-                    odometerRecord: [{ date: "10/29/2024", initialOdometer: formData.InitialOdometer, odometer: formData.Odometer, notes: formData.Notes }]
-                })
-                break;
+                case "odometer":
+                    await addOdometerRecord({
+                        vehicleId: parseInt(CarId.toString()),
+                        odometerRecord: [{ date: "10/29/2024", initialOdometer: formData.InitialOdometer, odometer: formData.Odometer, notes: formData.Notes }]
+                    });
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
+            }
+            isReturnFromForms(true);
+        } catch (error) {
+            console.error("Error handling form submission: ", error);
         }
-
-        isReturnFromForms(true)
         //console.log(!!errors)
     }
 
-    console.log("Error odo Type : " + JSON.stringify(errors))
+    //console.log("Error odo Type : " + JSON.stringify(errors))
 
     useEffect(() => {
         switch (actionType) {

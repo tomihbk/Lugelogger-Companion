@@ -6,18 +6,13 @@ import tw from '~/tw.config';
 import GroupActionButtons from "~/components/GroupActionButtons";
 import NextReminder from "~/components/NextReminder";
 import FavoriteCarShowcase from "~/components/FavoriteCarShowcase";
-import { useAddServiceRecord } from "~/hooks/api/use-get-servicerecords";
 
 export default function Home() {
   const { t } = useTranslation();
 
-  //console.log(`--------- ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: '2-digit', minute: "numeric" })}------------- \n` + JSON.stringify(gilbert.data))
-
-  const { mutateAsync: addServiceRecord } = useAddServiceRecord(1, [{ cost: "69", date: "9/28/2024", description: "Worakls Orechstre", odometer: "111111" }])
-
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      {/* <Redirect href="/(tabs)/garage" /> */}
+      <Redirect href="/(tabs)/garage" />
       <Stack.Screen options={{ title: 'Home', headerShown: false }} />
       <View style={tw`flex p-5`}>
         <Text style={tw`text-2xl mt-4 font-HKGrotesk-Black`}>Hi Thomas</Text>
@@ -26,7 +21,6 @@ export default function Home() {
           <Pressable android_ripple={{ color: '#f87171', borderless: false, foreground: true }}
             style={tw`rounded-full`} onPress={() => {
               try {
-                addServiceRecord()
                 console.log("trying to add new data...")
               } catch (Err) { console.error(Err) }
             }}>

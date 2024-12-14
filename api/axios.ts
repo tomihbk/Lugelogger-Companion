@@ -39,14 +39,14 @@ export const axios = Axios.create({
 axios.interceptors.request.use(authRequestInterceptor)
 
 // axios.interceptors.request.use(request => {
-//   //console.warn('Starting Request', JSON.stringify(request, null, 2))
+//   console.log('Starting Request', JSON.stringify(request, null, 2))
 //   return request
 // })
 
-axios.interceptors.request.use(error => {
-  console.error('Axios Error from file', JSON.stringify(error, null, 2))
-  return error
-})
+// axios.interceptors.request.use(error => {
+//   console.error('Axios Error from file', JSON.stringify(error, null, 2))
+//   return error
+// })
 
 
 // axios.interceptors.response.use(response => {

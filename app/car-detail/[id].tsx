@@ -123,7 +123,7 @@ const CarDetail = () => {
       case 'service':
         return (
           <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
-            <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Annual\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Total\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
             <StatsComponent themeColor={selectedButtonHexColor} cost={47} symbol={"📆"} description={`Days Since\nLast Repair`} />
             <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Annual\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
             <StatsComponent themeColor={selectedButtonHexColor} cost={selectedDataSet?.length} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
@@ -183,8 +183,8 @@ const CarDetail = () => {
                 <View style={tw`p-4 pb-0 mb-2 bg-white dark:bg-green-950 rounded-3xl`}>
                   <View style={tw`flex flex-row flex-wrap justify-between`}>
                     <Text style={tw`font-HKGrotesk-Medium text-base`}>{dateHandler(item.date).toString()}</Text>
-                    <Text style={tw`font-HKGrotesk-Medium text-base`}>${item.cost}</Text>
-                    <Text style={tw`font-HKGrotesk-Medium text-base`}>{item.odometer}km</Text>
+                    <Text style={tw`font-HKGrotesk-Medium text-base`}>${item?.cost}</Text>
+                    <Text style={tw`font-HKGrotesk-Medium text-base`}>{item.odometer}{preferredDistanceMeasurement}</Text>
                   </View>
                   <Text style={tw`bg-[${selectedButtonHexColor}]/5 mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`}>{item.description && item.description.substring(0, 58)}{item.description?.length > 58 && "..."}</Text>
                   <Text>{item.notes}</Text>

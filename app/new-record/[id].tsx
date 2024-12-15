@@ -4,7 +4,7 @@ import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { useForm, Controller } from "react-hook-form"
 import { useAddServiceRecord } from '~/hooks/api/use-get-servicerecords'
-import { useAddOdometerRecord, useLastOdometerRecord } from '~/hooks/api/use-get-odometerrecords'
+import { useAddOdometerRecord } from '~/hooks/api/use-get-odometerrecords'
 import { OdometerFunctionStore, ServiceFunctionStore } from '~/stores/RecordButtons'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
@@ -16,8 +16,6 @@ const NewRecord = () => {
     const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>()
     const { mutateAsync: addServiceRecord } = useAddServiceRecord()
     const { mutateAsync: addOdometerRecord } = useAddOdometerRecord()
-    const { data: getLastOdometerRecord } = useLastOdometerRecord(parseInt(CarId))
-    const { setIsReturnFromForms: isReturnFromForms, isReturnFromForms: returnFromForms } = GlobalStateStore((state) => state)
 
     const date = new Date().toLocaleDateString('de-DE', { year: '2-digit', month: '2-digit', day: '2-digit' })
 
@@ -36,11 +34,6 @@ const NewRecord = () => {
         },
         mode: "onChange"
     })
-
-    useEffect(() => {
-        if (returnFromForms) router.dismiss()
-    }, [returnFromForms])
-
     type formDataType = {
         Date: string;
         Odometer: string;
@@ -76,10 +69,10 @@ const NewRecord = () => {
                 default:
                     break;
             }
-            isReturnFromForms(true);
         } catch (error) {
             console.error("Error handling form submission: ", error);
         }
+        router.dismiss()
         //console.log(!!errors)
     }
 
@@ -89,32 +82,31 @@ const NewRecord = () => {
         switch (actionType) {
             case "odometer":
                 setCurrentActionType(OdometerFunctionStore)
-                break;
+                break
             case "service":
                 setCurrentActionType(ServiceFunctionStore)
-                break;
+                break
             case "repairs":
                 setCurrentActionType(OdometerFunctionStore)
-                break;
+                break
             case "upgrades":
                 setCurrentActionType(OdometerFunctionStore)
-                break;
+                break
             case "fuel":
                 setCurrentActionType(OdometerFunctionStore)
-                break;
+                break
             case "taxes":
                 setCurrentActionType(OdometerFunctionStore)
-                break;
+                break
             case "notes":
                 setCurrentActionType(OdometerFunctionStore)
-                break;
+                break
             default:
-                break;
+                break
         }
 
         // TODO needs optimization with "actionTypeMap: Record<string, any> ="" type
     }, [actionType])
-
 
     return (
         <View style={tw`flex flex-col p-5 pb-0 w-full h-full dark:bg-slate-900`}>

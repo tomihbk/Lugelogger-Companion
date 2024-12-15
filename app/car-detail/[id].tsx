@@ -16,7 +16,7 @@ const CarDetail = () => {
   const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
   const { data: ServiceRecords, isLoading: isServiceRecordsFetching } = useServiceRecords(parseInt(CarId.toString()))
   const { data: OdometerRecords, isLoading: isOdometerRecordsFetching } = useOdometerRecords(parseInt(CarId.toString()))
-  const { setSelectedTabName, setIsReturnFromForms, selectedTabName, preferredCurrencySymbol, preferredDistanceMeasurement } = GlobalStateStore((state) => state)
+  const { setSelectedTabName, selectedTabName, preferredCurrencySymbol, preferredDistanceMeasurement } = GlobalStateStore((state) => state)
 
   const ActionButtons = [
     { key: 'home', label: 'Home', color: '#f28900' },
@@ -84,6 +84,7 @@ const CarDetail = () => {
   useEffect(() => {
     if (OdometerRecords || ServiceRecords) {
       changeDataSet(selectedTabName)
+      setSelectedTabName(selectedTabName)
     }
     return () => {
       setSelectedTabName(actionType)
@@ -201,7 +202,6 @@ const CarDetail = () => {
             estimatedItemSize={10} />
           {showPlusButton &&
             <TouchableOpacity style={tw`rounded-full right-5 bottom-4 p-3 bg-[${selectedButtonHexColor}] ${selectedTabName == "home" ? 'hidden' : 'absolute'}`} onPress={() => {
-              setIsReturnFromForms(false)
               router.push({
                 pathname: "/new-record/[id]",
                 params: { id: CarId, actionType: selectedTabName }

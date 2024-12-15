@@ -33,7 +33,9 @@ const CarDetail = () => {
   const [selectedButtonHexColor, setSelectedButtonHexColor] = useState<string>(ActionButtons.filter((button) => button.key == actionType)[0].color)
   const [totalExpense, setTotalExpense] = useState<number>(0)
   const [totalDistance, setTotalDistance] = useState<number>(0)
-
+  const averageExpense = (Math.round((totalExpense / (selectedDataSet?.length || 1)) * 10) / 10)
+  let didInit = false
+  const [showPlusButton, setShowPlusButton] = useState<boolean>(true)
 
   const changeDataSet = async (serviceName: string) => {
     try {
@@ -63,8 +65,11 @@ const CarDetail = () => {
   }
 
   useEffect(() => {
-    setSelectedTabName(actionType)
-    changeDataSet(actionType)
+    if (!didInit) {  // ✅ Only runs once per app load, might run two times in development
+      didInit = true
+      setSelectedTabName(actionType)
+      changeDataSet(actionType)
+    }
   }, [])
 
   useEffect(() => {
@@ -118,15 +123,15 @@ const CarDetail = () => {
         return (
           <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
             <StatsComponent themeColor={selectedButtonHexColor} cost={totalDistance} symbol={preferredDistanceMeasurement} description={`Total\nDriven Distance`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={selectedDataSet?.length} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={(selectedDataSet?.length || 0)} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
           </View>)
       case 'service':
         return (
           <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
             <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Total\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
             <StatsComponent themeColor={selectedButtonHexColor} cost={47} symbol={"📆"} description={`Days Since\nLast Repair`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Annual\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={selectedDataSet?.length} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={averageExpense} symbol={preferredCurrencySymbol} description={`Average\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={(selectedDataSet?.length || 0)} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
           </View>
         )
       case 'repairs':
@@ -178,6 +183,8 @@ const CarDetail = () => {
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={StatsComponentHandler(selectedTabName)}
             data={selectedDataSet}
+            onScrollEndDrag={() => setShowPlusButton(true)}
+            onScrollBeginDrag={() => setShowPlusButton(false)}
             renderItem={({ item }) => {
               return (
                 <View style={tw`p-4 pb-0 mb-2 bg-white dark:bg-green-950 rounded-3xl`}>
@@ -192,15 +199,17 @@ const CarDetail = () => {
               )
             }}
             estimatedItemSize={10} />
-          <TouchableOpacity style={tw`rounded-full right-5 bottom-4 p-3 bg-[${selectedButtonHexColor}] ${selectedTabName == "home" ? 'hidden' : 'absolute'}`} onPress={() => {
-            setIsReturnFromForms(false)
-            router.push({
-              pathname: "/new-record/[id]",
-              params: { id: CarId, actionType: selectedTabName }
-            })
-          }}>
-            <PlusIcon size={35} color="white" />
-          </TouchableOpacity>
+          {showPlusButton &&
+            <TouchableOpacity style={tw`rounded-full right-5 bottom-4 p-3 bg-[${selectedButtonHexColor}] ${selectedTabName == "home" ? 'hidden' : 'absolute'}`} onPress={() => {
+              setIsReturnFromForms(false)
+              router.push({
+                pathname: "/new-record/[id]",
+                params: { id: CarId, actionType: selectedTabName }
+              })
+            }}>
+              <PlusIcon size={35} color="white" />
+            </TouchableOpacity>
+          }
         </>
       )}
     </View>

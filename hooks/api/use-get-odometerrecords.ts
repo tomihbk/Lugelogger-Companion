@@ -53,7 +53,6 @@ export const useAddOdometerRecord = () => {
       _queryClient.invalidateQueries(
         getQueryKey(vehicleId, undefined, odometerRecord) as InvalidateQueryFilters
       )
-
     },
   })
   return query

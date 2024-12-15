@@ -5,7 +5,7 @@ import tw from '~/tw.config'
 type StatsComponentPropType = {
     themeColor: string
     cost: number
-    currencySymbol: string
+    symbol: string
     description: string
 }
 
@@ -18,7 +18,7 @@ const StatsComponent = (props: StatsComponentPropType) => {
     return (
         <View style={tw`flex flex-row flex-wrap p-3 w-[48%] bg-[${props.themeColor}]/5 dark:bg-green-950 rounded-3xl border-[${props.themeColor}]/20 border`}>
             <Text style={tw`font-HKGrotesk-Bold text-3xl w-2/3 z-50 text-[${props.themeColor}]`}>{moneyHandler(props.cost)}</Text>
-            <Text style={tw`font-HKGrotesk-Medium text-lg absolute top-5 right-2 text-[${props.themeColor}]`}>{props.currencySymbol}</Text>
+            <Text style={tw`font-HKGrotesk-Medium text-lg absolute top-5 right-2 text-[${props.themeColor}]`}>{props.symbol}</Text>
             <Text style={tw`font-HKGrotesk-Medium text-xs text-[${props.themeColor}]`}>{props.description}</Text>
         </View>
     )

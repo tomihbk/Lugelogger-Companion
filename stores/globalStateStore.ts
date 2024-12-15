@@ -7,10 +7,12 @@ interface GlobalStateStoreProp {
   isReturnFromForms: boolean
   selectedTabName: string
   preferredCurrencySymbol: string
+  preferredDistanceMeasurement: string
   setFavoriteCar: (carId: number) => void
   setIsReturnFromForms: (state: boolean) => void
   setSelectedTabName: (lastSelectedTab: string) => void
   setPreferredCurrencySymbol: (currencyISO4217Symbol: string) => void
+  setPreferredDistanceMeasurement: (kmOrMiles: string) => void
 }
 
 const GlobalStateStore = create<GlobalStateStoreProp>()(
@@ -21,11 +23,14 @@ const GlobalStateStore = create<GlobalStateStoreProp>()(
       isInteractedWithForms: false,
       selectedTabName: "home",
       preferredCurrencySymbol: "CZK",
+      preferredDistanceMeasurement: "km",
       setIsReturnFromForms: (state) =>
         set(() => ({ isReturnFromForms: state })),
       setFavoriteCar: (carId) => set(() => ({ favoriteCarId: carId })),
       setPreferredCurrencySymbol: (currencyISO4217Symbol) =>
         set(() => ({ preferredCurrencySymbol: currencyISO4217Symbol })),
+      setPreferredDistanceMeasurement: (kmOrMiles) =>
+        set(() => ({ preferredDistanceMeasurement: kmOrMiles })),
       setSelectedTabName: (lastSelectedTab) =>
         set(() => ({ selectedTabName: lastSelectedTab })),
     }),

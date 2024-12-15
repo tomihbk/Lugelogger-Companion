@@ -16,7 +16,7 @@ const CarDetail = () => {
   const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
   const { data: ServiceRecords, isLoading: isServiceRecordsFetching } = useServiceRecords(parseInt(CarId.toString()))
   const { data: OdometerRecords, isLoading: isOdometerRecordsFetching } = useOdometerRecords(parseInt(CarId.toString()))
-  const { setSelectedTabName, setIsReturnFromForms, selectedTabName, preferredCurrencySymbol } = GlobalStateStore((state) => state)
+  const { setSelectedTabName, setIsReturnFromForms, selectedTabName, preferredCurrencySymbol, preferredDistanceMeasurement } = GlobalStateStore((state) => state)
 
   const ActionButtons = [
     { key: 'home', label: 'Home', color: '#f28900' },
@@ -32,6 +32,7 @@ const CarDetail = () => {
   const [selectedDataSet, setSelectedDataSet] = useState<RecordBase | OdometerRecord | GasRecordAdd | undefined>([])
   const [selectedButtonHexColor, setSelectedButtonHexColor] = useState<string>(ActionButtons.filter((button) => button.key == actionType)[0].color)
   const [totalExpense, setTotalExpense] = useState<number>(0)
+  const [totalDistance, setTotalDistance] = useState<number>(0)
 
 
   const changeDataSet = async (serviceName: string) => {
@@ -70,6 +71,9 @@ const CarDetail = () => {
     if (Array.isArray(selectedDataSet) && selectedDataSet.every(item => 'cost' in item)) {
       calculateTotalExpense(selectedDataSet as RecordBase)
     }
+    if (Array.isArray(selectedDataSet) && selectedDataSet.every(item => 'odometer' in item)) {
+      calculateTotalDistance(selectedDataSet as unknown as OdometerRecord)
+    }
   }, [selectedDataSet])
 
   useEffect(() => {
@@ -87,6 +91,16 @@ const CarDetail = () => {
     setTotalExpense(totalCost)
   }
 
+  const calculateTotalDistance = (recordDataObject: OdometerRecord) => {
+    if (recordDataObject.length === 0) return 0;
+    let totolOdometer = 0
+    let initialOdometerTotal = 0
+
+    for (const record of recordDataObject) totolOdometer += parseFloat(record.odometer)
+    for (const record of recordDataObject) initialOdometerTotal += parseFloat(record.initialOdometer)
+    setTotalDistance(totolOdometer - initialOdometerTotal)
+  }
+
   const dateHandler = (date: string, getISODate: boolean = false): Date | string => {
     if (!getISODate) {
       const [MM, DD, YYYY] = date.split('/')
@@ -95,6 +109,36 @@ const CarDetail = () => {
     } else {
       const [MM, DD, YYYY] = date.split('/').map(part => parseInt(part, 10))
       return new Date(YYYY, MM - 1, DD)
+    }
+  }
+
+  const StatsComponentHandler = (actiontype: string) => {
+    switch (actiontype) {
+      case 'odometer':
+        return (
+          <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
+            <StatsComponent themeColor={selectedButtonHexColor} cost={totalDistance} symbol={preferredDistanceMeasurement} description={`Total\nDriven Distance`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={selectedDataSet?.length} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
+          </View>)
+      case 'service':
+        return (
+          <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
+            <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Annual\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={47} symbol={"📆"} description={`Days Since\nLast Repair`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Annual\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={selectedDataSet?.length} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
+          </View>
+        )
+      case 'repairs':
+        return (<><Text>Repairs Stats component</Text></>)
+      case 'upgrades':
+        return (<><Text>Upgrades Stats component</Text></>)
+      case 'fuel':
+        return (<><Text>Fuel Stats component</Text></>)
+      case 'taxes':
+        return (<><Text>Taxes Stats component</Text></>)
+      case 'notes':
+        return (<><Text>Notes Stats component</Text></>)
     }
   }
 
@@ -132,16 +176,7 @@ const CarDetail = () => {
         <>
           <FlashList
             showsVerticalScrollIndicator={false}
-            ListHeaderComponent={() => {
-              return (
-                <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
-                  <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} currencySymbol={preferredCurrencySymbol} description={`Annual\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
-                  <StatsComponent themeColor={selectedButtonHexColor} cost={47} currencySymbol={"📆"} description={`Days Since\nLast Repair`} />
-                  <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} currencySymbol={preferredCurrencySymbol} description={`Annual\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
-                  <StatsComponent themeColor={selectedButtonHexColor} cost={selectedDataSet?.length.toString()} currencySymbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
-                </View>
-              )
-            }}
+            ListHeaderComponent={StatsComponentHandler(selectedTabName)}
             data={selectedDataSet}
             renderItem={({ item }) => {
               return (

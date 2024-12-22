@@ -3,26 +3,29 @@ import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { FlashList } from '@shopify/flash-list'
-import { useServiceRecords } from '~/hooks/api/use-get-servicerecords'
 import { RecordBase } from '~/api/records-base.types'
-import { useOdometerRecords } from '~/hooks/api/use-get-odometerrecords'
+import { useOdometerRecords, useServiceRecords, useRepairRecords } from '~/hooks/api/index'
 import { GasRecordAdd, OdometerRecord } from '~/api/index-records.types'
 import { PlusIcon } from 'lucide-react-native'
-import { OdometerFunctionStore, ServiceFunctionStore } from '~/stores/RecordButtons'
+import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore } from '~/stores/RecordButtons'
 import GlobalStateStore from '~/stores/globalStateStore'
 import StatsComponent from '~/components/StatsComponent'
 
 const CarDetail = () => {
   const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
-  const { data: ServiceRecords, isLoading: isServiceRecordsFetching } = useServiceRecords(parseInt(CarId.toString()))
-  const { data: OdometerRecords, isLoading: isOdometerRecordsFetching } = useOdometerRecords(parseInt(CarId.toString()))
+
+  const carId = parseInt(CarId.toString());
+  const { data: ServiceRecords, isLoading: isServiceRecordsFetching } = useServiceRecords(carId)
+  const { data: OdometerRecords, isLoading: isOdometerRecordsFetching } = useOdometerRecords(carId)
+  const { data: RepairRecords, isLoading: isRepairRecordsFetching } = useRepairRecords(carId)
+
   const { setSelectedTabName, selectedTabName, preferredCurrencySymbol, preferredDistanceMeasurement } = GlobalStateStore((state) => state)
 
   const ActionButtons = [
     { key: 'home', label: 'Home', color: '#f28900' },
     { key: OdometerFunctionStore.key, label: 'Odometer', color: OdometerFunctionStore.buttonColor },
     { key: ServiceFunctionStore.key, label: 'Service', color: ServiceFunctionStore.buttonColor },
-    { key: 'repairs', label: 'Repairs', color: '#00892B' },
+    { key: RepairFunctionStore.key, label: 'Repairs', color: RepairFunctionStore.buttonColor },
     { key: 'upgrades', label: 'Upgrades', color: '#E00004' },
     { key: 'fuel', label: 'Fuel', color: '#BF0296' },
     { key: 'taxes', label: 'Taxes', color: '#5e636e' },
@@ -47,6 +50,9 @@ const CarDetail = () => {
           break
         case "odometer":
           dataSource = OdometerRecords
+          break
+        case "repair":
+          dataSource = RepairRecords
           break
         default:
           dataSource = []
@@ -82,14 +88,14 @@ const CarDetail = () => {
   }, [selectedDataSet])
 
   useEffect(() => {
-    if (OdometerRecords || ServiceRecords) {
+    if (OdometerRecords || ServiceRecords || RepairRecords) {
       changeDataSet(selectedTabName)
       setSelectedTabName(selectedTabName)
     }
     return () => {
       setSelectedTabName(actionType)
     }
-  }, [OdometerRecords, ServiceRecords]) // TODO Add other records services with time
+  }, [OdometerRecords, ServiceRecords, RepairRecords]) // TODO Add other records services with time
 
   const calculateTotalExpense = (recordDataObject: RecordBase) => {
     let totalCost = 0
@@ -135,13 +141,20 @@ const CarDetail = () => {
             <StatsComponent themeColor={selectedButtonHexColor} cost={(selectedDataSet?.length || 0)} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
           </View>
         )
-      case 'repairs':
-        return (<><Text>Repairs Stats component</Text></>)
-      case 'upgrades':
+      case 'repair':
+        return (
+          <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
+            <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Total\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={47} symbol={"📆"} description={`Days Since\nLast Repair`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={averageExpense} symbol={preferredCurrencySymbol} description={`Average\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={(selectedDataSet?.length || 0)} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
+          </View>
+        )
+      case 'upgrade':
         return (<><Text>Upgrades Stats component</Text></>)
       case 'fuel':
         return (<><Text>Fuel Stats component</Text></>)
-      case 'taxes':
+      case 'tax':
         return (<><Text>Taxes Stats component</Text></>)
       case 'notes':
         return (<><Text>Notes Stats component</Text></>)
@@ -172,7 +185,7 @@ const CarDetail = () => {
         ))}
       </ScrollView>
 
-      {(isOdometerRecordsFetching || isServiceRecordsFetching) ? (
+      {(isOdometerRecordsFetching || isServiceRecordsFetching || isRepairRecordsFetching) ? (
         <>
           <Text>Loading...</Text>
           <ActivityIndicator size="large" color={selectedButtonHexColor} />

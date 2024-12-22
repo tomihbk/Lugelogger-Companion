@@ -3,9 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { useForm, Controller } from "react-hook-form"
-import { useAddServiceRecord } from '~/hooks/api/use-get-servicerecords'
-import { useAddOdometerRecord } from '~/hooks/api/use-get-odometerrecords'
-import { OdometerFunctionStore, ServiceFunctionStore } from '~/stores/RecordButtons'
+import { useAddServiceRecord, useAddOdometerRecord, useAddRepairRecord } from '~/hooks/api/index'
+import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore } from '~/stores/RecordButtons'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
 import GlobalStateStore from '~/stores/globalStateStore'
@@ -16,6 +15,7 @@ const NewRecord = () => {
     const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>()
     const { mutateAsync: addServiceRecord } = useAddServiceRecord()
     const { mutateAsync: addOdometerRecord } = useAddOdometerRecord()
+    const { mutateAsync: addRepairRecord } = useAddRepairRecord()
 
     const date = new Date().toLocaleDateString('de-DE', { year: '2-digit', month: '2-digit', day: '2-digit' })
 
@@ -56,18 +56,23 @@ const NewRecord = () => {
                     await addServiceRecord({
                         vehicleId: parseInt(CarId.toString()),
                         serviceRecord: [{ cost: formData.Cost, date: "10/29/2024", description: `Car ID ${CarId} - ${new Date().toISOString()}`, odometer: formData.Odometer, notes: formData.Notes }]
-                    });
-                    break;
-
+                    })
+                    break
                 case "odometer":
                     await addOdometerRecord({
                         vehicleId: parseInt(CarId.toString()),
                         odometerRecord: [{ date: "10/29/2024", initialOdometer: formData.InitialOdometer, odometer: formData.Odometer, notes: formData.Notes }]
-                    });
-                    break;
+                    })
+                    break
+                case "repair":
+                    await addRepairRecord({
+                        vehicleId: parseInt(CarId.toString()),
+                        repairRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
+                    })
+                    break
 
                 default:
-                    break;
+                    break
             }
         } catch (error) {
             console.error("Error handling form submission: ", error);
@@ -86,16 +91,16 @@ const NewRecord = () => {
             case "service":
                 setCurrentActionType(ServiceFunctionStore)
                 break
-            case "repairs":
-                setCurrentActionType(OdometerFunctionStore)
+            case "repair":
+                setCurrentActionType(RepairFunctionStore)
                 break
-            case "upgrades":
+            case "upgrade":
                 setCurrentActionType(OdometerFunctionStore)
                 break
             case "fuel":
                 setCurrentActionType(OdometerFunctionStore)
                 break
-            case "taxes":
+            case "tax":
                 setCurrentActionType(OdometerFunctionStore)
                 break
             case "notes":

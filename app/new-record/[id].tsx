@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { useForm, Controller } from "react-hook-form"
-import { useAddServiceRecord, useAddOdometerRecord, useAddRepairRecord } from '~/hooks/api/index'
-import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore } from '~/stores/RecordButtons'
+import { useAddServiceRecord, useAddOdometerRecord, useAddRepairRecord, useAddUpgradeRecord } from '~/hooks/api/index'
+import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore } from '~/stores/RecordButtons'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
 import GlobalStateStore from '~/stores/globalStateStore'
@@ -16,6 +16,7 @@ const NewRecord = () => {
     const { mutateAsync: addServiceRecord } = useAddServiceRecord()
     const { mutateAsync: addOdometerRecord } = useAddOdometerRecord()
     const { mutateAsync: addRepairRecord } = useAddRepairRecord()
+    const { mutateAsync: addUpgradeRecord } = useAddUpgradeRecord()
 
     const date = new Date().toLocaleDateString('de-DE', { year: '2-digit', month: '2-digit', day: '2-digit' })
 
@@ -70,7 +71,12 @@ const NewRecord = () => {
                         repairRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
                     })
                     break
-
+                case "upgrade":
+                    await addUpgradeRecord({
+                        vehicleId: parseInt(CarId.toString()),
+                        upgradeRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
+                    })
+                    break
                 default:
                     break
             }
@@ -95,7 +101,7 @@ const NewRecord = () => {
                 setCurrentActionType(RepairFunctionStore)
                 break
             case "upgrade":
-                setCurrentActionType(OdometerFunctionStore)
+                setCurrentActionType(UpgradeFunctionStore)
                 break
             case "fuel":
                 setCurrentActionType(OdometerFunctionStore)

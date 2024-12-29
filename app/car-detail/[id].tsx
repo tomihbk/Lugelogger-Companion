@@ -4,10 +4,10 @@ import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { FlashList } from '@shopify/flash-list'
 import { RecordBase } from '~/api/records-base.types'
-import { useOdometerRecords, useServiceRecords, useRepairRecords } from '~/hooks/api/index'
+import { useOdometerRecords, useServiceRecords, useRepairRecords, useUpgradeRecords } from '~/hooks/api/index'
 import { GasRecordAdd, OdometerRecord } from '~/api/index-records.types'
 import { PlusIcon } from 'lucide-react-native'
-import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore } from '~/stores/RecordButtons'
+import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore } from '~/stores/RecordButtons'
 import GlobalStateStore from '~/stores/globalStateStore'
 import StatsComponent from '~/components/StatsComponent'
 
@@ -18,6 +18,7 @@ const CarDetail = () => {
   const { data: ServiceRecords, isLoading: isServiceRecordsFetching } = useServiceRecords(carId)
   const { data: OdometerRecords, isLoading: isOdometerRecordsFetching } = useOdometerRecords(carId)
   const { data: RepairRecords, isLoading: isRepairRecordsFetching } = useRepairRecords(carId)
+  const { data: UpgradeRecords, isLoading: isUpgradeRecordsFetching } = useUpgradeRecords(carId)
 
   const { setSelectedTabName, selectedTabName, preferredCurrencySymbol, preferredDistanceMeasurement } = GlobalStateStore((state) => state)
 
@@ -26,7 +27,7 @@ const CarDetail = () => {
     { key: OdometerFunctionStore.key, label: 'Odometer', color: OdometerFunctionStore.buttonColor },
     { key: ServiceFunctionStore.key, label: 'Service', color: ServiceFunctionStore.buttonColor },
     { key: RepairFunctionStore.key, label: 'Repairs', color: RepairFunctionStore.buttonColor },
-    { key: 'upgrades', label: 'Upgrades', color: '#E00004' },
+    { key: UpgradeFunctionStore.key, label: 'Upgrades', color: UpgradeFunctionStore.buttonColor },
     { key: 'fuel', label: 'Fuel', color: '#BF0296' },
     { key: 'taxes', label: 'Taxes', color: '#5e636e' },
     { key: 'notes', label: 'Notes', color: '#009476' },
@@ -53,6 +54,9 @@ const CarDetail = () => {
           break
         case "repair":
           dataSource = RepairRecords
+          break
+        case "upgrade":
+          dataSource = UpgradeRecords
           break
         default:
           dataSource = []
@@ -88,14 +92,14 @@ const CarDetail = () => {
   }, [selectedDataSet])
 
   useEffect(() => {
-    if (OdometerRecords || ServiceRecords || RepairRecords) {
+    if (OdometerRecords || ServiceRecords || RepairRecords || UpgradeRecords) {
       changeDataSet(selectedTabName)
       setSelectedTabName(selectedTabName)
     }
     return () => {
       setSelectedTabName(actionType)
     }
-  }, [OdometerRecords, ServiceRecords, RepairRecords]) // TODO Add other records services with time
+  }, [OdometerRecords, ServiceRecords, RepairRecords, UpgradeRecords]) // TODO Add other records services with time
 
   const calculateTotalExpense = (recordDataObject: RecordBase) => {
     let totalCost = 0
@@ -151,7 +155,14 @@ const CarDetail = () => {
           </View>
         )
       case 'upgrade':
-        return (<><Text>Upgrades Stats component</Text></>)
+        return (
+          <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
+            <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Total\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={47} symbol={"📆"} description={`Days Since\nLast Upgrade`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={averageExpense} symbol={preferredCurrencySymbol} description={`Average\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={(selectedDataSet?.length || 0)} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
+          </View>
+        )
       case 'fuel':
         return (<><Text>Fuel Stats component</Text></>)
       case 'tax':

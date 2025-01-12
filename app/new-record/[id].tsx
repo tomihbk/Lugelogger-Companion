@@ -3,22 +3,22 @@ import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { useForm, Controller } from "react-hook-form"
-import { useAddServiceRecord, useAddOdometerRecord, useAddRepairRecord, useAddUpgradeRecord, useAddFuelRecord } from '~/hooks/api/index'
-import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore } from '~/stores/RecordButtons'
+import { useAddServiceRecord, useAddOdometerRecord, useAddRepairRecord, useAddUpgradeRecord, useAddFuelRecord, useAddTaxRecord } from '~/hooks/api/index'
+import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore } from '~/stores/RecordButtons'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
-import GlobalStateStore from '~/stores/globalStateStore'
 
 const NewRecord = () => {
     const { t } = useTranslation()
     const { id, actionType }: { id: string, actionType: string } = useLocalSearchParams()
     const CarId = parseInt(id)
-    const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>()
+    const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>(OdometerFunctionStore)
     const { mutateAsync: addServiceRecord } = useAddServiceRecord()
     const { mutateAsync: addOdometerRecord } = useAddOdometerRecord()
     const { mutateAsync: addRepairRecord } = useAddRepairRecord()
     const { mutateAsync: addUpgradeRecord } = useAddUpgradeRecord()
     const { mutateAsync: addFuelRecord } = useAddFuelRecord()
+    const { mutateAsync: addTaxRecord } = useAddTaxRecord()
 
     const date = new Date().toLocaleDateString('de-DE', { year: '2-digit', month: '2-digit', day: '2-digit' })
 
@@ -84,6 +84,12 @@ const NewRecord = () => {
                         fuelRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, fuelConsumed: formData.ConsumedFuel, isFillToFull: formData.IsFulltoFull, missedFuelUp: formData.MissedFuelUp }]
                     })
                     break
+                case "tax":
+                    await addTaxRecord({
+                        vehicleId: CarId,
+                        taxRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, notes: formData.Notes }]
+                    })
+                    break
                 default:
                     break
             }
@@ -114,7 +120,7 @@ const NewRecord = () => {
                 setCurrentActionType(FuelFunctionStore)
                 break
             case "tax":
-                setCurrentActionType(OdometerFunctionStore)
+                setCurrentActionType(TaxFunctionStore)
                 break
             case "notes":
                 setCurrentActionType(OdometerFunctionStore)

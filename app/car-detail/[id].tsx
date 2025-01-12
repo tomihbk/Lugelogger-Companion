@@ -4,10 +4,10 @@ import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { FlashList } from '@shopify/flash-list'
 import { RecordBase } from '~/api/records-base.types'
-import { useOdometerRecords, useServiceRecords, useRepairRecords, useUpgradeRecords, useFuelRecords } from '~/hooks/api/index'
+import { useOdometerRecords, useServiceRecords, useRepairRecords, useUpgradeRecords, useFuelRecords, useTaxRecords } from '~/hooks/api/index'
 import { FuelRecordAdd, OdometerRecord, FuelRecordGet } from '~/api/index-records.types'
 import { PlusIcon } from 'lucide-react-native'
-import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore } from '~/stores/RecordButtons'
+import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore } from '~/stores/RecordButtons'
 import GlobalStateStore from '~/stores/globalStateStore'
 import StatsComponent from '~/components/StatsComponent'
 
@@ -20,6 +20,7 @@ const CarDetail = () => {
   const { data: RepairRecords, isLoading: isRepairRecordsFetching } = useRepairRecords(carId)
   const { data: UpgradeRecords, isLoading: isUpgradeRecordsFetching } = useUpgradeRecords(carId)
   const { data: FuelRecords, isLoading: isFuelRecordsFetching } = useFuelRecords(carId)
+  const { data: TaxRecords, isLoading: isTaxRecordsFetching } = useTaxRecords(carId)
 
   const { setSelectedTabName, selectedTabName, preferredCurrencySymbol, preferredDistanceMeasurement, preferredLiquidMeasurement } = GlobalStateStore((state) => state)
 
@@ -30,8 +31,8 @@ const CarDetail = () => {
     { key: RepairFunctionStore.key, label: 'Repairs', color: RepairFunctionStore.buttonColor },
     { key: UpgradeFunctionStore.key, label: 'Upgrades', color: UpgradeFunctionStore.buttonColor },
     { key: FuelFunctionStore.key, label: 'Fuel', color: FuelFunctionStore.buttonColor },
-    { key: 'taxes', label: 'Taxes', color: '#5e636e' },
-    { key: 'notes', label: 'Notes', color: '#009476' },
+    { key: TaxFunctionStore.key, label: 'Taxes', color: TaxFunctionStore.buttonColor },
+    { key: 'notes', label: 'Notes', color: '#BF0296' },
   ]
 
   const [selectedDataSet, setSelectedDataSet] = useState<RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | undefined>([])
@@ -41,14 +42,13 @@ const CarDetail = () => {
   const averageExpense = (Math.round((totalExpense / (selectedDataSet?.length || 1)) * 10) / 10)
   let didInit = false
   const odometerDeltas: number[] = []
-  const scrollViewRef = useRef(null);
+  const scrollViewRef = useRef(null)
   const [odometerDelta, setOdometerDelta] = useState<number[]>([])
   const [showPlusButton, setShowPlusButton] = useState<boolean>(true)
 
   const changeDataSet = async (serviceName: string) => {
     try {
       let dataSource: RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | undefined;
-
       switch (serviceName) {
         case "service":
           dataSource = ServiceRecords
@@ -64,6 +64,9 @@ const CarDetail = () => {
           break
         case "fuel":
           dataSource = FuelRecords
+          break
+        case "tax":
+          dataSource = TaxRecords
           break
         default:
           dataSource = []
@@ -116,7 +119,7 @@ const CarDetail = () => {
     return () => {
       setSelectedTabName(actionType)
     }
-  }, [OdometerRecords, ServiceRecords, RepairRecords, UpgradeRecords, FuelRecords]) // TODO Add other records services with time
+  }, [OdometerRecords, ServiceRecords, RepairRecords, UpgradeRecords, FuelRecords, TaxRecords]) // TODO Add other records services with time
 
   const calculateTotalExpense = (recordDataObject: RecordBase) => {
     let totalCost = 0
@@ -199,7 +202,14 @@ const CarDetail = () => {
           </View>
         )
       case 'tax':
-        return (<><Text>Taxes Stats component</Text></>)
+        return (
+          <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
+            <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Total\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={47} symbol={"📆"} description={`Days Since\nLast Tax`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={averageExpense} symbol={preferredCurrencySymbol} description={`Average\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
+            <StatsComponent themeColor={selectedButtonHexColor} cost={(selectedDataSet?.length || 0)} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
+          </View>
+        )
       case 'notes':
         return (<><Text>Notes Stats component</Text></>)
     }
@@ -229,7 +239,7 @@ const CarDetail = () => {
         ))}
       </ScrollView>
 
-      {(isOdometerRecordsFetching || isServiceRecordsFetching || isRepairRecordsFetching || isUpgradeRecordsFetching || isFuelRecordsFetching) ? (
+      {(isOdometerRecordsFetching || isServiceRecordsFetching || isRepairRecordsFetching || isUpgradeRecordsFetching || isFuelRecordsFetching || isTaxRecordsFetching) ? (
         <>
           <Text>Loading...</Text>
           <ActivityIndicator size="large" color={selectedButtonHexColor} />

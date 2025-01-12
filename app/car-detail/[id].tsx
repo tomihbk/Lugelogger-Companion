@@ -10,6 +10,7 @@ import { PlusIcon } from 'lucide-react-native'
 import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore } from '~/stores/RecordButtons'
 import GlobalStateStore from '~/stores/globalStateStore'
 import StatsComponent from '~/components/StatsComponent'
+import DateHandler from '~/utils/datehandler'
 
 const CarDetail = () => {
   const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
@@ -146,16 +147,6 @@ const CarDetail = () => {
     }
     setOdometerDelta(odometerDeltas.reverse())
   }
-  const dateHandler = (date: string, getISODate: boolean = false): Date | string => {
-    if (!getISODate) {
-      const [MM, DD, YYYY] = date.split('/')
-      // Months start by 0 and not 1, don't ask me why
-      return (new Date(parseInt(YYYY), parseInt(MM) - 1, parseInt(DD)).toLocaleDateString('de-DE', { year: '2-digit', month: '2-digit', day: '2-digit' }))
-    } else {
-      const [MM, DD, YYYY] = date.split('/').map(part => parseInt(part, 10))
-      return new Date(YYYY, MM - 1, DD)
-    }
-  }
 
   const StatsComponentHandler = (actiontype: string) => {
     switch (actiontype) {
@@ -257,7 +248,7 @@ const CarDetail = () => {
               return selectedTabName != "fuel" ? (
                 <View style={tw`p-4 pb-0 mb-2 bg-white dark:bg-green-950 rounded-3xl`}>
                   <View style={tw`flex flex-row flex-wrap justify-between`}>
-                    <Text style={tw`font-HKGrotesk-Medium text-base`}>{dateHandler(item.date).toString()}</Text>
+                    <Text style={tw`font-HKGrotesk-Medium text-base`}>{DateHandler(item.date).toString()}</Text>
                     <Text style={tw`font-HKGrotesk-Medium text-base`}>{preferredCurrencySymbol} {item?.cost}</Text>
                     <Text style={tw`font-HKGrotesk-Medium text-base`}>{item.odometer}{preferredDistanceMeasurement}</Text>
                   </View>
@@ -267,7 +258,7 @@ const CarDetail = () => {
               ) : (
                 <View style={tw`p-4 mb-2 bg-white dark:bg-green-950 rounded-3xl`}>
                   <View style={tw`flex flex-row flex-wrap justify-between`}>
-                    <Text style={tw`font-HKGrotesk-Medium text-base w-1/2`}>{dateHandler(item.date).toString()}</Text>
+                    <Text style={tw`font-HKGrotesk-Medium text-base w-1/2`}>{DateHandler(item.date).toString()}</Text>
                     <Text style={tw`font-HKGrotesk-Medium text-base w-1/2 text-right`}>{item.odometer}{preferredDistanceMeasurement}</Text>
                     <Text style={tw`font-HKGrotesk-Medium text-base w-1/2`}>{item?.fuelConsumed}{preferredLiquidMeasurement}</Text>
                     <Text style={tw`font-HKGrotesk-Medium text-base w-1/2 text-right`}>{preferredCurrencySymbol} {parseInt(item?.cost).toFixed(2)}</Text>

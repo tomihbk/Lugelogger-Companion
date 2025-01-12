@@ -1,22 +1,24 @@
-import { View, Text, ScrollView, TextInput, Pressable } from 'react-native'
+import { View, Text, ScrollView, TextInput, Pressable, Switch } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { useForm, Controller } from "react-hook-form"
-import { useAddServiceRecord, useAddOdometerRecord, useAddRepairRecord, useAddUpgradeRecord } from '~/hooks/api/index'
-import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore } from '~/stores/RecordButtons'
+import { useAddServiceRecord, useAddOdometerRecord, useAddRepairRecord, useAddUpgradeRecord, useAddFuelRecord } from '~/hooks/api/index'
+import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore } from '~/stores/RecordButtons'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
 import GlobalStateStore from '~/stores/globalStateStore'
 
 const NewRecord = () => {
     const { t } = useTranslation()
-    const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
+    const { id, actionType }: { id: string, actionType: string } = useLocalSearchParams()
+    const CarId = parseInt(id)
     const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>()
     const { mutateAsync: addServiceRecord } = useAddServiceRecord()
     const { mutateAsync: addOdometerRecord } = useAddOdometerRecord()
     const { mutateAsync: addRepairRecord } = useAddRepairRecord()
     const { mutateAsync: addUpgradeRecord } = useAddUpgradeRecord()
+    const { mutateAsync: addFuelRecord } = useAddFuelRecord()
 
     const date = new Date().toLocaleDateString('de-DE', { year: '2-digit', month: '2-digit', day: '2-digit' })
 
@@ -29,8 +31,8 @@ const NewRecord = () => {
             Notes: "",
             Description: "",
             ConsumedFuel: "",
-            IsFulltoFull: "",
-            MissedFuelUp: "",
+            IsFulltoFull: false,
+            MissedFuelUp: false,
             Tags: ""
         },
         mode: "onChange"
@@ -43,38 +45,43 @@ const NewRecord = () => {
         Notes: string;
         Description: string;
         ConsumedFuel: string;
-        IsFulltoFull: string;
-        MissedFuelUp: string;
+        IsFulltoFull: boolean;
+        MissedFuelUp: boolean;
         Tags: string;
     }
     const handleForm = async (formData: formDataType) => {
         //console.log("formData : " + JSON.stringify(formData))
-        // TODO this will not work because we're making a service request on an odometer form and there are missing mandatory fields
 
         try {
             switch (actionType) {
                 case "service":
                     await addServiceRecord({
-                        vehicleId: parseInt(CarId.toString()),
+                        vehicleId: CarId,
                         serviceRecord: [{ cost: formData.Cost, date: "10/29/2024", description: `Car ID ${CarId} - ${new Date().toISOString()}`, odometer: formData.Odometer, notes: formData.Notes }]
                     })
                     break
                 case "odometer":
                     await addOdometerRecord({
-                        vehicleId: parseInt(CarId.toString()),
+                        vehicleId: CarId,
                         odometerRecord: [{ date: "10/29/2024", initialOdometer: formData.InitialOdometer, odometer: formData.Odometer, notes: formData.Notes }]
                     })
                     break
                 case "repair":
                     await addRepairRecord({
-                        vehicleId: parseInt(CarId.toString()),
+                        vehicleId: CarId,
                         repairRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
                     })
                     break
                 case "upgrade":
                     await addUpgradeRecord({
-                        vehicleId: parseInt(CarId.toString()),
+                        vehicleId: CarId,
                         upgradeRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
+                    })
+                    break
+                case "fuel":
+                    await addFuelRecord({
+                        vehicleId: CarId,
+                        fuelRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, fuelConsumed: formData.ConsumedFuel, isFillToFull: formData.IsFulltoFull, missedFuelUp: formData.MissedFuelUp }]
                     })
                     break
                 default:
@@ -84,7 +91,7 @@ const NewRecord = () => {
             console.error("Error handling form submission: ", error);
         }
         router.dismiss()
-        //console.log(!!errors)
+        //console.log("Error odo Type : " + JSON.stringify(errors))
     }
 
     //console.log("Error odo Type : " + JSON.stringify(errors))
@@ -104,7 +111,7 @@ const NewRecord = () => {
                 setCurrentActionType(UpgradeFunctionStore)
                 break
             case "fuel":
-                setCurrentActionType(OdometerFunctionStore)
+                setCurrentActionType(FuelFunctionStore)
                 break
             case "tax":
                 setCurrentActionType(OdometerFunctionStore)
@@ -121,7 +128,7 @@ const NewRecord = () => {
 
     return (
         <View style={tw`flex flex-col p-5 pb-0 w-full h-full dark:bg-slate-900`}>
-            <Stack.Screen options={{ title: CarId as string, headerShown: false }} />
+            <Stack.Screen options={{ title: id, headerShown: false }} />
             <Text style={tw`text-2xl my-4 font-HKGrotesk-Bold`}>{CarId}</Text>
             <View>
                 <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={"handled"}
@@ -213,6 +220,44 @@ const NewRecord = () => {
                             </>}
                         {errors.Description && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
 
+                        {currentActionType?.visibleFields.fuelConsumed &&
+                            <>
+                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>Amount of fuel filled
+                                    {!currentActionType.mandatoryFields.fuelConsumed && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
+                                <Controller control={control} rules={{ required: currentActionType.mandatoryFields.fuelConsumed }}
+                                    render={({ field: { onChange, onBlur, value } }) => (
+                                        <TextInput
+                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/10 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.ConsumedFuel && 'border-red-700' || ''}`}
+                                            onBlur={onBlur}
+                                            onChangeText={onChange}
+                                            value={value} />)} name="ConsumedFuel" />
+                            </>}
+                        {errors.ConsumedFuel && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
+
+                        {currentActionType?.visibleFields.isFulltoFill &&
+                            <View style={tw`flex flex-row items-center justify-between pt-2`}>
+                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>Tank filled to full ?
+                                    {!currentActionType.mandatoryFields.isFulltoFill && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
+                                <Controller control={control}
+                                    render={({ field: { onChange, value } }) => (
+                                        <Switch
+                                            onValueChange={() => onChange(!value)}
+                                            value={value} />)} name="IsFulltoFull" />
+                            </View>}
+
+                        {currentActionType?.visibleFields.missedFuelUp &&
+                            <View style={tw`flex flex-row items-center justify-between py-2`}>
+                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>Missed fuel up ?
+                                    {!currentActionType.mandatoryFields.missedFuelUp && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
+                                <Controller control={control}
+                                    render={({ field: { onChange, value } }) => (
+                                        <><Text>{value} </Text><Switch
+                                            onValueChange={() => onChange(!value)}
+                                            value={value} /></>
+
+                                    )} name="MissedFuelUp" />
+                            </View>}
+
                         {currentActionType?.visibleFields.notes &&
                             <>
                                 <Text style={tw`font-HKGrotesk-SemiBold text-base`}>{t("Notes")}
@@ -228,51 +273,9 @@ const NewRecord = () => {
                         }
                         {errors.Notes && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
 
-                        {currentActionType?.visibleFields.fuelConsumed &&
-                            <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>Consumed Fuel
-                                    {!currentActionType.mandatoryFields.fuelConsumed && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
-                                <Controller control={control} rules={{ required: currentActionType.mandatoryFields.fuelConsumed }}
-                                    render={({ field: { onChange, onBlur, value } }) => (
-                                        <TextInput
-                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/10 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.ConsumedFuel && 'border-red-700' || ''}`}
-                                            onBlur={onBlur}
-                                            onChangeText={onChange}
-                                            value={value} />)} name="ConsumedFuel" />
-                            </>}
-                        {errors.ConsumedFuel && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
-
-                        {currentActionType?.visibleFields.isFulltoFill &&
-                            <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>Is Full to Full
-                                    {!currentActionType.mandatoryFields.isFulltoFill && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
-                                <Controller control={control} rules={{ required: currentActionType.mandatoryFields.isFulltoFill }}
-                                    render={({ field: { onChange, onBlur, value } }) => (
-                                        <TextInput
-                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/10 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.IsFulltoFull && 'border-red-700' || ''}`}
-                                            onBlur={onBlur}
-                                            onChangeText={onChange}
-                                            value={value} />)} name="IsFulltoFull" />
-                            </>}
-                        {errors.IsFulltoFull && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
-
-                        {currentActionType?.visibleFields.missedFuelUp &&
-                            <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>Missed fuel up
-                                    {!currentActionType.mandatoryFields.missedFuelUp && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
-                                <Controller control={control} rules={{ required: currentActionType.mandatoryFields.missedFuelUp }}
-                                    render={({ field: { onChange, onBlur, value } }) => (
-                                        <TextInput
-                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/10 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.MissedFuelUp && 'border-red-700' || ''}`}
-                                            onBlur={onBlur}
-                                            onChangeText={onChange}
-                                            value={value} />)} name="MissedFuelUp" />
-                            </>}
-                        {errors.MissedFuelUp && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
-
                         {currentActionType?.visibleFields.tags &&
                             <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>Tags
+                                <Text style={tw`font-HKGrotesk-SemiBold text-base pt-1`}>Tags
                                     {!currentActionType.mandatoryFields.tags && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control} rules={{ required: currentActionType.mandatoryFields.tags }}
                                     render={({ field: { onChange, onBlur, value } }) => (

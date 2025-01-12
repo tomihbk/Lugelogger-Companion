@@ -31,7 +31,7 @@ export const useAddUpgradeRecord = () => {
   const query = useMutation({
     mutationFn: async ({
       vehicleId,
-      upgradeRecord: upgradeRecord,
+      upgradeRecord,
     }: {
       vehicleId: number
       upgradeRecord: UpgradeRecord

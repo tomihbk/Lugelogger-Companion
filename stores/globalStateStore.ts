@@ -7,27 +7,40 @@ interface GlobalStateStoreProp {
   selectedTabName: string
   preferredCurrencySymbol: string
   preferredDistanceMeasurement: string
+  preferredLiquidMeasurement: string
+  isUseUSMPG: boolean
+  isUseUKMPG: boolean
   setFavoriteCar: (carId: number) => void
   setSelectedTabName: (lastSelectedTab: string) => void
   setPreferredCurrencySymbol: (currencyISO4217Symbol: string) => void
   setPreferredDistanceMeasurement: (kmOrMiles: string) => void
+  setPreferredDLiquidMeasurement: (LOrGal: string) => void
+  setUseUSMPG: (useUSMPG: boolean) => void
+  setUseUKMPG: (useUKMPG: boolean) => void
 }
 
 const GlobalStateStore = create<GlobalStateStoreProp>()(
   persist(
     (set) => ({
-      favoriteCarId: 2,
+      favoriteCarId: 1,
       isInteractedWithForms: false,
       selectedTabName: "home",
       preferredCurrencySymbol: "CZK",
       preferredDistanceMeasurement: "km",
+      preferredLiquidMeasurement: "L",
+      isUseUSMPG: false,
+      isUseUKMPG: false,
       setFavoriteCar: (carId) => set(() => ({ favoriteCarId: carId })),
       setPreferredCurrencySymbol: (currencyISO4217Symbol) =>
         set(() => ({ preferredCurrencySymbol: currencyISO4217Symbol })),
       setPreferredDistanceMeasurement: (kmOrMiles) =>
         set(() => ({ preferredDistanceMeasurement: kmOrMiles })),
+      setPreferredDLiquidMeasurement: (LOrGal) =>
+        set(() => ({ preferredLiquidMeasurement: LOrGal })),
       setSelectedTabName: (lastSelectedTab) =>
         set(() => ({ selectedTabName: lastSelectedTab })),
+      setUseUSMPG: (useUSMPG) => set(() => ({ isUseUSMPG: useUSMPG })),
+      setUseUKMPG: (useUKMPG) => set(() => ({ isUseUKMPG: useUKMPG })),
     }),
     {
       name: "global-state-storage", // name of item in the persist store - must be unique

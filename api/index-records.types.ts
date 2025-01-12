@@ -10,12 +10,13 @@ export type OdometerRecord = {
 export type RepairRecord = RecordBase
 export type UpgradeRecord = RecordBase
 export type TaxRecord = RecordBase
-export type GasRecordAdd = {
+export type FuelRecordGet = {
   useMPG: boolean
   useUKMPG: boolean
 }[]
-export type GasRecordGet = RecordBase & {
-  fuelConsumed: string
-  isFillToFull: boolean
-  missedFuelUp: boolean
-}[]
+export type FuelRecordAdd = RecordBase &
+  {
+    fuelConsumed: string
+    isFillToFull: boolean
+    missedFuelUp: boolean
+  }[]

@@ -43,11 +43,10 @@ axios.interceptors.request.use(authRequestInterceptor)
 //   return request
 // })
 
-// axios.interceptors.request.use(error => {
-//   console.error('Axios Error from file', JSON.stringify(error, null, 2))
-//   return error
-// })
-
+// axios.interceptors.response.use(null, (error) => {
+//   console.warn(error.config); // log the request details
+//   return Promise.reject(error); // ensure the promise chain keeps failing
+// });
 
 // axios.interceptors.response.use(response => {
 //   console.log('Response:', JSON.stringify(response.data, null, 2))

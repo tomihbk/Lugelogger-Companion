@@ -9,7 +9,7 @@ export interface FuelFunctionStoreProp {
 
 const FuelFunctionStore: FuelFunctionStoreProp = {
   key: "fuel",
-  buttonColor: "#BF0296",
+  buttonColor: "#009476",
   visibleFields: {
     date: true,
     initialOdometer: false,

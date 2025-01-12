@@ -11,6 +11,7 @@ import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, Upgra
 import GlobalStateStore from '~/stores/globalStateStore'
 import StatsComponent from '~/components/StatsComponent'
 import DateHandler from '~/utils/datehandler'
+import FuelCard from '~/components/Cards/FuelCard'
 
 const CarDetail = () => {
   const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
@@ -23,7 +24,7 @@ const CarDetail = () => {
   const { data: FuelRecords, isLoading: isFuelRecordsFetching } = useFuelRecords(carId)
   const { data: TaxRecords, isLoading: isTaxRecordsFetching } = useTaxRecords(carId)
 
-  const { setSelectedTabName, selectedTabName, preferredCurrencySymbol, preferredDistanceMeasurement, preferredLiquidMeasurement } = GlobalStateStore((state) => state)
+  const { setSelectedTabName, selectedTabName, preferredCurrencySymbol, preferredDistanceMeasurement } = GlobalStateStore((state) => state)
 
   const ActionButtons = [
     { key: 'home', label: 'Home', color: '#f28900' },
@@ -256,17 +257,7 @@ const CarDetail = () => {
                   <Text>{item.notes}</Text>
                 </View>
               ) : (
-                <View style={tw`p-4 mb-2 bg-white dark:bg-green-950 rounded-3xl`}>
-                  <View style={tw`flex flex-row flex-wrap justify-between`}>
-                    <Text style={tw`font-HKGrotesk-Medium text-base w-1/2`}>{DateHandler(item.date).toString()}</Text>
-                    <Text style={tw`font-HKGrotesk-Medium text-base w-1/2 text-right`}>{item.odometer}{preferredDistanceMeasurement}</Text>
-                    <Text style={tw`font-HKGrotesk-Medium text-base w-1/2`}>{item?.fuelConsumed}{preferredLiquidMeasurement}</Text>
-                    <Text style={tw`font-HKGrotesk-Medium text-base w-1/2 text-right`}>{preferredCurrencySymbol} {parseInt(item?.cost).toFixed(2)}</Text>
-                    <Text style={tw`font-HKGrotesk-Medium text-base w-1/2`}>Δ{odometerDelta[index]}{preferredDistanceMeasurement}</Text>
-                    <Text style={tw`font-HKGrotesk-Medium text-base w-1/2 text-right`}>{preferredCurrencySymbol} {(parseInt(item?.cost) / parseInt(item?.fuelConsumed)).toFixed(2)}/{preferredLiquidMeasurement}</Text>
-                  </View>
-                  {item.notes && <Text style={tw`bg-[${selectedButtonHexColor}]/5 mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`} numberOfLines={2} ellipsizeMode="tail">{item.notes}</Text>}
-                </View>
+                <FuelCard item={item} odometerDelta={odometerDelta[index]} selectedButtonHexColor={selectedButtonHexColor} />
               )
             }}
             estimatedItemSize={10} />

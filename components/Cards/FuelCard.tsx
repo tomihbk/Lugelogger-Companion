@@ -2,10 +2,10 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import GlobalStateStore from '~/stores/globalStateStore'
 import tw from '~/tw.config'
-import DateHandler from '~/utils/datehandler'
+import DateHandler from '~/utils/DateHandler'
 import { RecordBase } from '~/api/records-base.types'
 
-const FuelCard = ({ item, odometerDelta, selectedButtonHexColor }: { item: RecordBase, odometerDelta: number, selectedButtonHexColor: string }) => {
+const FuelCard = ({ item, odometerDelta, selectedButtonHexColor }: { item: RecordBase[0], odometerDelta: number, selectedButtonHexColor: string }) => {
     const { preferredCurrencySymbol, preferredDistanceMeasurement, preferredLiquidMeasurement } = GlobalStateStore((state) => state)
 
     // Calculate derived values only once

@@ -1,17 +1,18 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native'
+import { View, Text, ScrollView, ActivityIndicator, Dimensions } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { router, Stack, useLocalSearchParams } from 'expo-router'
+import { Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { FlashList } from '@shopify/flash-list'
 import { RecordBase } from '~/api/records-base.types'
 import { useOdometerRecords, useServiceRecords, useRepairRecords, useUpgradeRecords, useFuelRecords, useTaxRecords } from '~/hooks/api/index'
 import { FuelRecordAdd, OdometerRecord, FuelRecordGet } from '~/api/index-records.types'
-import { PlusIcon } from 'lucide-react-native'
 import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore } from '~/stores/RecordButtons'
 import GlobalStateStore from '~/stores/globalStateStore'
-import StatsComponent from '~/components/StatsComponent'
-import DateHandler from '~/utils/datehandler'
 import FuelCard from '~/components/Cards/FuelCard'
+import RecordCard from '~/components/Cards/RecordCard'
+import NewRecordButton from '~/components/NewRecordButton'
+import PillRecordNavigation from '~/components/PillRecordNavigation'
+import { OdometerStats, FuelStats, RepairStats, ServiceStats, TaxStats, UpgradeStats } from '~/components/StatsComponents'
 
 const CarDetail = () => {
   const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
@@ -24,7 +25,7 @@ const CarDetail = () => {
   const { data: FuelRecords, isLoading: isFuelRecordsFetching } = useFuelRecords(carId)
   const { data: TaxRecords, isLoading: isTaxRecordsFetching } = useTaxRecords(carId)
 
-  const { setSelectedTabName, selectedTabName, preferredCurrencySymbol, preferredDistanceMeasurement } = GlobalStateStore((state) => state)
+  const { setSelectedTabName, selectedTabName } = GlobalStateStore((state) => state)
 
   const ActionButtons = [
     { key: 'home', label: 'Home', color: '#f28900' },
@@ -52,22 +53,22 @@ const CarDetail = () => {
     try {
       let dataSource: RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | undefined;
       switch (serviceName) {
-        case "service":
+        case ServiceFunctionStore.key:
           dataSource = ServiceRecords
           break
-        case "odometer":
+        case OdometerFunctionStore.key:
           dataSource = OdometerRecords
           break
-        case "repair":
+        case RepairFunctionStore.key:
           dataSource = RepairRecords
           break
-        case "upgrade":
+        case UpgradeFunctionStore.key:
           dataSource = UpgradeRecords
           break
-        case "fuel":
+        case FuelFunctionStore.key:
           dataSource = FuelRecords
           break
-        case "tax":
+        case TaxFunctionStore.key:
           dataSource = TaxRecords
           break
         default:
@@ -151,57 +152,18 @@ const CarDetail = () => {
 
   const StatsComponentHandler = (actiontype: string) => {
     switch (actiontype) {
-      case 'odometer':
-        return (
-          <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
-            <StatsComponent themeColor={selectedButtonHexColor} cost={totalDistance} symbol={preferredDistanceMeasurement} description={`Total\nDriven Distance`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={(selectedDataSet?.length || 0)} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
-          </View>)
-      case 'service':
-        return (
-          <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
-            <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Total\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={47} symbol={"📆"} description={`Days Since\nLast Repair`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={averageExpense} symbol={preferredCurrencySymbol} description={`Average\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={(selectedDataSet?.length || 0)} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
-          </View>
-        )
-      case 'repair':
-        return (
-          <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
-            <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Total\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={47} symbol={"📆"} description={`Days Since\nLast Repair`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={averageExpense} symbol={preferredCurrencySymbol} description={`Average\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={(selectedDataSet?.length || 0)} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
-          </View>
-        )
-      case 'upgrade':
-        return (
-          <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
-            <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Total\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={47} symbol={"📆"} description={`Days Since\nLast Upgrade`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={averageExpense} symbol={preferredCurrencySymbol} description={`Average\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={(selectedDataSet?.length || 0)} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
-          </View>
-        )
-      case 'fuel':
-        return (
-          <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
-            <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Total\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={47} symbol={"📆"} description={`Days Since\nLast Fill`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={averageExpense} symbol={preferredCurrencySymbol} description={`Average\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={(selectedDataSet?.length || 0)} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
-          </View>
-        )
-      case 'tax':
-        return (
-          <View style={tw`flex flex-row flex-wrap justify-between gap-3 mb-3`}>
-            <StatsComponent themeColor={selectedButtonHexColor} cost={totalExpense} symbol={preferredCurrencySymbol} description={`Total\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={47} symbol={"📆"} description={`Days Since\nLast Tax`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={averageExpense} symbol={preferredCurrencySymbol} description={`Average\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Expenses`} />
-            <StatsComponent themeColor={selectedButtonHexColor} cost={(selectedDataSet?.length || 0)} symbol={"±"} description={`Amount of\n${selectedTabName[0].toUpperCase()}${selectedTabName.substring(1, 99)} Records`} />
-          </View>
-        )
+      case OdometerFunctionStore.key:
+        return <OdometerStats selectedButtonHexColor={selectedButtonHexColor} selectedTabName={selectedTabName} totalDistance={totalDistance} selectedDataSet={(selectedDataSet?.length || 0)} />
+      case ServiceFunctionStore.key:
+        return <ServiceStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} />
+      case RepairFunctionStore.key:
+        return <RepairStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} />
+      case UpgradeFunctionStore.key:
+        return <UpgradeStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} />
+      case FuelFunctionStore.key:
+        return <FuelStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} />
+      case TaxFunctionStore.key:
+        return <TaxStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} />
       case 'notes':
         return (<><Text>Notes Stats component</Text></>)
     }
@@ -214,20 +176,13 @@ const CarDetail = () => {
       <ScrollView ref={scrollViewRef} horizontal={true} showsHorizontalScrollIndicator={false}
         style={tw`flex flex-row flex-wrap flex-grow-0 p-2 -mx-5 mb-1`}>
         {ActionButtons.map((button) => (
-          <TouchableOpacity key={button.key} onPress={() => {
-            setSelectedTabName(button.key)
-            setSelectedButtonHexColor(button.color)
-            changeDataSet(button.key)
-          }}>
-            <Text
-              style={tw`p-1 px-4 text-lg font-HKGrotesk-Medium rounded-full mr-2 ${selectedTabName === button.key
-                ? `bg-[${button.color}] text-white`
-                : `bg-[${button.color}]/10 text-[${button.color}]`
-                }`}>
-              {button.label}
-            </Text>
-          </TouchableOpacity>
-
+          <PillRecordNavigation color={button.color} key={button.key} buttonIndex={button.key} label={button.label}
+            onClick={() => {
+              setSelectedTabName(button.key)
+              setSelectedButtonHexColor(button.color)
+              changeDataSet(button.key)
+            }}
+            selectedTabName={selectedTabName} />
         ))}
       </ScrollView>
 
@@ -246,30 +201,16 @@ const CarDetail = () => {
             onScrollEndDrag={() => setShowPlusButton(true)}
             onScrollBeginDrag={() => setShowPlusButton(false)}
             renderItem={({ index, item }) => {
-              return selectedTabName != "fuel" ? (
-                <View style={tw`p-4 pb-0 mb-2 bg-white dark:bg-green-950 rounded-3xl`}>
-                  <View style={tw`flex flex-row flex-wrap justify-between`}>
-                    <Text style={tw`font-HKGrotesk-Medium text-base`}>{DateHandler(item.date).toString()}</Text>
-                    <Text style={tw`font-HKGrotesk-Medium text-base`}>{preferredCurrencySymbol} {item?.cost}</Text>
-                    <Text style={tw`font-HKGrotesk-Medium text-base`}>{item.odometer}{preferredDistanceMeasurement}</Text>
-                  </View>
-                  {item.description && <Text style={tw`bg-[${selectedButtonHexColor}]/5 mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>}
-                  <Text>{item.notes}</Text>
-                </View>
-              ) : (
-                <FuelCard item={item} odometerDelta={odometerDelta[index]} selectedButtonHexColor={selectedButtonHexColor} />
-              )
+              switch (selectedTabName) {
+                case FuelFunctionStore.key:
+                  return <FuelCard item={item} odometerDelta={odometerDelta[index]} selectedButtonHexColor={selectedButtonHexColor} />
+                default:
+                  return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+              }
             }}
             estimatedItemSize={10} />
           {showPlusButton &&
-            <TouchableOpacity style={tw`rounded-full right-5 bottom-4 p-3 bg-[${selectedButtonHexColor}] ${selectedTabName == "home" ? 'hidden' : 'absolute'}`} onPress={() => {
-              router.push({
-                pathname: "/new-record/[id]",
-                params: { id: CarId, actionType: selectedTabName }
-              })
-            }}>
-              <PlusIcon size={35} color="white" />
-            </TouchableOpacity>
+            <NewRecordButton selectedButtonHexColor={selectedButtonHexColor} selectedTabName={selectedTabName} carId={CarId} />
           }
         </>
       )}

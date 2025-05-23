@@ -13,6 +13,9 @@ import RecordCard from '~/components/Cards/RecordCard'
 import NewRecordButton from '~/components/NewRecordButton'
 import PillRecordNavigation from '~/components/PillRecordNavigation'
 import { OdometerStats, FuelStats, RepairStats, ServiceStats, TaxStats, UpgradeStats } from '~/components/StatsComponents'
+import OdometerCard from '~/components/Cards/OdometerCard'
+import ServiceCard from '~/components/Cards/ServiceCard'
+import TaxCard from '~/components/Cards/TaxCard'
 
 const CarDetail = () => {
   const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
@@ -35,7 +38,7 @@ const CarDetail = () => {
     { key: UpgradeFunctionStore.key, label: 'Upgrades', color: UpgradeFunctionStore.buttonColor },
     { key: FuelFunctionStore.key, label: 'Fuel', color: FuelFunctionStore.buttonColor },
     { key: TaxFunctionStore.key, label: 'Taxes', color: TaxFunctionStore.buttonColor },
-    { key: 'notes', label: 'Notes', color: '#BF0296' },
+    // { key: 'notes', label: 'Notes', color: '#BF0296' },
   ]
 
   const [selectedDataSet, setSelectedDataSet] = useState<RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | undefined>([])
@@ -204,6 +207,12 @@ const CarDetail = () => {
               switch (selectedTabName) {
                 case FuelFunctionStore.key:
                   return <FuelCard item={item} odometerDelta={odometerDelta[index]} selectedButtonHexColor={selectedButtonHexColor} />
+                case OdometerFunctionStore.key:
+                  return <OdometerCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                case ServiceFunctionStore.key:
+                  return <ServiceCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                case TaxFunctionStore.key:
+                  return <TaxCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
                 default:
                   return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
               }

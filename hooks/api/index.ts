@@ -11,7 +11,12 @@ export {
   useUpdateServiceRecord,
   useDeleteServiceRecord,
 } from "./use-get-servicerecords"
-export { useAddRepairRecord, useRepairRecords } from "./use-get-repairrecords"
+export {
+  useAddRepairRecord,
+  useRepairRecords,
+  useUpdateRepairRecord,
+  useDeleteRepairRecord,
+} from "./use-get-repairrecords"
 export {
   useAddUpgradeRecord,
   useUpgradeRecords,

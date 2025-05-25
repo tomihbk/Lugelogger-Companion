@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Pressable } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import GlobalStateStore from '~/stores/globalStateStore'
 import tw from '~/tw.config'
@@ -7,8 +7,8 @@ import { RecordBase } from '~/api/records-base.types'
 import { OdometerRecord } from '~/api/index-records.types'
 import { router } from 'expo-router'
 import { OdometerFunctionStore } from '~/stores/RecordButtons'
-import { Trash2 } from 'lucide-react-native'
 import { useDeleteOdometerRecord } from '~/hooks/api/index'
+import DeleteButton from '~/components/DeleteButton'
 
 type OdometerCardProps = RecordBase[0] & OdometerRecord[0]
 
@@ -45,15 +45,12 @@ const OdometerCard = ({ item, selectedButtonHexColor }: { item: OdometerCardProp
             </Pressable>
 
             {showDeleteButton && (
-                <TouchableOpacity
-                    style={tw`mt-2 p-3 bg-red-500 rounded-2xl flex-row justify-center items-center`}
+                <DeleteButton 
                     onPress={() => {
                         setShowDeleteButton(false)
                         if (item.id) handleDelete(parseInt(item.id))
-                    }}>
-                    <Trash2 size={20} color="white" />
-                    <Text style={tw`text-white font-HKGrotesk-Medium text-base ml-2`}>Delete Record</Text>
-                </TouchableOpacity>
+                    }}
+                />
             )}
         </View>
     )

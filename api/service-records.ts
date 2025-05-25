@@ -21,3 +21,24 @@ export const addServiceRecord = async (
   })
   return data
 }
+
+export const updateServiceRecord = async (
+  _recordID: number,
+  _serviceRecordData: ServiceRecord
+) => {
+  const { data } = await axios.put(`${ENDPOINT}/${ApiTypeEnum.UPDATE}`, {
+    id: _recordID,
+    ..._serviceRecordData[0],
+  })
+  return data
+}
+
+export const deleteServiceRecord = async (
+  _recordID: number
+) => {
+  const { data } = await axios.delete(`${ENDPOINT}/${ApiTypeEnum.DELETE}`, {
+    params: { id: _recordID }
+  })
+  return data
+}
+

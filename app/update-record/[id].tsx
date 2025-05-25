@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { useForm, Controller } from "react-hook-form"
-import { useAddServiceRecord, useAddRepairRecord, useAddUpgradeRecord, useAddFuelRecord, useAddTaxRecord, useUpdateOdometerRecord } from '~/hooks/api/index'
+import { useAddRepairRecord, useAddUpgradeRecord, useAddFuelRecord, useAddTaxRecord, useUpdateOdometerRecord, useUpdateServiceRecord } from '~/hooks/api/index'
 import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore } from '~/stores/RecordButtons'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
@@ -14,7 +14,7 @@ const NewRecord = () => {
     const _recordID = parseInt(id)
     const _data = JSON.parse(data)
     const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>(OdometerFunctionStore)
-    const { mutateAsync: addServiceRecord } = useAddServiceRecord()
+    const { mutateAsync: updateServiceRecord } = useUpdateServiceRecord()
     const { mutateAsync: updateOdometerRecord } = useUpdateOdometerRecord()
     const { mutateAsync: addRepairRecord } = useAddRepairRecord()
     const { mutateAsync: addUpgradeRecord } = useAddUpgradeRecord()
@@ -53,37 +53,37 @@ const NewRecord = () => {
 
         try {
             switch (actionType) {
-                case "service":
-                    await addServiceRecord({
-                        vehicleId: _recordID,
-                        serviceRecord: [{ cost: formData.Cost, date: "10/29/2024", description: `Car ID ${_recordID} - ${new Date().toISOString()}`, odometer: formData.Odometer, notes: formData.Notes }]
+                case ServiceFunctionStore.key:
+                    await updateServiceRecord({
+                        recordID: _recordID,
+                        serviceRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
                     })
                     break
-                case "odometer":
+                case OdometerFunctionStore.key:
                     await updateOdometerRecord({
                         recordID: _recordID,
                         odometerRecord: [{ date: formData.Date, initialOdometer: formData.InitialOdometer, odometer: formData.Odometer, notes: formData.Notes }]
                     })
                     break
-                case "repair":
+                case RepairFunctionStore.key:
                     await addRepairRecord({
                         vehicleId: _recordID,
                         repairRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
                     })
                     break
-                case "upgrade":
+                case UpgradeFunctionStore.key:
                     await addUpgradeRecord({
                         vehicleId: _recordID,
                         upgradeRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
                     })
                     break
-                case "fuel":
+                case FuelFunctionStore.key:
                     await addFuelRecord({
                         vehicleId: _recordID,
                         fuelRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, fuelConsumed: formData.ConsumedFuel, isFillToFull: formData.IsFulltoFull, missedFuelUp: formData.MissedFuelUp }]
                     })
                     break
-                case "tax":
+                case TaxFunctionStore.key:
                     await addTaxRecord({
                         vehicleId: _recordID,
                         taxRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, notes: formData.Notes }]

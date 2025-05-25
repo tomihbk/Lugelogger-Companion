@@ -20,6 +20,8 @@ export {
 export {
   useAddUpgradeRecord,
   useUpgradeRecords,
+  useUpdateUpgradeRecord,
+  useDeleteUpgradeRecord,
 } from "./use-get-upgraderecords"
 export { useAddFuelRecord, useFuelRecords } from "./use-get-fuelrecords"
 export { useAddTaxRecord, useTaxRecords } from "./use-get-taxrecords"

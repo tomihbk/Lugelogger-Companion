@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { useForm, Controller } from "react-hook-form"
-import { useAddUpgradeRecord, useAddFuelRecord, useAddTaxRecord, useUpdateOdometerRecord, useUpdateServiceRecord, useUpdateRepairRecord } from '~/hooks/api/index'
+import { useAddFuelRecord, useAddTaxRecord, useUpdateOdometerRecord, useUpdateServiceRecord, useUpdateRepairRecord, useUpdateUpgradeRecord } from '~/hooks/api/index'
 import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore } from '~/stores/RecordButtons'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
@@ -17,7 +17,7 @@ const NewRecord = () => {
     const { mutateAsync: updateServiceRecord } = useUpdateServiceRecord()
     const { mutateAsync: updateOdometerRecord } = useUpdateOdometerRecord()
     const { mutateAsync: updateRepairRecord } = useUpdateRepairRecord()
-    const { mutateAsync: addUpgradeRecord } = useAddUpgradeRecord()
+    const { mutateAsync: updateUpgradeRecord } = useUpdateUpgradeRecord()
     const { mutateAsync: addFuelRecord } = useAddFuelRecord()
     const { mutateAsync: addTaxRecord } = useAddTaxRecord()
 
@@ -72,9 +72,9 @@ const NewRecord = () => {
                     })
                     break
                 case UpgradeFunctionStore.key:
-                    await addUpgradeRecord({
-                        vehicleId: _recordID,
-                        upgradeRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
+                    await updateUpgradeRecord({
+                        recordID: _recordID,
+                        upgradeRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
                     })
                     break
                 case FuelFunctionStore.key:

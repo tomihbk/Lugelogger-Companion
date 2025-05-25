@@ -8,6 +8,8 @@ export {
 export {
   useAddServiceRecord,
   useServiceRecords,
+  useUpdateServiceRecord,
+  useDeleteServiceRecord,
 } from "./use-get-servicerecords"
 export { useAddRepairRecord, useRepairRecords } from "./use-get-repairrecords"
 export {

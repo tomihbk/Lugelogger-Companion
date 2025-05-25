@@ -31,3 +31,24 @@ export const addOdometerRecord = async (
   })
   return data
 }
+
+export const updateOdometerRecord = async (
+  _recordID: number,
+  _odometerRecordData: OdometerRecord
+) => {
+  const { data } = await axios.put(`${ENDPOINT}/${ApiTypeEnum.UPDATE}`, {
+    id: _recordID,
+    ..._odometerRecordData[0],
+  })
+  return data
+}
+
+export const deleteOdometerRecord = async (
+  _recordID: number
+) => {
+  const { data } = await axios.delete(`${ENDPOINT}/${ApiTypeEnum.DELETE}`, {
+    params: { id: _recordID }
+  })
+  return data
+}
+

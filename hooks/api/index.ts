@@ -2,6 +2,8 @@ export {
   useOdometerRecords,
   useAddOdometerRecord,
   useLastOdometerRecord,
+  useDeleteOdometerRecord,
+  useUpdateOdometerRecord,
 } from "./use-get-odometerrecords"
 export {
   useAddServiceRecord,

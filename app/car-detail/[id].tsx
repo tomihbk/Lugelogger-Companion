@@ -99,13 +99,13 @@ const CarDetail = () => {
   }, [])
 
   useEffect(() => {
-    if (Array.isArray(selectedDataSet) && selectedDataSet.every(item => 'cost' in item)) {
+    if (Array.isArray(selectedDataSet) && selectedDataSet.length > 0 && 'cost' in selectedDataSet[0]) {
       calculateTotalExpense(selectedDataSet as RecordBase)
     }
-    if (Array.isArray(selectedDataSet) && selectedDataSet.every(item => 'odometer' in item)) {
+    if (Array.isArray(selectedDataSet) && selectedDataSet.length > 0 && 'odometer' in selectedDataSet[0]) {
       calculateTotalDistance(selectedDataSet as OdometerRecord)
     }
-    if (Array.isArray(FuelRecords) && FuelRecords.every(item => 'fuelConsumed' in item)) {
+    if (Array.isArray(FuelRecords) && FuelRecords.length > 0 && 'fuelConsumed' in FuelRecords[0]) {
       calculateDeltaDistance(FuelRecords as FuelRecordAdd)
     }
 

@@ -7,6 +7,8 @@ import {
   getOdometerRecords,
   addOdometerRecord,
   getLastOdometerRecord,
+  updateOdometerRecord,
+  deleteOdometerRecord,
 } from "~/api/odometer-records"
 import type { OdometerRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
@@ -52,6 +54,42 @@ export const useAddOdometerRecord = () => {
       const { vehicleId, odometerRecord } = variables
       _queryClient.invalidateQueries(
         getQueryKey(vehicleId, undefined, odometerRecord) as InvalidateQueryFilters
+      )
+    },
+  })
+  return query
+}
+
+export const useUpdateOdometerRecord = () => {
+  const query = useMutation({
+    mutationFn: async ({
+      recordID,
+      odometerRecord,
+    }: {
+      recordID: number
+      odometerRecord: OdometerRecord
+    }) => await updateOdometerRecord(recordID, odometerRecord),
+    onSuccess: (_, variables) => {
+      const { recordID, odometerRecord } = variables
+      _queryClient.invalidateQueries(
+        getQueryKey(recordID, undefined, odometerRecord) as InvalidateQueryFilters
+      )
+    },
+  })
+  return query
+}
+
+export const useDeleteOdometerRecord = () => {
+  const query = useMutation({
+    mutationFn: async ({
+      recordID,
+    }: {
+      recordID: number
+    }) => await deleteOdometerRecord(recordID),
+    onSuccess: (_, variables) => {
+      const { recordID } = variables
+      _queryClient.invalidateQueries(
+        getQueryKey(recordID, undefined) as InvalidateQueryFilters
       )
     },
   })

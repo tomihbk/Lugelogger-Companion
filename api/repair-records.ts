@@ -21,3 +21,23 @@ export const addRepairRecord = async (
   })
   return data
 }
+
+export const updateRepairRecord = async (
+  _recordID: number,
+  _repairRecordData: RepairRecord
+) => {
+  const { data } = await axios.put(`${ENDPOINT}/${ApiTypeEnum.UPDATE}`, {
+    id: _recordID,
+    ..._repairRecordData[0],
+  })
+  return data
+}
+
+export const deleteRepairRecord = async (
+  _recordID: number
+) => {
+  const { data } = await axios.delete(`${ENDPOINT}/${ApiTypeEnum.DELETE}`, {
+    params: { id: _recordID }
+  })
+  return data
+}

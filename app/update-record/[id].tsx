@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { useForm, Controller } from "react-hook-form"
-import { useAddRepairRecord, useAddUpgradeRecord, useAddFuelRecord, useAddTaxRecord, useUpdateOdometerRecord, useUpdateServiceRecord } from '~/hooks/api/index'
+import { useAddUpgradeRecord, useAddFuelRecord, useAddTaxRecord, useUpdateOdometerRecord, useUpdateServiceRecord, useUpdateRepairRecord } from '~/hooks/api/index'
 import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore } from '~/stores/RecordButtons'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
@@ -16,7 +16,7 @@ const NewRecord = () => {
     const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>(OdometerFunctionStore)
     const { mutateAsync: updateServiceRecord } = useUpdateServiceRecord()
     const { mutateAsync: updateOdometerRecord } = useUpdateOdometerRecord()
-    const { mutateAsync: addRepairRecord } = useAddRepairRecord()
+    const { mutateAsync: updateRepairRecord } = useUpdateRepairRecord()
     const { mutateAsync: addUpgradeRecord } = useAddUpgradeRecord()
     const { mutateAsync: addFuelRecord } = useAddFuelRecord()
     const { mutateAsync: addTaxRecord } = useAddTaxRecord()
@@ -66,9 +66,9 @@ const NewRecord = () => {
                     })
                     break
                 case RepairFunctionStore.key:
-                    await addRepairRecord({
-                        vehicleId: _recordID,
-                        repairRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
+                    await updateRepairRecord({
+                        recordID: _recordID,
+                        repairRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
                     })
                     break
                 case UpgradeFunctionStore.key:

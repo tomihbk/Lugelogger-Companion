@@ -16,6 +16,7 @@ import { OdometerStats, FuelStats, RepairStats, ServiceStats, TaxStats, UpgradeS
 import OdometerCard from '~/components/Cards/OdometerCard'
 import ServiceCard from '~/components/Cards/ServiceCard'
 import TaxCard from '~/components/Cards/TaxCard'
+import RepairCard from '~/components/Cards/RepairCard'
 
 const CarDetail = () => {
   const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
@@ -213,6 +214,8 @@ const CarDetail = () => {
                   return <ServiceCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
                 case TaxFunctionStore.key:
                   return <TaxCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                case RepairFunctionStore.key:
+                  return <RepairCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
                 default:
                   return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
               }

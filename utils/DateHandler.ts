@@ -9,9 +9,9 @@ const DateHandler = (
       parseInt(YYYY),
       parseInt(MM) - 1,
       parseInt(DD)
-    ).toLocaleDateString("de-DE", {
-      year: "2-digit",
-      month: "2-digit",
+    ).toLocaleDateString(undefined, {
+      //year: "2-digit",
+      month: "short",
       day: "2-digit",
     })
   } else {

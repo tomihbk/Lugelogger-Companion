@@ -18,19 +18,23 @@ import ServiceCard from '~/components/Cards/ServiceCard'
 import TaxCard from '~/components/Cards/TaxCard'
 import RepairCard from '~/components/Cards/RepairCard'
 import UpgradeCard from '~/components/Cards/UpgradeCard'
+import DateHandler from '~/utils/DateHandler'
+
 
 const CarDetail = () => {
   const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
 
   const carId = parseInt(CarId.toString())
-  const { data: ServiceRecords, isLoading: isServiceRecordsFetching } = useServiceRecords(carId)
-  const { data: OdometerRecords, isLoading: isOdometerRecordsFetching } = useOdometerRecords(carId)
-  const { data: RepairRecords, isLoading: isRepairRecordsFetching } = useRepairRecords(carId)
-  const { data: UpgradeRecords, isLoading: isUpgradeRecordsFetching } = useUpgradeRecords(carId)
-  const { data: FuelRecords, isLoading: isFuelRecordsFetching } = useFuelRecords(carId)
-  const { data: TaxRecords, isLoading: isTaxRecordsFetching } = useTaxRecords(carId)
+  const { data: ServiceRecords, isPending: isServiceRecordsFetching } = useServiceRecords(carId)
+  const { data: OdometerRecords, isPending: isOdometerRecordsFetching } = useOdometerRecords(carId)
+  const { data: RepairRecords, isPending: isRepairRecordsFetching } = useRepairRecords(carId)
+  const { data: UpgradeRecords, isPending: isUpgradeRecordsFetching } = useUpgradeRecords(carId)
+  const { data: FuelRecords, isPending: isFuelRecordsFetching } = useFuelRecords(carId)
+  const { data: TaxRecords, isPending: isTaxRecordsFetching } = useTaxRecords(carId)
 
   const { setSelectedTabName, selectedTabName } = GlobalStateStore((state) => state)
+
+  const currentWorldYear = new Date().getFullYear()
 
   const ActionButtons = [
     { key: 'home', label: 'Home', color: '#f28900' },
@@ -82,7 +86,13 @@ const CarDetail = () => {
       }
 
       if (Array.isArray(dataSource)) {
-        const orderedDataByLatestDate = dataSource.slice().reverse()
+        const orderedDataByLatestDate = dataSource
+          .slice()
+          .sort((a, b) => {
+            const dateA = DateHandler(a.date, true) as Date;
+            const dateB = DateHandler(b.date, true) as Date;
+            return dateB.getTime() - dateA.getTime(); // Most recent first
+          })
         setSelectedDataSet(orderedDataByLatestDate)
       } else {
         setSelectedDataSet([])
@@ -206,22 +216,47 @@ const CarDetail = () => {
             onScrollEndDrag={() => setShowPlusButton(true)}
             onScrollBeginDrag={() => setShowPlusButton(false)}
             renderItem={({ index, item }) => {
-              switch (selectedTabName) {
-                case FuelFunctionStore.key:
-                  return <FuelCard item={item} odometerDelta={odometerDelta[index]} selectedButtonHexColor={selectedButtonHexColor} />
-                case OdometerFunctionStore.key:
-                  return <OdometerCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
-                case ServiceFunctionStore.key:
-                  return <ServiceCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
-                case TaxFunctionStore.key:
-                  return <TaxCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
-                case RepairFunctionStore.key:
-                  return <RepairCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
-                case UpgradeFunctionStore.key:
-                  return <UpgradeCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
-                default:
-                  return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+              
+              
+              const currentYear = (DateHandler(item.date, true) as Date).getFullYear()
+
+              const previousItem = index > 0 && selectedDataSet ? selectedDataSet[index - 1] : null
+
+              const previousYear = previousItem
+                ? (DateHandler(previousItem.date, true) as Date).getFullYear()
+                : null
+
+              const showYearHeader = (index === 0 || currentYear !== previousYear) && currentYear < currentWorldYear
+
+              const renderCard = () => {
+                switch (selectedTabName) {
+                  case FuelFunctionStore.key:
+                    return <FuelCard item={item} odometerDelta={odometerDelta[index]} selectedButtonHexColor={selectedButtonHexColor} />
+                  case OdometerFunctionStore.key:
+                    return <OdometerCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                  case ServiceFunctionStore.key:
+                    return <ServiceCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                  case TaxFunctionStore.key:
+                    return <TaxCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                  case RepairFunctionStore.key:
+                    return <RepairCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                  case UpgradeFunctionStore.key:
+                    return <UpgradeCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                  default:
+                    return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                }
               }
+
+              return (
+                <View>
+                  {showYearHeader && (
+                    <Text style={tw`text-sm font-HKGrotesk-Regular bg-[${selectedButtonHexColor}]/5 p-1 text-center w-1/2 mx-auto rounded-tr-xl rounded-tl-xl border-[${selectedButtonHexColor}]/20 border border-b-0`}>
+                      {currentYear}
+                    </Text>
+                  )}
+                  {renderCard()}
+                </View>
+              )
             }}
             estimatedItemSize={10} />
           {showPlusButton &&

@@ -24,3 +24,23 @@ export const addFuelRecord = async (
   })
   return data
 }
+
+export const updateFuelRecord = async (
+  _recordID: number,
+  _fuelRecordData: FuelRecordAdd
+) => {
+  const { data } = await axios.put(`${ENDPOINT}/${ApiTypeEnum.UPDATE}`, {
+    id: _recordID,
+    ..._fuelRecordData[0],
+  })
+  return data
+}
+
+export const deleteFuelRecord = async (
+  _recordID: number
+) => {
+  const { data } = await axios.delete(`${ENDPOINT}/${ApiTypeEnum.DELETE}`, {
+    params: { id: _recordID }
+  })
+  return data
+}

@@ -3,12 +3,12 @@ import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { useForm, Controller } from "react-hook-form"
-import { useAddFuelRecord, useAddTaxRecord, useUpdateOdometerRecord, useUpdateServiceRecord, useUpdateRepairRecord, useUpdateUpgradeRecord } from '~/hooks/api/index'
+import { useAddTaxRecord, useUpdateOdometerRecord, useUpdateServiceRecord, useUpdateRepairRecord, useUpdateUpgradeRecord, useUpdateFuelRecord } from '~/hooks/api/index'
 import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore } from '~/stores/RecordButtons'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
 
-const NewRecord = () => {
+const UpdateRecord = () => {
     const { t } = useTranslation()
     const { id, actionType, data }: { id: string, actionType: string, data: any } = useLocalSearchParams()
     const _recordID = parseInt(id)
@@ -18,7 +18,7 @@ const NewRecord = () => {
     const { mutateAsync: updateOdometerRecord } = useUpdateOdometerRecord()
     const { mutateAsync: updateRepairRecord } = useUpdateRepairRecord()
     const { mutateAsync: updateUpgradeRecord } = useUpdateUpgradeRecord()
-    const { mutateAsync: addFuelRecord } = useAddFuelRecord()
+    const { mutateAsync: updateFuelRecord } = useUpdateFuelRecord()
     const { mutateAsync: addTaxRecord } = useAddTaxRecord()
 
     const { control, handleSubmit, formState: { errors } } = useForm({
@@ -30,9 +30,9 @@ const NewRecord = () => {
             Notes: _data.notes || "",
             Description: _data.description || "",
             ConsumedFuel: _data.fuelConsumed || "",
-            IsFulltoFull: false,
-            MissedFuelUp: false,
-            Tags: ""
+            IsFillToFull: _data.isFillToFull || false,
+            MissedFuelUp: _data.missedFuelUp || false,
+            Tags: _data.tags || ""
         },
         mode: "onChange"
     })
@@ -44,7 +44,7 @@ const NewRecord = () => {
         Notes: string;
         Description: string;
         ConsumedFuel: string;
-        IsFulltoFull: boolean;
+        IsFillToFull: boolean;
         MissedFuelUp: boolean;
         Tags: string;
     }
@@ -78,9 +78,9 @@ const NewRecord = () => {
                     })
                     break
                 case FuelFunctionStore.key:
-                    await addFuelRecord({
-                        vehicleId: _recordID,
-                        fuelRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, fuelConsumed: formData.ConsumedFuel, isFillToFull: formData.IsFulltoFull, missedFuelUp: formData.MissedFuelUp }]
+                    await updateFuelRecord({
+                        recordID: _recordID,
+                        fuelRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, fuelConsumed: formData.ConsumedFuel, isFillToFull: formData.IsFillToFull, missedFuelUp: formData.MissedFuelUp }]
                     })
                     break
                 case TaxFunctionStore.key:
@@ -245,9 +245,10 @@ const NewRecord = () => {
                                     {!currentActionType.mandatoryFields.isFulltoFill && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control}
                                     render={({ field: { onChange, value } }) => (
+                                        <><Text>{value} </Text>
                                         <Switch
                                             onValueChange={() => onChange(!value)}
-                                            value={value} />)} name="IsFulltoFull" />
+                                            value={value} /></>)} name="IsFillToFull" />
                             </View>}
 
                         {currentActionType?.visibleFields.missedFuelUp &&
@@ -256,7 +257,8 @@ const NewRecord = () => {
                                     {!currentActionType.mandatoryFields.missedFuelUp && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control}
                                     render={({ field: { onChange, value } }) => (
-                                        <><Text>{value} </Text><Switch
+                                        <><Text>{value} </Text>
+                                        <Switch
                                             onValueChange={() => onChange(!value)}
                                             value={value} /></>
 
@@ -305,4 +307,4 @@ const NewRecord = () => {
     )
 }
 
-export default NewRecord
+export default UpdateRecord

@@ -21,3 +21,23 @@ export const addTaxRecord = async (
   })
   return data
 }
+
+export const updateTaxRecord = async (
+  _recordID: number,
+  _taxRecordData: TaxRecord
+) => {
+  const { data } = await axios.put(`${ENDPOINT}/${ApiTypeEnum.UPDATE}`, {
+    id: _recordID,
+    ..._taxRecordData[0],
+  })
+  return data
+}
+
+export const deleteTaxRecord = async (
+  _recordID: number
+) => {
+  const { data } = await axios.delete(`${ENDPOINT}/${ApiTypeEnum.DELETE}`, {
+    params: { id: _recordID }
+  })
+  return data
+}

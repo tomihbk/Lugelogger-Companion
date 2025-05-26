@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { useForm, Controller } from "react-hook-form"
-import { useAddTaxRecord, useUpdateOdometerRecord, useUpdateServiceRecord, useUpdateRepairRecord, useUpdateUpgradeRecord, useUpdateFuelRecord } from '~/hooks/api/index'
+import { useUpdateOdometerRecord, useUpdateServiceRecord, useUpdateRepairRecord, useUpdateUpgradeRecord, useUpdateFuelRecord, useUpdateTaxRecord } from '~/hooks/api/index'
 import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore } from '~/stores/RecordButtons'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
@@ -19,7 +19,7 @@ const UpdateRecord = () => {
     const { mutateAsync: updateRepairRecord } = useUpdateRepairRecord()
     const { mutateAsync: updateUpgradeRecord } = useUpdateUpgradeRecord()
     const { mutateAsync: updateFuelRecord } = useUpdateFuelRecord()
-    const { mutateAsync: addTaxRecord } = useAddTaxRecord()
+    const { mutateAsync: updateTaxRecord } = useUpdateTaxRecord()
 
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
@@ -84,9 +84,9 @@ const UpdateRecord = () => {
                     })
                     break
                 case TaxFunctionStore.key:
-                    await addTaxRecord({
-                        vehicleId: _recordID,
-                        taxRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, notes: formData.Notes }]
+                    await updateTaxRecord({
+                        recordID: _recordID,
+                        taxRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, notes: formData.Notes }]
                     })
                     break
                 default:

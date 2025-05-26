@@ -29,4 +29,9 @@ export {
   useUpdateFuelRecord,
   useDeleteFuelRecord,
 } from "./use-get-fuelrecords"
-export { useAddTaxRecord, useTaxRecords } from "./use-get-taxrecords"
+export {
+  useAddTaxRecord,
+  useTaxRecords,
+  useUpdateTaxRecord,
+  useDeleteTaxRecord,
+} from "./use-get-taxrecords"

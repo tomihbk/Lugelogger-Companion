@@ -54,7 +54,7 @@ const UpdateRecord = () => {
 
         // Convert comma-separated tags to space-separated string
         const tags = formData.Tags ? formData.Tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '').join(' ') : ''
-        console.log("tags from update record: " + tags)
+
         try {
             switch (actionType) {
                 case ServiceFunctionStore.key:

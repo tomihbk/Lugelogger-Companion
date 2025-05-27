@@ -1,3 +1,5 @@
+const locale = Intl.DateTimeFormat().resolvedOptions().locale
+
 const DateHandler = (
   date: string,
   getISODate: boolean = false
@@ -9,7 +11,7 @@ const DateHandler = (
       parseInt(YYYY),
       parseInt(MM) - 1,
       parseInt(DD)
-    ).toLocaleDateString(undefined, {
+    ).toLocaleDateString(locale, {
       //year: "2-digit",
       month: "short",
       day: "2-digit",
@@ -19,4 +21,10 @@ const DateHandler = (
     return new Date(YYYY, MM - 1, DD)
   }
 }
+
+const GetWeekday = (date: string) => {
+  return (DateHandler(date, true) as Date).toLocaleDateString(Intl.DateTimeFormat().resolvedOptions().locale, { weekday: 'long' }).replace(/^./, c => c.toUpperCase())
+} 
+
+export { GetWeekday }
 export default DateHandler

@@ -57,7 +57,7 @@ const CarDetail = () => {
   const scrollViewRef = useRef(null)
   const [odometerDelta, setOdometerDelta] = useState<number[]>([])
   const [showPlusButton, setShowPlusButton] = useState<boolean>(true)
-
+  
   const changeDataSet = async (serviceName: string) => {
     try {
       let dataSource: RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | undefined;
@@ -147,12 +147,12 @@ const CarDetail = () => {
 
   const calculateTotalDistance = (recordDataObject: OdometerRecord) => {
     if (recordDataObject.length === 0) return 0;
-    let totolOdometer = 0
+    let totalOdometer = 0
     let initialOdometerTotal = 0
 
-    for (const record of recordDataObject) totolOdometer += parseFloat(record.odometer)
+    for (const record of recordDataObject) totalOdometer += parseFloat(record.odometer)
     for (const record of recordDataObject) initialOdometerTotal += parseFloat(record.initialOdometer)
-    setTotalDistance(totolOdometer - initialOdometerTotal)
+    setTotalDistance(totalOdometer - initialOdometerTotal)
   }
 
   const calculateDeltaDistance = (recordDataObject: FuelRecordAdd) => {
@@ -202,10 +202,10 @@ const CarDetail = () => {
       </ScrollView>
 
       {(isOdometerRecordsFetching || isServiceRecordsFetching || isRepairRecordsFetching || isUpgradeRecordsFetching || isFuelRecordsFetching || isTaxRecordsFetching) ? (
-        <>
-          <Text>Loading...</Text>
+        <View style={tw`flex flex-col items-center justify-center h-4/5`}>
+          <Text style={tw`text-lg font-HKGrotesk-Medium`}>Fetching data...</Text>
           <ActivityIndicator size="large" color={selectedButtonHexColor} />
-        </>
+        </View>
       ) : (
         selectedTabName != 'home' && selectedTabName != 'notes' &&
         <>

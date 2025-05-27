@@ -5,5 +5,5 @@ export type RecordBase = {
   description?: string
   notes?: string
   cost: string
-  tags?: []
+  tags?: string
 }[]

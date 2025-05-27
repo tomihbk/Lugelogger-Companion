@@ -1,0 +1,68 @@
+import { View, Text, TextInput, Pressable } from 'react-native'
+import React, { useState } from 'react'
+import tw from '~/tw.config'
+
+type TagInputProps = {
+    value: string
+    onChangeText: (text: string) => void
+    onBlur?: () => void
+    color: string
+    hasError?: boolean
+}
+
+const TagInput = ({ value, onChangeText, onBlur, color, hasError }: TagInputProps) => {
+    const [currentInput, setCurrentInput] = useState('')
+
+    // Split existing value into tags
+    const tags = value ? value.split(' ').filter(tag => tag !== '') : []
+
+    const handleTextChange = (text: string) => {
+        const lastChar = text.slice(-1)
+        
+        // If user types space or comma
+        if (lastChar === ' ' || lastChar === ',') {
+            const newTag = text.slice(0, -1).trim()
+            if (newTag) {
+                // Add the new tag to existing tags
+                const updatedTags = [...tags, newTag]
+                onChangeText(updatedTags.join(' '))
+                setCurrentInput('')
+            }
+        } else {
+            setCurrentInput(text)
+        }
+    }
+
+    const removeTag = (indexToRemove: number) => {
+        const updatedTags = tags.filter((_, index) => index !== indexToRemove)
+        onChangeText(updatedTags.join(' '))
+    }
+
+    return (
+        <View style={tw`flex flex-col`}>
+            <View style={tw`flex flex-row flex-wrap gap-2 mb-2`}>
+                {tags.map((tag, index) => (
+                    <Pressable 
+                        key={index} 
+                        onPress={() => removeTag(index)}
+                        style={tw`flex-row items-center bg-[${color}]/40 rounded-full px-2 py-1`}
+                    >
+                        <Text style={tw`font-HKGrotesk-Medium text-sm text-white mr-1`}>{tag}</Text>
+                        <Text style={tw`font-HKGrotesk-Medium text-sm text-white`}>×</Text>
+                    </Pressable>
+                ))}
+            </View>
+            <TextInput
+                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg 
+                    border-[${color}]/10 selection:border-[${color}]/30 
+                    bg-gray-100 border p-2 ${hasError ? 'border-red-700' : ''}`}
+                value={currentInput}
+                onChangeText={handleTextChange}
+                onBlur={onBlur}
+                placeholder="Type and use space or comma to add tags"
+            />
+        </View>
+    )
+}
+
+export default TagInput 

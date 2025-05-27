@@ -9,6 +9,7 @@ import { router } from 'expo-router'
 import { OdometerFunctionStore } from '~/stores/RecordButtons'
 import { useDeleteOdometerRecord } from '~/hooks/api/index'
 import DeleteButton from '~/components/DeleteButton'
+import Tag from '~/components/TagComponent'
 
 type OdometerCardProps = RecordBase[0] & OdometerRecord[0]
 
@@ -42,10 +43,11 @@ const OdometerCard = ({ item, selectedButtonHexColor }: { item: OdometerCardProp
                     <Text style={tw`font-HKGrotesk-Medium text-base`}>{item.odometer}{preferredDistanceMeasurement}</Text>
                 </View>
                 {item.notes && <Text style={tw`bg-[${selectedButtonHexColor}]/5 mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`} numberOfLines={2} ellipsizeMode="tail">{item.notes}</Text>}
+                {item.tags && <Tag tags={item.tags} color={selectedButtonHexColor} />}
             </Pressable>
 
             {showDeleteButton && (
-                <DeleteButton 
+                <DeleteButton
                     onPress={() => {
                         setShowDeleteButton(false)
                         if (item.id) handleDelete(parseInt(item.id))

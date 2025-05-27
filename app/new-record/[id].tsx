@@ -7,6 +7,7 @@ import { useAddServiceRecord, useAddOdometerRecord, useAddRepairRecord, useAddUp
 import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore } from '~/stores/RecordButtons'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
+import TagInput from '~/components/TagInput'
 
 const NewRecord = () => {
     const { t } = useTranslation()
@@ -52,42 +53,45 @@ const NewRecord = () => {
     const handleForm = async (formData: formDataType) => {
         //console.log("formData : " + JSON.stringify(formData))
 
+        // Convert comma-separated tags to space-separated string
+        const tags = formData.Tags ? formData.Tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '').join(' ') : ''
+
         try {
             switch (actionType) {
                 case "service":
                     await addServiceRecord({
                         vehicleId: CarId,
-                        serviceRecord: [{ cost: formData.Cost, date: "10/29/2024", description: `Car ID ${CarId} - ${new Date().toISOString()}`, odometer: formData.Odometer, notes: formData.Notes }]
+                        serviceRecord: [{ cost: formData.Cost, date: "10/29/2024", description: `Car ID ${CarId} - ${new Date().toISOString()}`, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
                 case "odometer":
                     await addOdometerRecord({
                         vehicleId: CarId,
-                        odometerRecord: [{ date: "10/29/2024", initialOdometer: formData.InitialOdometer, odometer: formData.Odometer, notes: formData.Notes }]
+                        odometerRecord: [{ date: "10/29/2024", initialOdometer: formData.InitialOdometer, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
                 case "repair":
                     await addRepairRecord({
                         vehicleId: CarId,
-                        repairRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
+                        repairRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
                 case "upgrade":
                     await addUpgradeRecord({
                         vehicleId: CarId,
-                        upgradeRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
+                        upgradeRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
                 case "fuel":
                     await addFuelRecord({
                         vehicleId: CarId,
-                        fuelRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, fuelConsumed: formData.ConsumedFuel, isFillToFull: formData.IsFulltoFull, missedFuelUp: formData.MissedFuelUp }]
+                        fuelRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, fuelConsumed: formData.ConsumedFuel, isFillToFull: formData.IsFulltoFull, missedFuelUp: formData.MissedFuelUp, tags }]
                     })
                     break
                 case "tax":
                     await addTaxRecord({
                         vehicleId: CarId,
-                        taxRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, notes: formData.Notes }]
+                        taxRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, notes: formData.Notes, tags }]
                     })
                     break
                 default:
@@ -285,11 +289,14 @@ const NewRecord = () => {
                                     {!currentActionType.mandatoryFields.tags && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control} rules={{ required: currentActionType.mandatoryFields.tags }}
                                     render={({ field: { onChange, onBlur, value } }) => (
-                                        <TextInput
-                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/10 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Tags && 'border-red-700' || ''}`}
-                                            onBlur={onBlur}
+                                        <TagInput
+                                            value={value}
                                             onChangeText={onChange}
-                                            value={value} />)} name="Tags" />
+                                            onBlur={onBlur}
+                                            color={currentActionType?.buttonColor}
+                                            hasError={!!errors.Tags}
+                                        />
+                                    )} name="Tags" />
                             </>
                         }
                         {errors.Tags && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}

@@ -91,7 +91,7 @@ const NewRecord = () => {
                 case "tax":
                     await addTaxRecord({
                         vehicleId: CarId,
-                        taxRecord: [{ cost: formData.Cost, date: "12/12/2024", description: formData.Description, notes: formData.Notes, tags }]
+                        taxRecord: [{ cost: formData.Cost, date: "12/05/2025", description: formData.Description, notes: formData.Notes, tags }]
                     })
                     break
                 default:
@@ -146,7 +146,7 @@ const NewRecord = () => {
                     <Text style={tw`font-HKGrotesk-Bold text-lg`}>New {actionType.toString().toLowerCase()} record</Text>
 
                     <View style={tw``}>
-                        {currentActionType?.visibleFields.odometer &&
+                        {currentActionType?.visibleFields.date &&
                             <>
                                 <Text style={tw`font-HKGrotesk-SemiBold text-base mb-1`}>{t("Date")}
                                     {!currentActionType.mandatoryFields.date && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}

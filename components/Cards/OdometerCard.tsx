@@ -42,7 +42,7 @@ const OdometerCard = ({ item, selectedButtonHexColor }: { item: OdometerCardProp
                     <Text style={tw`font-HKGrotesk-Bold text-lg w-1/2`}>{DateHandler(item.date).toString()}</Text>
                     <Text style={tw`font-HKGrotesk-Bold text-lg text-right w-1/2`}>{NumberHandler(parseInt(item.odometer))} {preferredDistanceMeasurement}</Text>
                     <Text style={tw`font-HKGrotesk-Regular text-xs text-left`}>{weekday}</Text>
-                    <Text style={tw`font-HKGrotesk-Regular text-xs text-right`}>Δ{NumberHandler(calculateDeltaDistance(item.initialOdometer, item.odometer))} {preferredDistanceMeasurement}</Text>
+                    <Text style={tw`font-HKGrotesk-SemiBold text-xs text-right`}>Δ{NumberHandler(calculateDeltaDistance(item.initialOdometer, item.odometer))} {preferredDistanceMeasurement}</Text>
                 </View>
 
                 {item.notes && <Text style={tw`bg-[${selectedButtonHexColor}]/5 mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`} numberOfLines={2} ellipsizeMode="tail">{item.notes}</Text>}

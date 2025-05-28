@@ -7,6 +7,7 @@ import { useUpdateOdometerRecord, useUpdateServiceRecord, useUpdateRepairRecord,
 import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore } from '~/stores/RecordButtons'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
+import TagInput from '~/components/TagInput'
 
 const UpdateRecord = () => {
     const { t } = useTranslation()
@@ -51,42 +52,45 @@ const UpdateRecord = () => {
     const handleForm = async (formData: formDataType) => {
         //console.log("formData : " + JSON.stringify(formData))
 
+        // Convert comma-separated tags to space-separated string
+        const tags = formData.Tags ? formData.Tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '').join(' ') : ''
+
         try {
             switch (actionType) {
                 case ServiceFunctionStore.key:
                     await updateServiceRecord({
                         recordID: _recordID,
-                        serviceRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
+                        serviceRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
                 case OdometerFunctionStore.key:
                     await updateOdometerRecord({
                         recordID: _recordID,
-                        odometerRecord: [{ date: formData.Date, initialOdometer: formData.InitialOdometer, odometer: formData.Odometer, notes: formData.Notes }]
+                        odometerRecord: [{ date: formData.Date, initialOdometer: formData.InitialOdometer, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
                 case RepairFunctionStore.key:
                     await updateRepairRecord({
                         recordID: _recordID,
-                        repairRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
+                        repairRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
                 case UpgradeFunctionStore.key:
                     await updateUpgradeRecord({
                         recordID: _recordID,
-                        upgradeRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes }]
+                        upgradeRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
                 case FuelFunctionStore.key:
                     await updateFuelRecord({
                         recordID: _recordID,
-                        fuelRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, fuelConsumed: formData.ConsumedFuel, isFillToFull: formData.IsFillToFull, missedFuelUp: formData.MissedFuelUp }]
+                        fuelRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, fuelConsumed: formData.ConsumedFuel, isFillToFull: formData.IsFillToFull, missedFuelUp: formData.MissedFuelUp, tags }]
                     })
                     break
                 case TaxFunctionStore.key:
                     await updateTaxRecord({
                         recordID: _recordID,
-                        taxRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, notes: formData.Notes }]
+                        taxRecord: [{ cost: formData.Cost, date: formData.Date, description: formData.Description, notes: formData.Notes, tags }]
                     })
                     break
                 default:
@@ -246,9 +250,9 @@ const UpdateRecord = () => {
                                 <Controller control={control}
                                     render={({ field: { onChange, value } }) => (
                                         <><Text>{value} </Text>
-                                        <Switch
-                                            onValueChange={() => onChange(!value)}
-                                            value={value} /></>)} name="IsFillToFull" />
+                                            <Switch
+                                                onValueChange={() => onChange(!value)}
+                                                value={value} /></>)} name="IsFillToFull" />
                             </View>}
 
                         {currentActionType?.visibleFields.missedFuelUp &&
@@ -258,9 +262,9 @@ const UpdateRecord = () => {
                                 <Controller control={control}
                                     render={({ field: { onChange, value } }) => (
                                         <><Text>{value} </Text>
-                                        <Switch
-                                            onValueChange={() => onChange(!value)}
-                                            value={value} /></>
+                                            <Switch
+                                                onValueChange={() => onChange(!value)}
+                                                value={value} /></>
 
                                     )} name="MissedFuelUp" />
                             </View>}
@@ -286,11 +290,14 @@ const UpdateRecord = () => {
                                     {!currentActionType.mandatoryFields.tags && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control} rules={{ required: currentActionType.mandatoryFields.tags }}
                                     render={({ field: { onChange, onBlur, value } }) => (
-                                        <TextInput
-                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/10 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Tags && 'border-red-700' || ''}`}
-                                            onBlur={onBlur}
+                                        <TagInput
+                                            value={value}
                                             onChangeText={onChange}
-                                            value={value} />)} name="Tags" />
+                                            onBlur={onBlur}
+                                            color={currentActionType?.buttonColor}
+                                            hasError={!!errors.Tags}
+                                        />
+                                    )} name="Tags" />
                             </>
                         }
                         {errors.Tags && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}

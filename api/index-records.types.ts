@@ -6,6 +6,7 @@ export type OdometerRecord = {
   initialOdometer: string
   odometer: string
   notes?: string
+  tags?: string
 }[]
 export type RepairRecord = RecordBase
 export type UpgradeRecord = RecordBase

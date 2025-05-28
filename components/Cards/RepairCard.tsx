@@ -38,7 +38,7 @@ const RepairCard = ({ item, selectedButtonHexColor }: { item: RepairCardProps, s
                 <Text style={tw`font-HKGrotesk-Bold text-lg w-1/2`}>{DateHandler(item.date).toString()}</Text>
                 <Text style={tw`font-HKGrotesk-Bold text-lg text-right w-1/2`}>{preferredCurrencySymbol} {item?.cost}</Text>
                 <Text style={tw`font-HKGrotesk-Regular text-xs text-left`}>{GetWeekday(item.date)}</Text>
-                <Text style={tw`font-HKGrotesk-SemiBold text-xs text-right`}>{NumberHandler(parseInt(item.odometer || '0'))}{preferredDistanceMeasurement}</Text>
+                <Text style={tw`font-HKGrotesk-SemiBold text-xs text-right`}>{NumberHandler(parseInt(item.odometer || '0'))} {preferredDistanceMeasurement}</Text>
             </View>
             {item.description && <Text style={tw`bg-[${selectedButtonHexColor}]/5 mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`} numberOfLines={item.notes ? 1 : 2} ellipsizeMode="tail">{item.description}</Text>}
 

@@ -13,7 +13,7 @@ const RecordCard = ({ item, selectedButtonHexColor }: { item: RecordBase[0], sel
             <View style={tw`flex flex-row flex-wrap justify-between`}>
                 <Text style={tw`font-HKGrotesk-Medium text-base`}>{DateHandler(item.date).toString()}</Text>
                 <Text style={tw`font-HKGrotesk-Medium text-base`}>{preferredCurrencySymbol} {item?.cost}</Text>
-                <Text style={tw`font-HKGrotesk-Medium text-base`}>{item.odometer}{preferredDistanceMeasurement}</Text>
+                <Text style={tw`font-HKGrotesk-Medium text-base`}>{item.odometer} {preferredDistanceMeasurement}</Text>
             </View>
             {item.description && <Text style={tw`bg-[${selectedButtonHexColor}]/5 mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>}
             <Text>{item.notes}</Text>

@@ -54,12 +54,13 @@ const TagInput = ({ value, onChangeText, onBlur, color, hasError }: TagInputProp
             </View>
             <TextInput
                 style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg 
-                    border-[${color}]/10 selection:border-[${color}]/30 
+                    border-[${color}]/20 selection:border-[${color}]/30 
                     bg-gray-100 border p-2 ${hasError ? 'border-red-700' : ''}`}
                 value={currentInput}
                 onChangeText={handleTextChange}
                 onBlur={onBlur}
-                placeholder="Type and use space or comma to add tags"
+                autoCapitalize="words"
+                placeholder="Use space or comma to add tags"
             />
         </View>
     )

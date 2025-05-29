@@ -260,7 +260,12 @@ const CarDetail = () => {
             }}
             estimatedItemSize={10} />
           {showPlusButton &&
-            <NewRecordButton selectedButtonHexColor={selectedButtonHexColor} selectedTabName={selectedTabName} carId={CarId} />
+            <NewRecordButton 
+              selectedButtonHexColor={selectedButtonHexColor} 
+              selectedTabName={selectedTabName} 
+              carId={CarId}
+              lastOdometer={Array.isArray(OdometerRecords) && OdometerRecords.length > 0 ? OdometerRecords[OdometerRecords.length - 1].odometer : undefined} 
+            />
           }
         </>
       )}

@@ -7,7 +7,8 @@ import tw from '~/tw.config'
 type NewRecordButtonPropType = {
     selectedButtonHexColor: string,
     selectedTabName: string,
-    carId: string
+    carId: string,
+    lastOdometer?: string
 }
 
 const NewRecordButton = (props: NewRecordButtonPropType) => {
@@ -15,7 +16,11 @@ const NewRecordButton = (props: NewRecordButtonPropType) => {
         <TouchableOpacity style={tw`rounded-full right-5 bottom-4 p-3 bg-[${props.selectedButtonHexColor}] ${props.selectedTabName == "home" ? 'hidden' : 'absolute'}`} onPress={() => {
             router.push({
                 pathname: "/new-record/[id]",
-                params: { id: props.carId, actionType: props.selectedTabName }
+                params: { 
+                    id: props.carId, 
+                    actionType: props.selectedTabName,
+                    lastOdometer: props.lastOdometer 
+                }
             })
         }}>
             <PlusIcon size={35} color="white" />

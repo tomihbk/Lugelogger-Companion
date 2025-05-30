@@ -57,7 +57,7 @@ const CarDetail = () => {
   const scrollViewRef = useRef(null)
   const [odometerDelta, setOdometerDelta] = useState<number[]>([])
   const [showPlusButton, setShowPlusButton] = useState<boolean>(true)
-  
+
   const changeDataSet = async (serviceName: string) => {
     try {
       let dataSource: RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | undefined;
@@ -216,8 +216,8 @@ const CarDetail = () => {
             onScrollEndDrag={() => setShowPlusButton(true)}
             onScrollBeginDrag={() => setShowPlusButton(false)}
             renderItem={({ index, item }) => {
-              
-              
+
+
               const currentYear = (DateHandler(item.date, true) as Date).getFullYear()
 
               const previousItem = index > 0 && selectedDataSet ? selectedDataSet[index - 1] : null
@@ -260,7 +260,12 @@ const CarDetail = () => {
             }}
             estimatedItemSize={10} />
           {showPlusButton &&
-            <NewRecordButton selectedButtonHexColor={selectedButtonHexColor} selectedTabName={selectedTabName} carId={CarId} />
+            <NewRecordButton
+              selectedButtonHexColor={selectedButtonHexColor}
+              selectedTabName={selectedTabName}
+              carId={CarId}
+              lastOdometer={Array.isArray(selectedDataSet) && selectedDataSet.length > 0 && selectedTabName !== TaxFunctionStore.key && 'odometer' in selectedDataSet[0] ? selectedDataSet[0].odometer : undefined}
+            />
           }
         </>
       )}

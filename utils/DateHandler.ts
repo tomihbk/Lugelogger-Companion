@@ -26,5 +26,13 @@ const GetWeekday = (date: string) => {
   return (DateHandler(date, true) as Date).toLocaleDateString(Intl.DateTimeFormat().resolvedOptions().locale, { weekday: 'long' }).replace(/^./, c => c.toUpperCase())
 } 
 
-export { GetWeekday }
+const ConvertUTCToUSFormat = (date: string) => {
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'numeric',
+    day: '2-digit'
+  })
+}
+
+export { GetWeekday, ConvertUTCToUSFormat }
 export default DateHandler

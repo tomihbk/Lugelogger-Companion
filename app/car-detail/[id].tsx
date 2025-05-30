@@ -178,7 +178,6 @@ const CarDetail = () => {
 
   const calculateDaysSinceLastRecord = () => {
     const lastRecord = selectedDataSet[0]
-
     const lastRecordDate = DateHandler(lastRecord.date, true) as Date
     const today = new Date()
     const _daysSinceLastRecord = Math.ceil((today.getTime() - lastRecordDate.getTime()) / (1000 * 60 * 60 * 24)) - 1 // -1 because the last record is the current record
@@ -205,9 +204,14 @@ const CarDetail = () => {
   }
 
   return (
-    <View style={tw`flex flex-col p-5 pb-0 w-full h-full dark:bg-slate-900`}>
-      <Stack.Screen options={{ title: CarId as string, headerShown: false }} />
-      <Text style={tw`text-2xl mt-4 font-HKGrotesk-Bold`}>{CarId}</Text>
+    <View style={tw`flex flex-col p-5 pb-0 w-full h-full dark:bg-slate-900 mt-6`}>
+      <Stack.Screen options={{
+        headerShadowVisible: false,
+        headerShown: true,
+        headerStyle: { backgroundColor: `transparent` },
+        headerTitle: () => <Text style={tw`text-xl dark:text-white font-HKGrotesk-Medium`} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>,
+        headerTransparent: true,
+      }} />
       <ScrollView ref={scrollViewRef} horizontal={true} showsHorizontalScrollIndicator={false}
         style={tw`flex flex-row flex-wrap flex-grow-0 p-2 -mx-5 mb-1`}>
         {ActionButtons.map((button) => (

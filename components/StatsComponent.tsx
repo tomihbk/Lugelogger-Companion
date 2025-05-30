@@ -1,11 +1,11 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import tw from '~/tw.config'
-
+import { Banknote, CalendarDays, Coins, Hash, Ruler } from 'lucide-react-native'
 type StatsComponentPropType = {
     themeColor: string
     cost: number
-    symbol: string
+    symbol: "money" | "calendar" | "average" | "total" | "distance"
     description: string
 }
 
@@ -24,10 +24,25 @@ const StatsComponent = (props: StatsComponentPropType) => {
         }
     }
 
+    const IconSet = () => {
+        switch (props.symbol) {
+            case 'money':
+                return <Banknote style={tw`absolute top-5 right-2`} color={props.themeColor} size={25} />
+            case 'calendar':
+                return <CalendarDays style={tw`absolute top-5 right-2`} color={props.themeColor} size={25} />
+            case 'average':
+                return <Coins style={tw`absolute top-5 right-2`} color={props.themeColor} size={25} />
+            case 'total':
+                return <Hash style={tw`absolute top-5 right-2`} color={props.themeColor} size={25} />
+            case 'distance':
+                return <Ruler style={tw`absolute top-5 right-2`} color={props.themeColor} size={25} />
+        }
+    }
+
     return (
         <View style={tw`flex flex-row flex-wrap p-3 w-[48%] bg-[${props.themeColor}]/5 dark:bg-green-950 rounded-3xl border-[${props.themeColor}]/20 border`}>
             <Text style={tw`font-HKGrotesk-Bold text-[1.75rem] w-2/3 z-50 text-[${props.themeColor}]`}>{formatAmount(props.cost)}</Text>
-            <Text style={tw`font-HKGrotesk-Medium text-lg absolute top-5 right-2 text-[${props.themeColor}]`}>{props.symbol}</Text>
+            {IconSet()}
             <Text style={tw`font-HKGrotesk-Medium text-xs text-[${props.themeColor}]`}>{props.description}</Text>
         </View>
     )

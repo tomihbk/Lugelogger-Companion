@@ -35,3 +35,7 @@ export {
   useUpdateTaxRecord,
   useDeleteTaxRecord,
 } from "./use-get-taxrecords"
+export {
+  useGetAllVehicles,
+} from "./use-get-vehicleinfos"
+

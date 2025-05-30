@@ -13,13 +13,13 @@ type NewRecordButtonPropType = {
 
 const NewRecordButton = (props: NewRecordButtonPropType) => {
     return (
-        <TouchableOpacity style={tw`rounded-full right-5 bottom-4 p-3 bg-[${props.selectedButtonHexColor}] ${props.selectedTabName == "home" ? 'hidden' : 'absolute'}`} onPress={() => {
+        <TouchableOpacity style={tw`rounded-full right-5 bottom-10 p-3 z-50 shadow-lg shadow-[${props.selectedButtonHexColor}] bg-[${props.selectedButtonHexColor}] ${props.selectedTabName == "home" ? 'hidden' : 'absolute'}`} onPress={() => {
             router.push({
                 pathname: "/new-record/[id]",
-                params: { 
-                    id: props.carId, 
+                params: {
+                    id: props.carId,
                     actionType: props.selectedTabName,
-                    lastOdometer: props.lastOdometer 
+                    lastOdometer: props.lastOdometer
                 }
             })
         }}>

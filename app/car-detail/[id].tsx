@@ -57,6 +57,7 @@ const CarDetail = () => {
   const scrollViewRef = useRef(null)
   const [odometerDelta, setOdometerDelta] = useState<number[]>([])
   const [showPlusButton, setShowPlusButton] = useState<boolean>(true)
+  const [daysSinceLastRecord, setDaysSinceLastRecord] = useState<number>(0)
 
   const changeDataSet = async (serviceName: string) => {
     try {
@@ -113,14 +114,24 @@ const CarDetail = () => {
   useEffect(() => {
     if (Array.isArray(selectedDataSet) && selectedDataSet.length > 0 && 'cost' in selectedDataSet[0]) {
       calculateTotalExpense(selectedDataSet as RecordBase)
+    } else {
+      setTotalExpense(0)
     }
     if (Array.isArray(selectedDataSet) && selectedDataSet.length > 0 && 'odometer' in selectedDataSet[0]) {
       calculateTotalDistance(selectedDataSet as OdometerRecord)
+    } else {
+      setTotalDistance(0)
     }
     if (Array.isArray(FuelRecords) && FuelRecords.length > 0 && 'fuelConsumed' in FuelRecords[0]) {
       calculateDeltaDistance(FuelRecords as FuelRecordAdd)
+    } else {
+      setOdometerDelta([])
     }
-
+    if (Array.isArray(selectedDataSet) && selectedDataSet.length > 0 && 'date' in selectedDataSet[0]) {
+      calculateDaysSinceLastRecord()
+    } else {
+      setDaysSinceLastRecord(0)
+    }
     // this section handles when a tab is selected, the tab name is focused and should be shown.
     const selectedTabIndex = ActionButtons.findIndex(button => button.key === selectedTabName);
     if (scrollViewRef.current && selectedTabIndex !== -1) {
@@ -169,33 +180,38 @@ const CarDetail = () => {
     const lastRecord = selectedDataSet[0]
     const lastRecordDate = DateHandler(lastRecord.date, true) as Date
     const today = new Date()
-    const daysSinceLastRecord = Math.ceil((today.getTime() - lastRecordDate.getTime()) / (1000 * 60 * 60 * 24)) - 1 // -1 because the last record is the current record
-    return daysSinceLastRecord
+    const _daysSinceLastRecord = Math.ceil((today.getTime() - lastRecordDate.getTime()) / (1000 * 60 * 60 * 24)) - 1 // -1 because the last record is the current record
+    setDaysSinceLastRecord(_daysSinceLastRecord)
   }
 
   const StatsComponentHandler = (actiontype: string) => {
     switch (actiontype) {
       case OdometerFunctionStore.key:
-        return <OdometerStats selectedButtonHexColor={selectedButtonHexColor} selectedTabName={selectedTabName} totalDistance={totalDistance} selectedDataSet={(selectedDataSet?.length || 0)} daysSinceLastOdometer={0} />
+        return <OdometerStats selectedButtonHexColor={selectedButtonHexColor} selectedTabName={selectedTabName} totalDistance={totalDistance} selectedDataSet={(selectedDataSet?.length || 0)} daysSinceLastOdometer={daysSinceLastRecord} />
       case ServiceFunctionStore.key:
-        return <ServiceStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastService={calculateDaysSinceLastRecord()} />
+        return <ServiceStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastService={daysSinceLastRecord} />
       case RepairFunctionStore.key:
-        return <RepairStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastRepair={calculateDaysSinceLastRecord()} />
+        return <RepairStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastRepair={daysSinceLastRecord} />
       case UpgradeFunctionStore.key:
-        return <UpgradeStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastUpgrade={calculateDaysSinceLastRecord()} />
+        return <UpgradeStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastUpgrade={daysSinceLastRecord} />
       case FuelFunctionStore.key:
-        return <FuelStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastFuel={calculateDaysSinceLastRecord()} />
+        return <FuelStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastFuel={daysSinceLastRecord} />
       case TaxFunctionStore.key:
-        return <TaxStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastTax={calculateDaysSinceLastRecord()} />
+        return <TaxStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastTax={daysSinceLastRecord} />
       case 'notes':
         return (<><Text>Notes Stats component</Text></>)
     }
   }
 
   return (
-    <View style={tw`flex flex-col p-5 pb-0 w-full h-full dark:bg-slate-900`}>
-      <Stack.Screen options={{ title: CarId as string, headerShown: false }} />
-      <Text style={tw`text-2xl mt-4 font-HKGrotesk-Bold`}>{CarId}</Text>
+    <View style={tw`flex flex-col p-5 w-full h-full dark:bg-slate-900 mt-6`}>
+      <Stack.Screen options={{
+        headerShadowVisible: false,
+        headerShown: true,
+        headerStyle: { backgroundColor: `transparent` },
+        headerTitle: () => <Text style={tw`text-xl dark:text-white font-HKGrotesk-Medium`} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>,
+        headerTransparent: true,
+      }} />
       <ScrollView ref={scrollViewRef} horizontal={true} showsHorizontalScrollIndicator={false}
         style={tw`flex flex-row flex-wrap flex-grow-0 p-2 -mx-5 mb-1`}>
         {ActionButtons.map((button) => (

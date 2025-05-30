@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TextInput, Pressable, Switch, SafeAreaView } from 'react-native'
+import { View, Text, ScrollView, TextInput, Pressable, SafeAreaView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
@@ -13,6 +13,8 @@ import { CalendarDays, GaugeCircle, CircleDollarSign, FuelIcon, Info, X, PenSqua
 import { tint } from 'polished'
 import { ConvertUTCToUSFormat } from '~/utils/DateHandler'
 import ModernSwitch from '~/components/ModernSwitch'
+import NumberHandler from '~/utils/NumberHandler'
+import GlobalStateStore from '~/stores/globalStateStore'
 
 const NewRecord = () => {
     const { t } = useTranslation()
@@ -28,6 +30,7 @@ const NewRecord = () => {
     const [openDatePickerModal, setOpenDatePickerModal] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
     const [initialOdometerEditable, setInitialOdometerEditable] = useState(false)
+    const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
 
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
@@ -66,37 +69,37 @@ const NewRecord = () => {
 
         try {
             switch (actionType) {
-                case "service":
+                case ServiceFunctionStore.key:
                     await addServiceRecord({
                         vehicleId: CarId,
                         serviceRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
-                case "odometer":
+                case OdometerFunctionStore.key:
                     await addOdometerRecord({
                         vehicleId: CarId,
                         odometerRecord: [{ date: convertedDate, initialOdometer: formData.InitialOdometer, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
-                case "repair":
+                case RepairFunctionStore.key:
                     await addRepairRecord({
                         vehicleId: CarId,
                         repairRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
-                case "upgrade":
+                case UpgradeFunctionStore.key:
                     await addUpgradeRecord({
                         vehicleId: CarId,
                         upgradeRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
-                case "fuel":
+                case FuelFunctionStore.key:
                     await addFuelRecord({
                         vehicleId: CarId,
                         fuelRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, fuelConsumed: formData.ConsumedFuel, isFillToFull: formData.IsFulltoFull, missedFuelUp: formData.MissedFuelUp, tags }]
                     })
                     break
-                case "tax":
+                case TaxFunctionStore.key:
                     await addTaxRecord({
                         vehicleId: CarId,
                         taxRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, notes: formData.Notes, tags }]
@@ -112,36 +115,16 @@ const NewRecord = () => {
         //console.log("Error odo Type : " + JSON.stringify(errors))
     }
 
-    //console.log("Error odo Type : " + JSON.stringify(errors))
-
     useEffect(() => {
-        switch (actionType) {
-            case "odometer":
-                setCurrentActionType(OdometerFunctionStore)
-                break
-            case "service":
-                setCurrentActionType(ServiceFunctionStore)
-                break
-            case "repair":
-                setCurrentActionType(RepairFunctionStore)
-                break
-            case "upgrade":
-                setCurrentActionType(UpgradeFunctionStore)
-                break
-            case "fuel":
-                setCurrentActionType(FuelFunctionStore)
-                break
-            case "tax":
-                setCurrentActionType(TaxFunctionStore)
-                break
-            case "notes":
-                setCurrentActionType(OdometerFunctionStore)
-                break
-            default:
-                break
+        const actionTypeMap = {
+            [OdometerFunctionStore.key]: OdometerFunctionStore,
+            [ServiceFunctionStore.key]: ServiceFunctionStore,
+            [RepairFunctionStore.key]: RepairFunctionStore,
+            [UpgradeFunctionStore.key]: UpgradeFunctionStore,
+            [FuelFunctionStore.key]: FuelFunctionStore,
+            [TaxFunctionStore.key]: TaxFunctionStore,
         }
-
-        // TODO needs optimization with "actionTypeMap: Record<string, any> ="" type
+        setCurrentActionType(actionTypeMap[actionType] || OdometerFunctionStore)
     }, [actionType])
 
     return (
@@ -276,6 +259,7 @@ const NewRecord = () => {
                                                 value={value}
                                                 returnKeyType='next'
                                                 keyboardType="numeric"
+                                                placeholder={`Last Odometer : ${NumberHandler(parseInt(lastOdometerReading || '0'))} ${preferredDistanceMeasurement}`}
                                                 inputMode="numeric" />
                                             <View style={tw`absolute right-4 top-3`}>
                                                 <GaugeCircle size={22} color={tint(0.6, currentActionType?.buttonColor)} />
@@ -303,7 +287,7 @@ const NewRecord = () => {
                                                 onBlur={onBlur}
                                                 onChangeText={(text) => {
                                                     // Only allow numbers
-                                                    const numericValue = text.replace(/[^0-9]/g, '')
+                                                    const numericValue = text.replace(/[^0-9.]/g, '')
                                                     onChange(numericValue);
                                                 }}
                                                 returnKeyType='next'

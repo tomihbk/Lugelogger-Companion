@@ -204,7 +204,7 @@ const CarDetail = () => {
   }
 
   return (
-    <View style={tw`flex flex-col p-5 pb-0 w-full h-full dark:bg-slate-900 mt-6`}>
+    <View style={tw`flex flex-col p-5 w-full h-full dark:bg-slate-900 mt-6`}>
       <Stack.Screen options={{
         headerShadowVisible: false,
         headerShown: true,

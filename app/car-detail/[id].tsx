@@ -165,20 +165,28 @@ const CarDetail = () => {
     setOdometerDelta(odometerDeltas.reverse())
   }
 
+  const calculateDaysSinceLastRecord = () => {
+    const lastRecord = selectedDataSet[0]
+    const lastRecordDate = DateHandler(lastRecord.date, true) as Date
+    const today = new Date()
+    const daysSinceLastRecord = Math.ceil((today.getTime() - lastRecordDate.getTime()) / (1000 * 60 * 60 * 24)) - 1 // -1 because the last record is the current record
+    return daysSinceLastRecord
+  }
+
   const StatsComponentHandler = (actiontype: string) => {
     switch (actiontype) {
       case OdometerFunctionStore.key:
-        return <OdometerStats selectedButtonHexColor={selectedButtonHexColor} selectedTabName={selectedTabName} totalDistance={totalDistance} selectedDataSet={(selectedDataSet?.length || 0)} />
+        return <OdometerStats selectedButtonHexColor={selectedButtonHexColor} selectedTabName={selectedTabName} totalDistance={totalDistance} selectedDataSet={(selectedDataSet?.length || 0)} daysSinceLastOdometer={0} />
       case ServiceFunctionStore.key:
-        return <ServiceStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} />
+        return <ServiceStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastService={calculateDaysSinceLastRecord()} />
       case RepairFunctionStore.key:
-        return <RepairStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} />
+        return <RepairStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastRepair={calculateDaysSinceLastRecord()} />
       case UpgradeFunctionStore.key:
-        return <UpgradeStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} />
+        return <UpgradeStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastUpgrade={calculateDaysSinceLastRecord()} />
       case FuelFunctionStore.key:
-        return <FuelStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} />
+        return <FuelStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastFuel={calculateDaysSinceLastRecord()} />
       case TaxFunctionStore.key:
-        return <TaxStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} />
+        return <TaxStats averageExpense={averageExpense} selectedButtonHexColor={selectedButtonHexColor} selectedDataSet={(selectedDataSet?.length || 0)} selectedTabName={selectedTabName} totalExpense={totalExpense} daysSinceLastTax={calculateDaysSinceLastRecord()} />
       case 'notes':
         return (<><Text>Notes Stats component</Text></>)
     }

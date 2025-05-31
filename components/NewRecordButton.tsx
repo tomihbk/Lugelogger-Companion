@@ -7,8 +7,7 @@ import tw from '~/tw.config'
 type NewRecordButtonPropType = {
     selectedButtonHexColor: string,
     selectedTabName: string,
-    carId: string,
-    lastOdometer?: string
+    carId: string
 }
 
 const NewRecordButton = (props: NewRecordButtonPropType) => {
@@ -18,8 +17,7 @@ const NewRecordButton = (props: NewRecordButtonPropType) => {
                 pathname: "/new-record/[id]",
                 params: {
                     id: props.carId,
-                    actionType: props.selectedTabName,
-                    lastOdometer: props.lastOdometer
+                    actionType: props.selectedTabName
                 }
             })
         }}>

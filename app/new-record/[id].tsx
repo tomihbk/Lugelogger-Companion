@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { useForm, Controller } from "react-hook-form"
-import { useAddServiceRecord, useAddOdometerRecord, useAddRepairRecord, useAddUpgradeRecord, useAddFuelRecord, useAddTaxRecord } from '~/hooks/api/index'
+import { useAddServiceRecord, useAddOdometerRecord, useAddRepairRecord, useAddUpgradeRecord, useAddFuelRecord, useAddTaxRecord, useLastOdometerRecord } from '~/hooks/api/index'
 import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore } from '~/stores/RecordButtons'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
@@ -18,7 +18,7 @@ import GlobalStateStore from '~/stores/globalStateStore'
 
 const NewRecord = () => {
     const { t } = useTranslation()
-    const { id, actionType, lastOdometer: lastOdometerReading }: { id: string, actionType: string, lastOdometer?: string } = useLocalSearchParams()
+    const { id, actionType }: { id: string, actionType: string } = useLocalSearchParams()
     const CarId = parseInt(id)
     const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>(OdometerFunctionStore)
     const { mutateAsync: addServiceRecord } = useAddServiceRecord()
@@ -31,12 +31,13 @@ const NewRecord = () => {
     const [showTooltip, setShowTooltip] = useState(false)
     const [initialOdometerEditable, setInitialOdometerEditable] = useState(false)
     const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
+    const { data: lastOdometerReading } = useLastOdometerRecord(CarId)
 
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
             Date: new Date(),
             Odometer: "",
-            InitialOdometer: lastOdometerReading || "",
+            InitialOdometer: lastOdometerReading?.toString() || "",
             Cost: "",
             Notes: "",
             Description: "",
@@ -259,7 +260,7 @@ const NewRecord = () => {
                                                 value={value}
                                                 returnKeyType='next'
                                                 keyboardType="numeric"
-                                                placeholder={`Last Odometer : ${NumberHandler(parseInt(lastOdometerReading || '0'))} ${preferredDistanceMeasurement}`}
+                                                placeholder={`Last Odometer : ${NumberHandler(parseInt(lastOdometerReading?.toString() || '0'))} ${preferredDistanceMeasurement}`}
                                                 inputMode="numeric" />
                                             <View style={tw`absolute right-4 top-3`}>
                                                 <GaugeCircle size={22} color={tint(0.6, currentActionType?.buttonColor)} />

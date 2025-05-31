@@ -204,16 +204,18 @@ const CarDetail = () => {
   }
 
   return (
-    <View style={tw`flex flex-col p-5 w-full h-full dark:bg-slate-900 mt-6`}>
+    <View style={tw`flex flex-col px-5 w-full h-full dark:bg-slate-900`}>
       <Stack.Screen options={{
         headerShadowVisible: false,
         headerShown: true,
-        headerStyle: { backgroundColor: `transparent` },
+        headerStyle: { backgroundColor: `#f2f2f2` },
         headerTitle: () => <Text style={tw`text-xl dark:text-white font-HKGrotesk-Medium`} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>,
-        headerTransparent: true,
+        statusBarStyle: 'dark',
+        statusBarColor: '#f2f2f2',
+        headerTransparent: false,
       }} />
       <ScrollView ref={scrollViewRef} horizontal={true} showsHorizontalScrollIndicator={false}
-        style={tw`flex flex-row flex-wrap flex-grow-0 p-2 -mx-5 mb-1`}>
+        style={tw`flex flex-row flex-wrap flex-grow-0 p-2 -mx-5 pt-0`}>
         {ActionButtons.map((button) => (
           <PillRecordNavigation color={button.color} key={button.key} buttonIndex={button.key} label={button.label}
             onClick={() => {

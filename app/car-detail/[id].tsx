@@ -54,7 +54,8 @@ const CarDetail = () => {
   const averageExpense = (Math.round((totalExpense / (selectedDataSet?.length || 1)) * 10) / 10)
   let didInit = false
   const odometerDeltas: number[] = []
-  const scrollViewRef = useRef(null)
+  const scrollViewRef = useRef<ScrollView>(null)
+  const flashListRef = useRef<FlashList<any>>(null)
   const [odometerDelta, setOdometerDelta] = useState<number[]>([])
   const [showPlusButton, setShowPlusButton] = useState<boolean>(true)
   const [daysSinceLastRecord, setDaysSinceLastRecord] = useState<number>(0)
@@ -84,6 +85,10 @@ const CarDetail = () => {
         default:
           dataSource = []
           break
+      }
+
+      if (flashListRef.current) {
+        flashListRef.current.scrollToOffset({ offset: 0, animated: true })
       }
 
       if (Array.isArray(dataSource)) {
@@ -236,6 +241,7 @@ const CarDetail = () => {
         selectedTabName != 'home' && selectedTabName != 'notes' &&
         <>
           <FlashList
+            ref={flashListRef}
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={StatsComponentHandler(selectedTabName)}
             data={selectedDataSet}
@@ -243,15 +249,11 @@ const CarDetail = () => {
             onScrollBeginDrag={() => setShowPlusButton(false)}
             renderItem={({ index, item }) => {
 
-
               const currentYear = (DateHandler(item.date, true) as Date).getFullYear()
-
               const previousItem = index > 0 && selectedDataSet ? selectedDataSet[index - 1] : null
-
               const previousYear = previousItem
                 ? (DateHandler(previousItem.date, true) as Date).getFullYear()
                 : null
-
               const showYearHeader = (index === 0 || currentYear !== previousYear) && currentYear < currentWorldYear
 
               const renderCard = () => {
@@ -272,7 +274,6 @@ const CarDetail = () => {
                     return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
                 }
               }
-
               return (
                 <View>
                   {showYearHeader && (

@@ -25,6 +25,7 @@ const CarShowCase = (props: CarShowCaseProps) => {
     // I wasted 5 hours on this trying to call the image via proper way by using axios, but it was not working.
     // So I just used the uri directly and it worked. it's not the best way to do it, but it 1am in the morning and I'm mentally exhausted.
 
+    // TODO: Remove this once the image is fetched via axios
     const username = process.env.EXPO_PUBLIC_API_USERNAME!
     const password = process.env.EXPO_PUBLIC_API_PASSWORD!
     const basicAuthToken = base64Encode(utf8Encode(`${username}:${password}`))

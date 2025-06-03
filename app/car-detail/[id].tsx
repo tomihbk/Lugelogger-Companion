@@ -4,9 +4,9 @@ import { Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { FlashList } from '@shopify/flash-list'
 import { RecordBase } from '~/api/records-base.types'
-import { useOdometerRecords, useServiceRecords, useRepairRecords, useUpgradeRecords, useFuelRecords, useTaxRecords } from '~/hooks/api/index'
-import { FuelRecordAdd, OdometerRecord, FuelRecordGet } from '~/api/index-records.types'
-import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore } from '~/stores/RecordButtons'
+import { useOdometerRecords, useServiceRecords, useRepairRecords, useUpgradeRecords, useFuelRecords, useTaxRecords, useReminderRecords } from '~/hooks/api/index'
+import { FuelRecordAdd, OdometerRecord, FuelRecordGet, ReminderRecord } from '~/api/index-records.types'
+import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore, ReminderFunctionStore } from '~/stores/RecordButtons'
 import GlobalStateStore from '~/stores/globalStateStore'
 import FuelCard from '~/components/Cards/FuelCard'
 import RecordCard from '~/components/Cards/RecordCard'
@@ -20,6 +20,7 @@ import RepairCard from '~/components/Cards/RepairCard'
 import UpgradeCard from '~/components/Cards/UpgradeCard'
 import DateHandler from '~/utils/DateHandler'
 import Dashboard from '~/components/Dashboard'
+import ReminderCard from '~/components/Cards/ReminderCard'
 
 
 const CarDetail = () => {
@@ -32,9 +33,9 @@ const CarDetail = () => {
   const { data: UpgradeRecords, isPending: isUpgradeRecordsFetching } = useUpgradeRecords(carId)
   const { data: FuelRecords, isPending: isFuelRecordsFetching } = useFuelRecords(carId)
   const { data: TaxRecords, isPending: isTaxRecordsFetching } = useTaxRecords(carId)
+  const { data: ReminderRecords, isPending: isReminderRecordsFetching } = useReminderRecords(carId)
 
   const { setSelectedTabName, selectedTabName } = GlobalStateStore((state) => state)
-
   const currentWorldYear = new Date().getFullYear()
 
   const ActionButtons = [
@@ -45,10 +46,11 @@ const CarDetail = () => {
     { key: UpgradeFunctionStore.key, label: 'Upgrades', color: UpgradeFunctionStore.buttonColor },
     { key: FuelFunctionStore.key, label: 'Fuel', color: FuelFunctionStore.buttonColor },
     { key: TaxFunctionStore.key, label: 'Taxes', color: TaxFunctionStore.buttonColor },
+    { key: ReminderFunctionStore.key, label: 'Reminders', color: ReminderFunctionStore.buttonColor },
     // { key: 'notes', label: 'Notes', color: '#BF0296' },
   ]
 
-  const [selectedDataSet, setSelectedDataSet] = useState<RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | undefined>([])
+  const [selectedDataSet, setSelectedDataSet] = useState<RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | ReminderRecord | undefined>([])
   const [selectedButtonHexColor, setSelectedButtonHexColor] = useState<string>(ActionButtons.filter((button) => button.key == actionType)[0].color)
   const [totalExpense, setTotalExpense] = useState<number>(0)
   const [totalDistance, setTotalDistance] = useState<number>(0)
@@ -64,7 +66,7 @@ const CarDetail = () => {
 
   const changeDataSet = async (serviceName: string) => {
     try {
-      let dataSource: RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | undefined;
+      let dataSource: RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | ReminderRecord | undefined;
       switch (serviceName) {
         case ServiceFunctionStore.key:
           dataSource = ServiceRecords
@@ -84,8 +86,11 @@ const CarDetail = () => {
         case TaxFunctionStore.key:
           dataSource = TaxRecords
           break
+        case ReminderFunctionStore.key:
+          dataSource = ReminderRecords
+          break
         default:
-          dataSource = []
+          dataSource = undefined
           break
       }
 
@@ -93,7 +98,7 @@ const CarDetail = () => {
         flashListRef.current.scrollToOffset({ offset: 0, animated: true })
       }
 
-      if (Array.isArray(dataSource)) {
+      if (Array.isArray(dataSource) && !('metric' in (dataSource[0] || {})))  {
         const orderedDataByLatestDate = dataSource
           .slice()
           .sort((a, b) => {
@@ -102,6 +107,8 @@ const CarDetail = () => {
             return dateB.getTime() - dateA.getTime(); // Most recent first
           })
         setSelectedDataSet(orderedDataByLatestDate)
+      } else if (Array.isArray(dataSource) && dataSource.length > 0 && 'metric' in dataSource[0]) {
+        setSelectedDataSet(calculateOrderedDataByUrgency(dataSource as ReminderRecord))
       } else {
         setSelectedDataSet([])
       }
@@ -148,14 +155,14 @@ const CarDetail = () => {
   }, [selectedDataSet])
 
   useEffect(() => {
-    if (OdometerRecords || ServiceRecords || RepairRecords || UpgradeRecords || FuelRecords) {
+    if (OdometerRecords || ServiceRecords || RepairRecords || UpgradeRecords || FuelRecords || ReminderRecords) {
       changeDataSet(selectedTabName)
       setSelectedTabName(selectedTabName)
     }
     return () => {
       setSelectedTabName(actionType)
     }
-  }, [OdometerRecords, ServiceRecords, RepairRecords, UpgradeRecords, FuelRecords, TaxRecords]) // TODO Add other records services with time
+  }, [OdometerRecords, ServiceRecords, RepairRecords, UpgradeRecords, FuelRecords, TaxRecords, ReminderRecords]) // TODO Add other records services with time
 
   const calculateTotalExpense = (recordDataObject: RecordBase) => {
     let totalCost = 0
@@ -189,6 +196,39 @@ const CarDetail = () => {
     const today = new Date()
     const _daysSinceLastRecord = Math.ceil((today.getTime() - lastRecordDate.getTime()) / (1000 * 60 * 60 * 24)) - 1 // -1 because the last record is the current record
     setDaysSinceLastRecord(_daysSinceLastRecord)
+  }
+
+  const calculateOrderedDataByUrgency = (dataSource: ReminderRecord) => {
+    const urgencyGrade = {
+      'PastDue': 0,
+      'VeryUrgent': 1,
+      'Urgent': 2,
+      'NotUrgent': 3
+    } as const;
+
+    type UrgencyType = keyof typeof urgencyGrade;
+    const reminderData = dataSource as ReminderRecord;
+
+    const orderedDataByUrgency = [...reminderData].sort((a, b) => {
+      // First sort by urgency
+      const urgencyA = urgencyGrade[(a.urgency || 'NotUrgent') as UrgencyType];
+      const urgencyB = urgencyGrade[(b.urgency || 'NotUrgent') as UrgencyType];
+
+      if (urgencyA !== urgencyB) {
+        return urgencyA - urgencyB;
+      }
+
+      // If urgency is the same, sort by dueDate or dueOdometer
+      if (a.metric === 'Date' || a.metric === 'Both') {
+        const dateA = DateHandler(a.dueDate, true) as Date;
+        const dateB = DateHandler(b.dueDate, true) as Date;
+        return dateA.getTime() - dateB.getTime(); // Earlier dates first
+      } else if (a.metric === 'Odometer') {
+        return parseInt(a.dueOdometer) - parseInt(b.dueOdometer); // Lower odometer first
+      }
+      return 0
+    })
+    return orderedDataByUrgency
   }
 
   const StatsComponentHandler = (actiontype: string) => {
@@ -245,7 +285,7 @@ const CarDetail = () => {
         ))}
       </ScrollView>
 
-      {(isOdometerRecordsFetching || isServiceRecordsFetching || isRepairRecordsFetching || isUpgradeRecordsFetching || isFuelRecordsFetching || isTaxRecordsFetching) ? (
+      {(isOdometerRecordsFetching || isServiceRecordsFetching || isRepairRecordsFetching || isUpgradeRecordsFetching || isFuelRecordsFetching || isTaxRecordsFetching || isReminderRecordsFetching) ? (
         <View style={tw`flex flex-col items-center justify-center h-4/5`}>
           <Text style={tw`text-lg font-HKGrotesk-Medium`}>Fetching data...</Text>
           <ActivityIndicator size="large" color={selectedButtonHexColor} />
@@ -262,12 +302,22 @@ const CarDetail = () => {
             onScrollBeginDrag={() => setShowPlusButton(false)}
             renderItem={({ index, item }) => {
 
-              const currentYear = (DateHandler(item.date, true) as Date).getFullYear()
-              const previousItem = index > 0 && selectedDataSet ? selectedDataSet[index - 1] : null
-              const previousYear = previousItem
+              let currentYear = (DateHandler(item.date, true) as Date).getFullYear()
+              let previousItem = index > 0 && selectedDataSet ? selectedDataSet[index - 1] : null
+              let previousYear = previousItem
                 ? (DateHandler(previousItem.date, true) as Date).getFullYear()
                 : null
-              const showYearHeader = (index === 0 || currentYear !== previousYear) && currentYear < currentWorldYear
+              let showYearHeader = (index === 0 || currentYear !== previousYear) && currentYear < currentWorldYear
+
+              // This if condition will skip for ReminderRecord
+              if (!('metric' in (item))) {
+                currentYear = (DateHandler(item.date, true) as Date).getFullYear()
+                previousItem = index > 0 && selectedDataSet ? selectedDataSet[index - 1] : null
+                previousYear = previousItem
+                  ? (DateHandler(previousItem.date, true) as Date).getFullYear()
+                  : null
+                showYearHeader = (index === 0 || currentYear !== previousYear) && currentYear < currentWorldYear
+              }
 
               const renderCard = () => {
                 switch (selectedTabName) {
@@ -283,6 +333,8 @@ const CarDetail = () => {
                     return <RepairCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
                   case UpgradeFunctionStore.key:
                     return <UpgradeCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                  case ReminderFunctionStore.key:
+                    return <ReminderCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
                   default:
                     return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
                 }

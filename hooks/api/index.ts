@@ -41,5 +41,10 @@ export {
 export {
   useGetUserInfo,
 } from "./use-get-userinfo"
-
+export {
+  useReminderRecords,
+  useAddReminderRecord,
+  useUpdateReminderRecord,
+  useDeleteReminderRecord,
+} from "./use-get-reminderrecords"
 

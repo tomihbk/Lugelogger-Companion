@@ -9,4 +9,7 @@ export type IsFieldVisible = {
   fuelConsumed: boolean
   isFulltoFill: boolean
   missedFuelUp: boolean
+  dueOdometer: boolean
+  dueDate: boolean
+  metric: boolean
 }

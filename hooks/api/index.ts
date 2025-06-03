@@ -38,4 +38,10 @@ export {
 export {
   useGetAllVehicles,
 } from "./use-get-vehicleinfos"
+export {
+  useReminderRecords,
+  useAddReminderRecord,
+  useUpdateReminderRecord,
+  useDeleteReminderRecord,
+} from "./use-get-reminderrecords"
 

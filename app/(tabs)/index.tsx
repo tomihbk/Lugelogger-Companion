@@ -12,9 +12,9 @@ export default function Home() {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <Redirect href="/(tabs)/garage" />
+      {/* <Redirect href="/(tabs)/garage" /> */}
       <Stack.Screen options={{ title: 'Home', headerShown: false }} />
-      <View style={tw`flex p-5`}>
+      <View style={tw`flex p-5 mb-13`}>
         <Text style={tw`text-2xl mt-4 font-HKGrotesk-Black`}>Hi Thomas</Text>
         <Text style={tw`text-sm mb-4 font-HKGrotesk-Regular`}>How&apos;s the car doing ?</Text>
         <View style={tw`rounded-full overflow-hidden mb-4`}>

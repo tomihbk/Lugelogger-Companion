@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "CarMainLogger",
+    "name": "carmainlogger",
     "slug": "carmainlogger",
     "version": "1.0.0",
-    "scheme": "CarMainLogger",
+    "scheme": "carmainlogger",
     "web": {
       "bundler": "metro",
       "output": "static",

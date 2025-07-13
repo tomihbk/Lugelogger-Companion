@@ -1,9 +1,10 @@
 import React, { useMemo, useState } from 'react'
-import { View, Text } from 'react-native'
+import { ScrollView, View, LogBox } from 'react-native'
 import tw from '~/tw.config'
 import { useLocalSearchParams } from 'expo-router'
 import {
   useFuelRecords,
+  useOdometerRecords,
   useRepairRecords,
   useServiceRecords,
   useTaxRecords,
@@ -12,6 +13,7 @@ import {
 import ExpenseOverview from './ExpenseOverview'
 import DateHandler from '~/utils/DateHandler'
 import MonthlyExpensesChart from './MonthlyExpensesChart'
+import HomeStats from './StatsComponents/HomeStats'
 
 const Dashboard = () => {
   const { id: CarId }: { id: string } = useLocalSearchParams()
@@ -19,6 +21,7 @@ const Dashboard = () => {
 
   const { data: ServiceRecords } = useServiceRecords(carId)
   const { data: RepairRecords } = useRepairRecords(carId)
+  const { data: OdometerRecords } = useOdometerRecords(carId)
   const { data: UpgradeRecords } = useUpgradeRecords(carId)
   const { data: FuelRecords } = useFuelRecords(carId)
   const { data: TaxRecords } = useTaxRecords(carId)
@@ -31,6 +34,11 @@ const Dashboard = () => {
     ...(TaxRecords || []),
   ]
 
+  LogBox.ignoreLogs([
+    'VirtualizedLists should never be nested', // Ignore nested list warning
+  ])
+
+ // const lastEntryDays = DaysSinceLastEntry([...allRecords, OdometerRecords])
   const getYear = (date: string) => {
     const d = DateHandler(date, true) as Date
     return d.getFullYear()
@@ -53,6 +61,15 @@ const Dashboard = () => {
   const [yearFilter, setYearFilter] = useState<number | 'all'>(
     availableYears[0] || 'all'
   )
+
+  const totalRecords = useMemo(() => {
+    if (yearFilter === 'all') return allRecords.length
+    return allRecords.filter(r => {
+      if (!r.date) return false
+      const d = DateHandler(r.date, true) as Date
+      return d.getFullYear() === yearFilter
+    }).length
+  }, [allRecords, yearFilter])
 
   // Calculate total expenses per month for all record types
   const totalExpensesPerMonth = useMemo(() => {
@@ -79,21 +96,21 @@ const Dashboard = () => {
         totalMonthlyCost: (Math.round(monthly[month] * 100) / 100) || 0,
       }
     })
-    //console.log('Total Expenses Per Month:', JSON.stringify(totalExpenses))
     return totalExpenses
   }, [allRecords, yearFilter])
 
-
-
   return (
-    <View style={tw`flex-1 bg-gray-100 gap-3`}>
-      <ExpenseOverview
-        yearFilter={yearFilter}
-        setYearFilter={setYearFilter}
-        availableYears={availableYears}
-      />
-      <MonthlyExpensesChart data={totalExpensesPerMonth} />
-    </View>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <View style={tw`flex-1 bg-gray-100 gap-3 mb-3`}>
+        <ExpenseOverview
+          yearFilter={yearFilter}
+          setYearFilter={setYearFilter}
+          availableYears={availableYears}
+        />
+        <HomeStats totalExpensesPerMonth={totalExpensesPerMonth} totalRecords={totalRecords}/>
+        <MonthlyExpensesChart data={totalExpensesPerMonth} />
+      </View>
+    </ScrollView>
   )
 }
 

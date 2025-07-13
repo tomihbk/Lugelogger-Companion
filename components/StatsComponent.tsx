@@ -4,6 +4,8 @@ import tw from '~/tw.config'
 import { Banknote, CalendarDays, Coins, Hash, Ruler } from 'lucide-react-native'
 type StatsComponentPropType = {
     themeColor: string
+    backgroundColor?: string
+    borderWidth?: string
     cost: number
     symbol: "money" | "calendar" | "average" | "total" | "distance"
     description: string
@@ -40,7 +42,7 @@ const StatsComponent = (props: StatsComponentPropType) => {
     }
 
     return (
-        <View style={tw`flex flex-row flex-wrap p-3 w-[48%] bg-[${props.themeColor}]/5 dark:bg-green-950 rounded-3xl border-[${props.themeColor}]/20 border`}>
+        <View style={tw`flex flex-row flex-wrap p-3 w-[48%] ${props.backgroundColor ? `bg-[${props.backgroundColor}]` : `bg-[${props.themeColor}]/5`} dark:bg-green-950 rounded-3xl border-[${props.themeColor}]/20 ${props.borderWidth ? `border-[${props.borderWidth}]` : 'border'}`}>
             <Text style={tw`font-HKGrotesk-Bold text-[1.75rem] w-2/3 z-50 text-[${props.themeColor}]`}>{formatAmount(props.cost)}</Text>
             {IconSet()}
             <Text style={tw`font-HKGrotesk-Medium text-xs text-[${props.themeColor}]`}>{props.description}</Text>

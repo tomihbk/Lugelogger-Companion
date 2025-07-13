@@ -19,6 +19,7 @@ import TaxCard from '~/components/Cards/TaxCard'
 import RepairCard from '~/components/Cards/RepairCard'
 import UpgradeCard from '~/components/Cards/UpgradeCard'
 import DateHandler from '~/utils/DateHandler'
+import Dashboard from '~/components/Dashboard'
 
 
 const CarDetail = () => {
@@ -59,6 +60,7 @@ const CarDetail = () => {
   const [odometerDelta, setOdometerDelta] = useState<number[]>([])
   const [showPlusButton, setShowPlusButton] = useState<boolean>(true)
   const [daysSinceLastRecord, setDaysSinceLastRecord] = useState<number>(0)
+  const [atStart, setAtStart] = useState(true)
 
   const changeDataSet = async (serviceName: string) => {
     try {
@@ -208,8 +210,17 @@ const CarDetail = () => {
     }
   }
 
+  const handleMarginMenuScroll = (event) => {
+    const offsetX = event.nativeEvent.contentOffset.x
+    const isAtStart = offsetX <= 1
+
+    if (isAtStart !== atStart) {
+      setAtStart(isAtStart)
+    }
+  }
+
   return (
-    <View style={tw`flex flex-col px-5 w-full h-full dark:bg-slate-900`}>
+    <View style={tw`flex flex-col px-3 w-full h-full dark:bg-slate-900`}>
       <Stack.Screen options={{
         headerShadowVisible: false,
         headerShown: true,
@@ -220,7 +231,9 @@ const CarDetail = () => {
         headerTransparent: false,
       }} />
       <ScrollView ref={scrollViewRef} horizontal={true} showsHorizontalScrollIndicator={false}
-        style={tw`flex flex-row flex-wrap flex-grow-0 p-2 -mx-5 pt-0`}>
+        style={tw`flex flex-row flex-wrap flex-grow-0 p-2 ${atStart ? "-ml-2 -mr-5" : "-mx-5"} pt-0`}
+        scrollEventThrottle={16}
+        onScroll={handleMarginMenuScroll}>
         {ActionButtons.map((button) => (
           <PillRecordNavigation color={button.color} key={button.key} buttonIndex={button.key} label={button.label}
             onClick={() => {
@@ -296,6 +309,7 @@ const CarDetail = () => {
           }
         </>
       )}
+      {selectedTabName === 'home' && <Dashboard />}
     </View>
   )
 }

@@ -1,28 +1,44 @@
 import React from "react"
 import { Stack } from 'expo-router'
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, SafeAreaView } from 'react-native'
 import tw from '~/tw.config'
 import { useTranslation } from "react-i18next"
 import CarShowCase from "~/components/CarShowCase"
+import { useGetAllVehicles } from "~/hooks/api"
+import { VehicleInfo } from "~/api/index-records.types"
 
 export default function garage() {
   const { t } = useTranslation()
+  const { data: vehicleList } = useGetAllVehicles()
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={tw`flex flex-col p-5`}>
-      <Stack.Screen options={{ title: 'Garage', headerShown: false }} />
-      <View style={tw`flex flex-row flex-wrap`}>
-        <Text style={tw`w-5/12 text-2xl mt-4 mb-5 dark:text-white font-HKGrotesk-Black`}>{t("Garage")}</Text>
-        {/* <TouchableOpacity style={tw`flex flex-row w-7/12 text-2xl mt-4 font-bold bg-blue-500 p-2 rounded-xl`} onPress={() => router.push({
+    <SafeAreaView>
+      <Stack.Screen options={{
+        headerShadowVisible: false,
+        headerShown: true,
+        headerStyle: { backgroundColor: `transparent` },
+        headerTitle: () => <Text style={tw`text-2xl dark:text-white font-HKGrotesk-Black`} numberOfLines={1}>{t("Garage")}</Text>,
+        statusBarStyle: 'dark',
+        statusBarColor: '#f2f2f2',
+        headerTransparent: false,
+      }} />
+      <View style={tw`p-5 py-0`}>
+        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={"handled"}>
+          <View style={tw`flex flex-row flex-wrap`}>
+            {/* <TouchableOpacity style={tw`flex flex-row w-7/12 text-2xl mt-4 font-bold bg-blue-500 p-2 rounded-xl`} onPress={() => router.push({
           pathname: "/car/NewCarForm"
         })}> // Function not supported by API yet
           <CirclePlus color="white" size={24} />
           <Text style={tw`text-center font-semibold self-center ml-3 text-white`}>{t("Add_New_Vehicle").toUpperCase()}</Text>
         </TouchableOpacity> */}
-        <CarShowCase Name="Porsche 911 Carrera 3.2" Mileage="320125km" PlateNumber="ZH47589" Year="1985" CarPhotoUri="https://www.williamscrawford.co.uk/wp-content/uploads/2023/09/Porsche-911-carrera-3.2-polo-red-for-sale-williams-crawford-40.jpg" carId={1} />
-        <CarShowCase Name="Mazda 6" Mileage="15005km" PlateNumber="FR4754" Year="2019" CarPhotoUri="https://carsguide-res.cloudinary.com/image/upload/f_auto,fl_lossy,q_auto,t_default/v1/editorial/story/hero_image/Mazda6%20Atenza%20sedan.jpg" carId={2} />
-        <CarShowCase Name="Hyundai N Vision 74" Mileage="320125km" PlateNumber="GE11" Year="2077" CarPhotoUri="https://www.topgear.com/sites/default/files/2022/09/1%20Hyundai%20N%20Vision%2074.jpg" carId={3} />
+            {vehicleList?.map((vehicle: VehicleInfo, index: number) => (
+              <CarShowCase key={index} Name={`${vehicle.make} ${vehicle.model}`} PlateNumber={vehicle.licensePlate} Year={vehicle.year} CarPhotoUri={`${process.env.EXPO_PUBLIC_API_URL}${vehicle.imageLocation}`} carId={vehicle.id} />
+
+              // TODO: Don't forget to modify the process.env in prod for carphotouri
+            ))}
+          </View>
+        </ScrollView>
       </View>
-    </ScrollView>
+    </SafeAreaView>
   )
 }

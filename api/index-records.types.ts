@@ -21,3 +21,27 @@ export type FuelRecordAdd = RecordBase &
     isFillToFull: boolean
     missedFuelUp: boolean
   }[]
+
+export type VehicleInfo = {
+  id: number
+  imageLocation: string
+  year: number
+  make: string
+  model: string
+  licensePlate: string
+  purchaseDate: string | null
+  soldDate: string | null
+  purchasePrice: number
+  soldPrice: number
+  isElectric: boolean
+  isDiesel: boolean
+  useHours: boolean
+  odometerOptional: boolean
+  extraFields: any[]
+  tags: string[]
+  hasOdometerAdjustment: boolean
+  odometerMultiplier: string
+  odometerDifference: string
+  dashboardMetrics: any[]
+  vehicleIdentifier: string
+}

@@ -1,6 +1,7 @@
 import React from "react"
 import { Tabs } from "expo-router"
 import { Home, Warehouse, Settings } from 'lucide-react-native'
+import { View } from 'react-native'
 import "../../i18n/i18n.config"
 import { StatusBar } from "expo-status-bar"
 import useThemeStore from "~/stores/themeStore"
@@ -20,7 +21,27 @@ export default function TabLayout() {
   return (
     <>
       <StatusBar style={colorSchemeStore == 'light' ? 'dark' : 'light'} />
+
       <Tabs
+      sceneContainerStyle={{ backgroundColor: colorSchemeStore == 'light' ? '#fafafa' : '#564' }} // Body background color
+      screenOptions={{
+        // tabBarActiveTintColor: '#000',
+        // tabBarInactiveTintColor: '#fff',
+        headerShown: false,
+        headerStyle: { backgroundColor: colorSchemeStore == 'light' ? '#fafafa' : '#0d1117' }, // Header background color
+        tabBarBackground: () => <View style={tw`bg-white h-full mx-4 rounded-tr-2xl rounded-tl-2xl`} />,
+        tabBarStyle:{
+            position: 'absolute',
+            shadowColor: 'transparent',
+            height: 58,
+            borderColor: 'transparent',
+            borderWidth: 0,
+          },
+          tabBarLabelStyle: {
+            marginBottom: 7,
+          },
+        }}>
+{/* <Tabs
         key={tw.memoBuster}
         screenOptions={{
           headerShadowVisible: false,
@@ -39,7 +60,7 @@ export default function TabLayout() {
           headerStyle: { backgroundColor: colorSchemeStore == 'light' ? '#fafafa' : '#0d1117' } // Header background color
         }}
         sceneContainerStyle={{ backgroundColor: colorSchemeStore == 'light' ? '#fafafa' : '#0d1117' }} // Body background color
-      >
+      > */}
         <Tabs.Screen
           name="index"
           options={{

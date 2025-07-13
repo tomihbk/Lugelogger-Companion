@@ -2,7 +2,7 @@ import { ApiTypeEnum } from "./api-enum"
 import { axios } from "./axios"
 import type { TaxRecord } from "./index-records.types"
 
-const ENDPOINT = "/taxrecords"
+const ENDPOINT = "/api/vehicle/taxrecords"
 
 export const getTaxRecords = async (_vehicleId: number) => {
   const { data } = await axios.get<TaxRecord>(ENDPOINT, {

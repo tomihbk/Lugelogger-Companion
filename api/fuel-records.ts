@@ -3,7 +3,7 @@ import { axios } from "./axios"
 import type { FuelRecordAdd, FuelRecordGet } from "./index-records.types"
 import GlobalStateStore from "~/stores/globalStateStore"
 
-const ENDPOINT = "/gasrecords"
+const ENDPOINT = "/api/vehicle/gasrecords"
 
 export const getFuelRecords = async (_vehicleId: number) => {
   const { isUseUKMPG, isUseUSMPG } = GlobalStateStore.getState()

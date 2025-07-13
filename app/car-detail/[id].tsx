@@ -19,6 +19,7 @@ import TaxCard from '~/components/Cards/TaxCard'
 import RepairCard from '~/components/Cards/RepairCard'
 import UpgradeCard from '~/components/Cards/UpgradeCard'
 import DateHandler from '~/utils/DateHandler'
+import Dashboard from '~/components/Dashboard'
 
 
 const CarDetail = () => {
@@ -54,10 +55,12 @@ const CarDetail = () => {
   const averageExpense = (Math.round((totalExpense / (selectedDataSet?.length || 1)) * 10) / 10)
   let didInit = false
   const odometerDeltas: number[] = []
-  const scrollViewRef = useRef(null)
+  const scrollViewRef = useRef<ScrollView>(null)
+  const flashListRef = useRef<FlashList<any>>(null)
   const [odometerDelta, setOdometerDelta] = useState<number[]>([])
   const [showPlusButton, setShowPlusButton] = useState<boolean>(true)
   const [daysSinceLastRecord, setDaysSinceLastRecord] = useState<number>(0)
+  const [atStart, setAtStart] = useState(true)
 
   const changeDataSet = async (serviceName: string) => {
     try {
@@ -84,6 +87,10 @@ const CarDetail = () => {
         default:
           dataSource = []
           break
+      }
+
+      if (flashListRef.current) {
+        flashListRef.current.scrollToOffset({ offset: 0, animated: true })
       }
 
       if (Array.isArray(dataSource)) {
@@ -203,17 +210,30 @@ const CarDetail = () => {
     }
   }
 
+  const handleMarginMenuScroll = (event) => {
+    const offsetX = event.nativeEvent.contentOffset.x
+    const isAtStart = offsetX <= 1
+
+    if (isAtStart !== atStart) {
+      setAtStart(isAtStart)
+    }
+  }
+
   return (
-    <View style={tw`flex flex-col p-5 w-full h-full dark:bg-slate-900 mt-6`}>
+    <View style={tw`flex flex-col px-3 w-full h-full dark:bg-slate-900`}>
       <Stack.Screen options={{
         headerShadowVisible: false,
         headerShown: true,
-        headerStyle: { backgroundColor: `transparent` },
+        headerStyle: { backgroundColor: `#f2f2f2` },
         headerTitle: () => <Text style={tw`text-xl dark:text-white font-HKGrotesk-Medium`} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>,
-        headerTransparent: true,
+        statusBarStyle: 'dark',
+        statusBarColor: '#f2f2f2',
+        headerTransparent: false,
       }} />
       <ScrollView ref={scrollViewRef} horizontal={true} showsHorizontalScrollIndicator={false}
-        style={tw`flex flex-row flex-wrap flex-grow-0 p-2 -mx-5 mb-1`}>
+        style={tw`flex flex-row flex-wrap flex-grow-0 p-2 ${atStart ? "-ml-2 -mr-5" : "-mx-5"} pt-0`}
+        scrollEventThrottle={16}
+        onScroll={handleMarginMenuScroll}>
         {ActionButtons.map((button) => (
           <PillRecordNavigation color={button.color} key={button.key} buttonIndex={button.key} label={button.label}
             onClick={() => {
@@ -234,6 +254,7 @@ const CarDetail = () => {
         selectedTabName != 'home' && selectedTabName != 'notes' &&
         <>
           <FlashList
+            ref={flashListRef}
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={StatsComponentHandler(selectedTabName)}
             data={selectedDataSet}
@@ -241,15 +262,11 @@ const CarDetail = () => {
             onScrollBeginDrag={() => setShowPlusButton(false)}
             renderItem={({ index, item }) => {
 
-
               const currentYear = (DateHandler(item.date, true) as Date).getFullYear()
-
               const previousItem = index > 0 && selectedDataSet ? selectedDataSet[index - 1] : null
-
               const previousYear = previousItem
                 ? (DateHandler(previousItem.date, true) as Date).getFullYear()
                 : null
-
               const showYearHeader = (index === 0 || currentYear !== previousYear) && currentYear < currentWorldYear
 
               const renderCard = () => {
@@ -270,7 +287,6 @@ const CarDetail = () => {
                     return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
                 }
               }
-
               return (
                 <View>
                   {showYearHeader && (
@@ -293,6 +309,7 @@ const CarDetail = () => {
           }
         </>
       )}
+      {selectedTabName === 'home' && <Dashboard />}
     </View>
   )
 }

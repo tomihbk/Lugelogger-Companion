@@ -10,13 +10,15 @@ interface GlobalStateStoreProp {
   preferredLiquidMeasurement: string
   isUseUSMPG: boolean
   isUseUKMPG: boolean
+  optInCrashReports?: boolean
   setFavoriteCar: (carId: number) => void
   setSelectedTabName: (lastSelectedTab: string) => void
   setPreferredCurrencySymbol: (currencyISO4217Symbol: string) => void
-  setPreferredDistanceMeasurement: (kmOrMiles: string) => void
+  setPreferredDistanceMeasurement: (kmOrMiles: "km" | "mi") => void
   setPreferredDLiquidMeasurement: (LOrGal: string) => void
   setUseUSMPG: (useUSMPG: boolean) => void
   setUseUKMPG: (useUKMPG: boolean) => void
+  setOptInCrashReports: (optInCrashReports: boolean) => void
 }
 
 const GlobalStateStore = create<GlobalStateStoreProp>()(
@@ -41,6 +43,7 @@ const GlobalStateStore = create<GlobalStateStoreProp>()(
         set(() => ({ selectedTabName: lastSelectedTab })),
       setUseUSMPG: (useUSMPG) => set(() => ({ isUseUSMPG: useUSMPG })),
       setUseUKMPG: (useUKMPG) => set(() => ({ isUseUKMPG: useUKMPG })),
+      setOptInCrashReports: (optInCrashReports) => set(() => ({ optInCrashReports })),
     }),
     {
       name: "global-state-storage", // name of item in the persist store - must be unique

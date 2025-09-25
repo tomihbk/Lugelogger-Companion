@@ -5,15 +5,26 @@ import { View, Text, ScrollView, Modal, Platform, TouchableOpacity } from "react
 import tw from "~/tw.config"
 
 import i18n from "~/i18n/i18n.config"
-import { Palette, ArrowRight, Languages, BadgeInfo, Scale, Settings2, CircleX, Server, GitBranch } from 'lucide-react-native'
+import { Palette, ArrowRight, Languages, BadgeInfo, Scale, Settings2, Server, GitBranch, ArrowLeft } from 'lucide-react-native'
 import useThemeStore from "~/stores/themeStore"
 import { useAppColorScheme } from "twrnc"
 import SettingRow from "~/components/SettingRow"
+import GlobalStateStore from "~/stores/globalStateStore"
+import ModernSwitch from "~/components/ModernSwitch"
+import { Flag } from "~/assets/flags/"
 
 const Settings = () => {
   const { t } = useTranslation()
   const { colorScheme: colorSchemeStore, setColorScheme: setColorSchemeStore } = useThemeStore()
   const [colorScheme, toggleColorScheme, setColorScheme] = useAppColorScheme(tw)
+  const { preferredDistanceMeasurement, setPreferredDistanceMeasurement, setOptInCrashReports, optInCrashReports } = GlobalStateStore((state) => state)
+
+  const languageData: Record<string, string> = {
+    en: "English",
+    fr: "French",
+    es: "Spanish",
+    de: "German",
+  }
 
   const [modalLanguageVisible, setModalLanguageVisibile] = useState(false)
   const [modalThemeVisible, setModalThemeVisible] = useState(false)
@@ -31,7 +42,7 @@ const Settings = () => {
     <ScrollView showsVerticalScrollIndicator={false} style={tw`p-5`}>
       <Stack.Screen options={{ title: 'Settings', headerShown: false }} />
       <View style={tw`flex flex-col`}>
-        <Text style={tw`w-5/12 text-2xl mt-4 font-HKGrotesk-Black mb-5`}>{t("Settings")}</Text>
+        <Text style={tw`w-5/12 text-2xl font-HKGrotesk-Black mb-5`}>{t("Settings")}</Text>
         <Text style={tw`font-HKGrotesk-Regular mb-1 text-gray-600 dark:text-gray-200`}>Personalisation</Text>
 
         <View style={tw`flex flex-col bg-[#fafcff] border-[#a6cdff]/30 border rounded-2xl dark:bg-slate-800 dark:border-gray-700`}>
@@ -50,7 +61,11 @@ const Settings = () => {
                 setModalThemeVisible(!modalThemeVisible)
               }}>
               <View style={tw`flex flex-col flex-1 p-5 dark:bg-slate-800`}>
-                <Text style={tw`text-2xl font-bold mb-5 dark:text-white`}>Theme Settings</Text>
+                <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
+                  <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                    onPress={() => { setModalThemeVisible(!modalThemeVisible) }} />
+                  <Text style={tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`} numberOfLines={1}>Theme Settings</Text>
+                </View>
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <SettingRow
                     icon={null}
@@ -92,20 +107,24 @@ const Settings = () => {
                 setModalLanguageVisibile(!modalLanguageVisible)
               }}>
               <View style={tw`flex flex-col p-5`}>
-                <Text style={tw`text-2xl font-bold mb-5`}>Language Settings</Text>
+                <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
+                  <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                    onPress={() => { setModalLanguageVisibile(!modalLanguageVisible) }} />
+                  <Text style={tw`text-2xl mb-5 w-5/6 font-HKGrotesk-Bold`} numberOfLines={1}>Language Settings</Text>
+                </View>
                 <ScrollView showsVerticalScrollIndicator={false}>
                   {Object.keys(i18n.services.resourceStore.data)
                     .map((lang) => (
                       <SettingRow
                         key={lang}
-                        icon={null}
-                        label={lang}
+                        icon={Flag(lang, { width: 40 })}
+                        label={languageData[lang]}
                         onPress={() => {
                           i18n.changeLanguage(lang)
                           setModalLanguageVisibile(!modalLanguageVisible)
                         }}
                         color={i18n.language == lang ? "#2563eb" : "#a6cdff"}
-                        style={tw`${i18n.language == lang ? "bg-blue-200 border border-blue-400" : "bg-gray-100"} dark:text-gray-200`}
+                        style={tw`${i18n.language == lang ? "bg-blue-50 border border-blue-400" : "bg-gray-100"} dark:text-gray-200 py-7 mb-4`}
                       />
                     ))}
                 </ScrollView>
@@ -136,17 +155,31 @@ const Settings = () => {
               }}>
               <View style={tw`flex flex-col p-5`}>
                 <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
-                  <Text style={tw`text-2xl font-bold mb-5 w-5/6`}>User Preferences</Text>
-                  <CircleX size={20} color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4`}
+                  <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
                     onPress={() => { setModalUserPrefVisible(!modalUserPrefVisible) }} />
+                  <Text style={tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`} numberOfLines={1}>User Preferences</Text>
                 </View>
 
                 <ScrollView showsVerticalScrollIndicator={false}>
-                  <SettingRow icon={null} label="KM/Miles" onPress={() => { }} color="#a6cdff" style={tw`bg-blue-200 border border-blue-400 dark:text-gray-200`} />
-                  <SettingRow icon={null} label="Date Format" onPress={() => { }} color="#a6cdff" style={tw`bg-blue-200 border border-blue-400 dark:text-gray-200`} />
+                  <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
+                    <Text style={tw`text-base font-HKGrotesk-Regular dark:text-gray-200`}>Use Miles</Text>
+                    <ModernSwitch
+                      onValueChange={(val) => setPreferredDistanceMeasurement(val ? "mi" : "km")}
+                      value={preferredDistanceMeasurement === "mi"}
+                      activeColor={"#2563eb"}
+                    />
+                  </View>
                   <SettingRow icon={null} label="Currency" onPress={() => { }} color="#a6cdff" style={tw`bg-blue-200 border border-blue-400 dark:text-gray-200`} />
                   <SettingRow icon={null} label="Opt-in Crash log" onPress={() => { }} color="#a6cdff" style={tw`bg-blue-200 border border-blue-400 dark:text-gray-200`} />
-                  <SettingRow icon={null} label="Date format" onPress={() => { }} color="#a6cdff" style={tw`bg-blue-200 border border-blue-400 dark:text-gray-200`} />
+
+                  <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
+                    <Text style={tw`text-base font-HKGrotesk-Regular dark:text-gray-200`}>Opt-in Crash log</Text>
+                    <ModernSwitch
+                      onValueChange={() => setOptInCrashReports(!optInCrashReports)}
+                      value={!!optInCrashReports}
+                      activeColor={"#2563eb"}
+                    />
+                  </View>
                 </ScrollView>
               </View>
             </Modal>
@@ -168,7 +201,11 @@ const Settings = () => {
                 setModalServerVisible(!modalServerVisible)
               }}>
               <View style={tw`flex flex-col p-5`}>
-                <Text style={tw`text-2xl font-bold mb-5`}>Server Settings</Text>
+                <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
+                  <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                    onPress={() => { setModalServerVisible(!modalServerVisible) }} />
+                  <Text style={tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`} numberOfLines={1}>Server Settings</Text>
+                </View>
                 <ScrollView showsVerticalScrollIndicator={false}>
                   {/* Server settings content here */}
                 </ScrollView>

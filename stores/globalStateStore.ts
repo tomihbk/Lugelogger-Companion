@@ -27,7 +27,7 @@ const GlobalStateStore = create<GlobalStateStoreProp>()(
       favoriteCarId: 1,
       isInteractedWithForms: false,
       selectedTabName: "home",
-      preferredCurrencySymbol: "CZK",
+      preferredCurrencySymbol: "USD",
       preferredDistanceMeasurement: "km",
       preferredLiquidMeasurement: "L",
       isUseUSMPG: false,

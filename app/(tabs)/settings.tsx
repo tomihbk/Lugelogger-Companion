@@ -12,12 +12,13 @@ import SettingRow from "~/components/SettingRow"
 import GlobalStateStore from "~/stores/globalStateStore"
 import ModernSwitch from "~/components/ModernSwitch"
 import { Flag } from "~/assets/flags/"
+import CurrencySelector from "~/components/CurrencySelector"
 
 const Settings = () => {
   const { t } = useTranslation()
   const { colorScheme: colorSchemeStore, setColorScheme: setColorSchemeStore } = useThemeStore()
-  const [colorScheme, toggleColorScheme, setColorScheme] = useAppColorScheme(tw)
-  const { preferredDistanceMeasurement, setPreferredDistanceMeasurement, setOptInCrashReports, optInCrashReports } = GlobalStateStore((state) => state)
+  const [ colorScheme, toggleColorScheme, setColorScheme ] = useAppColorScheme(tw)
+  const { preferredDistanceMeasurement, setPreferredDistanceMeasurement, setOptInCrashReports, optInCrashReports, preferredCurrencySymbol } = GlobalStateStore((state) => state)
 
   const languageData: Record<string, string> = {
     en: "English",
@@ -169,8 +170,10 @@ const Settings = () => {
                       activeColor={"#2563eb"}
                     />
                   </View>
-                  <SettingRow icon={null} label="Currency" onPress={() => { }} color="#a6cdff" style={tw`bg-blue-200 border border-blue-400 dark:text-gray-200`} />
-                  <SettingRow icon={null} label="Opt-in Crash log" onPress={() => { }} color="#a6cdff" style={tw`bg-blue-200 border border-blue-400 dark:text-gray-200`} />
+                  <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
+                    <Text style={tw`text-base font-HKGrotesk-Regular dark:text-gray-200`}>Currency</Text>
+                    <CurrencySelector savedCurrencyCode={preferredCurrencySymbol}/>
+                  </View>
 
                   <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
                     <Text style={tw`text-base font-HKGrotesk-Regular dark:text-gray-200`}>Opt-in Crash log</Text>

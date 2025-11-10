@@ -45,3 +45,9 @@ export type VehicleInfo = {
   dashboardMetrics: any[]
   vehicleIdentifier: string
 }
+export type UserInfo = {
+  username: string
+  emailAddress: string
+  isAdmin: boolean
+  isRoot: boolean
+}

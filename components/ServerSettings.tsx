@@ -9,7 +9,7 @@ import { ENDPOINT } from '~/api/user-info'
 type ServerSettingsProps = {
     initial?: { serverURL?: string; username?: string; password?: string }
     buttonColor?: string
-    onSave?: (values: { serverURL: string; username: string; password: string }) => void
+    onSave?: () => void
 }
 
 const ServerSettings: React.FC<ServerSettingsProps> = ({
@@ -78,9 +78,8 @@ const ServerSettings: React.FC<ServerSettingsProps> = ({
     const handleSave = (values: { serverURL: string; username: string; password: string }) => {
         setSettings(values)
         if (onSave) {
-            onSave(values)
+            onSave()
         }
-        alert('Settings saved securely!')
     }
 
     return (

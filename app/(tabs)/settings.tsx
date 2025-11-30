@@ -1,205 +1,316 @@
-import { Stack } from "expo-router";
+import { Stack } from "expo-router"
 import React, { useEffect, useState } from "react"
-import { useTranslation } from "react-i18next";
-import { View, Text, ScrollView, TouchableOpacity, Modal, Platform } from "react-native"
-import tw from "~/tw.config";
+import { useTranslation } from "react-i18next"
+import { View, Text, ScrollView, Modal, Platform, TouchableOpacity, SafeAreaView, Linking } from "react-native"
+import tw from "~/tw.config"
 
-import i18n from "~/i18n/i18n.config";
-import { Palette, ArrowRight, Languages, BadgeInfo, Scale, Settings2, CircleX, Server } from 'lucide-react-native'
-import useThemeStore from "~/stores/themeStore";
-import { useAppColorScheme } from "twrnc";
+import i18n from "~/i18n/i18n.config"
+import { Palette, ArrowRight, Languages, BadgeInfo, Scale, Settings2, Server, GitBranch, ArrowLeft } from 'lucide-react-native'
+import useThemeStore from "~/stores/themeStore"
+import { useAppColorScheme } from "twrnc"
+import SettingRow from "~/components/SettingRow"
+import GlobalStateStore from "~/stores/globalStateStore"
+import ModernSwitch from "~/components/ModernSwitch"
+import { Flag } from "~/assets/flags/"
+import CurrencySelector from "~/components/CurrencySelector"
+import ServerSettings from "~/components/ServerSettings"
+import AboutScreen from "~/components/AboutPage"
+import LicensesScreen from "~/components/LicencePage"
+import ThemeSetting from "~/components/ThemeSettings"
 
 const Settings = () => {
   const { t } = useTranslation()
   const { colorScheme: colorSchemeStore, setColorScheme: setColorSchemeStore } = useThemeStore()
   const [colorScheme, toggleColorScheme, setColorScheme] = useAppColorScheme(tw)
+  const { preferredDistanceMeasurement, setPreferredDistanceMeasurement, setOptInCrashReports, optInCrashReports, preferredCurrencySymbol } = GlobalStateStore((state) => state)
 
-  const [modalLanguageVisible, setModalLanguageVisibile] = useState(false);
-  const [modalThemeVisible, setModalThemeVisible] = useState(false);
-  const [modalUserPrefVisible, setModalUserPrefVisible] = useState(false);
-  const [modalServerVisible, setModalServerVisible] = useState(false);
+  const languageData: Record<string, string> = {
+    en: "English",
+    fr: "French",
+    es: "Spanish",
+    de: "German",
+  }
+
+  const [modalLanguageVisible, setModalLanguageVisibile] = useState(false)
+  const [modalThemeVisible, setModalThemeVisible] = useState(false)
+  const [modalUserPrefVisible, setModalUserPrefVisible] = useState(false)
+  const [modalServerVisible, setModalServerVisible] = useState(false)
+  const [modalAboutVisible, setModalAboutVisible] = useState(false)
+  const [modalLicenseVisible, setModalLicenseVisible] = useState(false)
+
 
   // Sync Zustand store with twrnc
   useEffect(() => {
-    setColorScheme(colorSchemeStore); // Set the twrnc color scheme whenever Zustand changes
+    setColorScheme(colorSchemeStore) // Set the twrnc color scheme whenever Zustand changes
     console.log("store : " + colorSchemeStore + " | twrn theme : " + colorScheme)
-  }, [colorSchemeStore, colorScheme]);
+  }, [colorSchemeStore, colorScheme])
 
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={tw`p-5`}>
-      <Stack.Screen options={{ title: 'Settings', headerShown: false }} />
-      <View style={tw`flex flex-col`}>
-        <Text style={tw`w-5/12 text-2xl mt-4 font-HKGrotesk-Black mb-5`}>{t("Settings")}</Text>
-        <TouchableOpacity style={tw`flex flex-row flex-wrap bg-white p-4 pr-2 rounded-xl mb-1 dark:bg-slate-800 dark:text-gray-200`}
-          onPress={() => setModalThemeVisible(!modalThemeVisible)}>
-          <Palette size={24} color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`mr-3`} />
-          <Text style={tw`flex-grow ml-3 text-lg font-HKGrotesk-Medium dark:text-gray-200`}>Theme</Text>
-          <ArrowRight size={24} color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`mr-3`} />
-          <Modal
-            animationType="slide"
-            visible={modalThemeVisible}
-            hardwareAccelerated={true}
-            onRequestClose={() => {
-              setModalThemeVisible(!modalThemeVisible)
-            }}>
-            <View style={tw`flex flex-col flex-1 p-5 dark:bg-slate-800`}>
-              <Text style={tw`text-2xl font-bold mb-5 dark:text-white`}>Theme Settings</Text>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setColorSchemeStore('light')
-                    setModalThemeVisible(!modalThemeVisible)
-                  }}
-                  style={tw`text-lg w-full font-HKGrotesk-Medium p-4 rounded-xl mb-1  ${colorSchemeStore == "light" ? "bg-blue-200 border border-blue-400" : "bg-gray-100"} dark:text-gray-200`}>
-                  <Text>Light</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    setColorSchemeStore('dark')
-                    setModalThemeVisible(!modalThemeVisible)
-                  }}
-                  style={tw`text-lg w-full font-HKGrotesk-Medium p-4 rounded-xl mb-1  ${colorSchemeStore == "dark" ? "bg-blue-200 border border-blue-400" : "bg-gray-100"} dark:text-gray-200`}>
-                  <Text>Dark</Text>
-                </TouchableOpacity>
-              </ScrollView>
-            </View>
-          </Modal>
+    <SafeAreaView>
+      <ScrollView showsVerticalScrollIndicator={false} style={tw`p-5`}>
+        <Stack.Screen options={{ title: 'Settings', headerShown: false }} />
+        <View style={tw`flex flex-col`}>
+          <Text style={tw`w-5/12 text-2xl font-HKGrotesk-Black mb-5`}>{t("Settings")}</Text>
+          <Text style={tw`font-HKGrotesk-Regular mb-1 text-gray-600 dark:text-gray-200`}>Personalisation</Text>
+
+          <View style={tw`flex flex-col bg-[#fafcff] border-[#a6cdff]/30 border rounded-2xl dark:bg-slate-800 dark:border-gray-700`}>
+            <SettingRow
+              icon={<Palette size={20} color={colorSchemeStore == "dark" ? "white" : "black"} />}
+              label="Theme"
+              onPress={() => setModalThemeVisible(!modalThemeVisible)}
+              color={colorSchemeStore == "dark" ? "white" : '#a6cdff'}
+              style={tw`border-b border-blue-100`}>
+              <ArrowRight size={20} color={colorSchemeStore == "dark" ? "white" : '#a6cdff'} />
+              <Modal
+                animationType="slide"
+                visible={modalThemeVisible}
+                hardwareAccelerated={true}
+                onRequestClose={() => {
+                  setModalThemeVisible(!modalThemeVisible)
+                }}>
+                <View style={tw`flex flex-col flex-1 p-5 dark:bg-slate-800`}>
+                  <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
+                    <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                      onPress={() => { setModalThemeVisible(!modalThemeVisible) }} />
+                    <Text style={tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`} numberOfLines={1}>Theme Settings</Text>
+                  </View>
+                  <ScrollView showsVerticalScrollIndicator={false}>
+
+                    <ThemeSetting
+                      colorSchemeStore={colorSchemeStore}
+                      setColorSchemeStore={setColorSchemeStore}
+                      setModalThemeVisible={setModalThemeVisible}
+                      modalThemeVisible={modalThemeVisible}
+                    />
+                    {/* <SettingRow
+                      icon={null}
+                      label="Light"
+                      onPress={() => {
+                        setColorSchemeStore('light')
+                        setModalThemeVisible(!modalThemeVisible)
+                      }}
+                      color={colorSchemeStore == "light" ? "#2563eb" : "#a6cdff"}
+                      style={tw`${colorSchemeStore == "light" ? "bg-blue-200 border border-blue-400" : "bg-gray-100"} dark:text-gray-200`}
+                    />
+                    <SettingRow
+                      icon={null}
+                      label="Dark"
+                      onPress={() => {
+                        setColorSchemeStore('dark')
+                        setModalThemeVisible(!modalThemeVisible)
+                      }}
+                      color={colorSchemeStore == "dark" ? "#2563eb" : "#a6cdff"}
+                      style={tw`${colorSchemeStore == "dark" ? "bg-blue-200 border border-blue-400" : "bg-gray-100"} dark:text-gray-200`}
+                    /> */}
+                  </ScrollView>
+                </View>
+              </Modal>
+            </SettingRow>
+
+            <SettingRow
+              icon={<Languages size={20} color={colorSchemeStore == "dark" ? "white" : "black"} />}
+              label="Language"
+              onPress={() => setModalLanguageVisibile(!modalLanguageVisible)}
+              color={colorSchemeStore == "dark" ? "white" : '#a6cdff'}>
+              <ArrowRight size={20} color={colorSchemeStore == "dark" ? "white" : '#a6cdff'} />
+              <Modal
+                animationType="slide"
+                style={tw`bg-black`}
+                visible={modalLanguageVisible}
+                hardwareAccelerated={true}
+                onRequestClose={() => {
+                  setModalLanguageVisibile(!modalLanguageVisible)
+                }}>
+                <View style={tw`flex flex-col p-5`}>
+                  <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
+                    <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                      onPress={() => { setModalLanguageVisibile(!modalLanguageVisible) }} />
+                    <Text style={tw`text-2xl mb-5 w-5/6 font-HKGrotesk-Bold`} numberOfLines={1}>Language Settings</Text>
+                  </View>
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    {Object.keys(i18n.services.resourceStore.data)
+                      .map((lang) => (
+                        <SettingRow
+                          key={lang}
+                          icon={Flag(lang, { width: 40 })}
+                          label={languageData[lang]}
+                          onPress={() => {
+                            i18n.changeLanguage(lang)
+                            setModalLanguageVisibile(!modalLanguageVisible)
+                          }}
+                          color={i18n.language == lang ? "#2563eb" : "#a6cdff"}
+                          style={tw`${i18n.language == lang ? "bg-blue-50 border border-blue-400" : "bg-gray-100"} dark:text-gray-200 py-7 mb-4`}
+                        />
+                      ))}
+                  </ScrollView>
+                </View>
+              </Modal>
+            </SettingRow>
+          </View>
+
+          <Text style={tw`font-HKGrotesk-Regular mt-4 mb-1 text-gray-600 dark:text-gray-200`}>Preferences</Text>
+          <View style={tw`flex flex-col bg-[#fafcff] border-[#a6cdff]/30 border rounded-2xl dark:bg-slate-800 dark:border-gray-700`}>
+
+            <SettingRow
+              icon={<Settings2 size={20} color={colorSchemeStore == "dark" ? "white" : "black"} />}
+              label="App Preferences"
+              onPress={() => setModalUserPrefVisible(!modalUserPrefVisible)}
+              color={colorSchemeStore == "dark" ? "white" : '#a6cdff'}
+              style={tw`border-b border-blue-100`}
+            >
+              <ArrowRight size={20} color={colorSchemeStore == "dark" ? "white" : '#a6cdff'} />
+
+              <Modal
+                animationType="slide"
+                style={tw`bg-black`}
+                visible={modalUserPrefVisible}
+                hardwareAccelerated={true}
+                onRequestClose={() => {
+                  setModalUserPrefVisible(!modalUserPrefVisible)
+                }}>
+                <View style={tw`flex flex-col p-5`}>
+                  <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
+                    <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                      onPress={() => { setModalUserPrefVisible(!modalUserPrefVisible) }} />
+                    <Text style={tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`} numberOfLines={1}>User Preferences</Text>
+                  </View>
+
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
+                      <Text style={tw`text-base font-HKGrotesk-Regular dark:text-gray-200`}>Use Miles</Text>
+                      <ModernSwitch
+                        onValueChange={(val) => setPreferredDistanceMeasurement(val ? "mi" : "km")}
+                        value={preferredDistanceMeasurement === "mi"}
+                        activeColor={"#2563eb"}
+                      />
+                    </View>
+                    <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
+                      <Text style={tw`text-base font-HKGrotesk-Regular dark:text-gray-200`}>Currency</Text>
+                      <CurrencySelector savedCurrencyCode={preferredCurrencySymbol} />
+                    </View>
+
+                    <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
+                      <Text style={tw`text-base font-HKGrotesk-Regular dark:text-gray-200`}>Opt-in Crash log</Text>
+                      <ModernSwitch
+                        onValueChange={() => setOptInCrashReports(!optInCrashReports)}
+                        value={!!optInCrashReports}
+                        activeColor={"#2563eb"}
+                      />
+                    </View>
+                  </ScrollView>
+                </View>
+              </Modal>
+            </SettingRow>
+
+            <SettingRow
+              icon={<Server size={20} color={colorSchemeStore == "dark" ? "white" : "black"} />}
+              label="Server Settings"
+              onPress={() => setModalServerVisible(!modalServerVisible)}
+              color={colorSchemeStore == "dark" ? "white" : '#a6cdff'}
+            >
+              <ArrowRight size={20} color={colorSchemeStore == "dark" ? "white" : '#a6cdff'} />
+              <Modal
+                animationType="slide"
+                style={tw`bg-black`}
+                visible={modalServerVisible}
+                hardwareAccelerated={true}
+                onRequestClose={() => {
+                  setModalServerVisible(!modalServerVisible)
+                }}>
+                <View style={tw`flex flex-col p-5`}>
+                  <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
+                    <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                      onPress={() => { setModalServerVisible(!modalServerVisible) }} />
+                    <Text style={tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`} numberOfLines={1}>Server Settings</Text>
+                  </View>
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    <ServerSettings onSave={() => { setModalServerVisible(!modalServerVisible) }} />
+                  </ScrollView>
+                </View>
+              </Modal>
+            </SettingRow>
+          </View>
+
+          <Text style={tw`font-HKGrotesk-Regular mt-4 mb-1 text-gray-600 dark:text-gray-200`}>More</Text>
+          <View style={tw`flex flex-col bg-[#fafcff] border-[#a6cdff]/30 border rounded-2xl dark:bg-slate-800 dark:border-gray-700`}>
+
+            <SettingRow
+              icon={<BadgeInfo size={20} color={colorSchemeStore == "dark" ? "white" : "black"} />}
+              label="About"
+              onPress={() => { setModalAboutVisible(!modalAboutVisible) }}
+              color={colorSchemeStore == "dark" ? "white" : '#a6cdff'}
+              style={tw`border-b border-blue-100`}
+            >
+              <ArrowRight size={20} color={colorSchemeStore == "dark" ? "white" : '#a6cdff'} />
+              <Modal
+                animationType="slide"
+                style={tw`bg-black`}
+                visible={modalAboutVisible}
+                hardwareAccelerated={true}
+                onRequestClose={() => {
+                  setModalAboutVisible(!modalAboutVisible)
+                }}>
+                <View style={tw`flex flex-col p-5`}>
+                  <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
+                    <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                      onPress={() => { setModalAboutVisible(!modalAboutVisible) }} />
+                    <Text style={tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`} numberOfLines={1}>About</Text>
+                  </View>
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    <AboutScreen />
+                  </ScrollView>
+                </View>
+              </Modal>
+            </SettingRow>
+
+            <SettingRow
+              icon={<Scale size={20} color={colorSchemeStore == "dark" ? "white" : "black"} />}
+              label="Licenses"
+              onPress={() => { setModalLicenseVisible(!modalLicenseVisible) }}
+              color={colorSchemeStore == "dark" ? "white" : '#a6cdff'}
+              style={tw`border-b border-blue-100`}
+            >
+              <ArrowRight size={20} color={colorSchemeStore == "dark" ? "white" : '#a6cdff'} />
+
+              <Modal
+                animationType="slide"
+                style={tw`bg-black`}
+                visible={modalLicenseVisible}
+                hardwareAccelerated={true}
+                onRequestClose={() => {
+                  setModalLicenseVisible(!modalLicenseVisible)
+                }}>
+                <View style={tw`flex flex-col p-5`}>
+                  <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
+                    <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                      onPress={() => { setModalLicenseVisible(!modalLicenseVisible) }} />
+                    <Text style={tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`} numberOfLines={1}>Licenses</Text>
+                  </View>
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    <LicensesScreen />
+                  </ScrollView>
+                </View>
+              </Modal>
+            </SettingRow>
+
+            <SettingRow
+              icon={<GitBranch size={20} color={colorSchemeStore == "dark" ? "white" : "black"} />}
+              label="Github"
+              onPress={() => { Linking.openURL("https://github.com/hargata/lubelog") }}
+              // TODO : Add your repo link
+              color={colorSchemeStore == "dark" ? "white" : '#a6cdff'}
+            >
+              <ArrowRight size={20} color={colorSchemeStore == "dark" ? "white" : '#a6cdff'} />
+            </SettingRow>
+          </View>
+        </View>
+        <TouchableOpacity style={tw`bg-white mt-4 p-2 dark:bg-blue-900 dark:text-gray-200 pr-2 rounded-full border border-blue-800 dark:border-0 mb-10`}>
+          <Text style={tw`text-lg font-HKGrotesk-Medium dark:text-gray-200 text-blue-950 text-center`}>Rate App on {Platform.OS == 'android' ? 'PlayStore' : 'App Store'}</Text>
+          {/* // TODO : Add link to app store / play store */}
         </TouchableOpacity>
-
-        <TouchableOpacity style={tw`flex flex-row flex-wrap bg-white p-4 dark:bg-slate-800 dark:text-gray-200 pr-2 rounded-xl items-center mb-1`}
-          onPress={() => setModalLanguageVisibile(!modalLanguageVisible)}>
-          <Languages size={24} color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`mr-3`} />
-          <Text style={tw`flex-grow ml-3 text-lg font-HKGrotesk-Medium dark:text-gray-200`}>Language</Text>
-          <ArrowRight size={24} color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`mr-3`} />
-          <Modal
-            animationType="slide"
-            style={tw`bg-black`}
-            visible={modalLanguageVisible}
-            hardwareAccelerated={true}
-            onRequestClose={() => {
-              setModalLanguageVisibile(!modalLanguageVisible)
-            }}>
-            <View style={tw`flex flex-col p-5`}>
-              <Text style={tw`text-2xl font-bold mb-5`}>Language Settings</Text>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {Object.keys(i18n.services.resourceStore.data)
-                  .map((lang) => {
-                    return (
-                      <TouchableOpacity key={lang}
-                        onPress={() => {
-                          i18n.changeLanguage(lang)
-                          setModalLanguageVisibile(!modalLanguageVisible)
-                        }}
-                        style={tw`text-lg w-full font-HKGrotesk-Medium p-4 rounded-xl mb-1  ${i18n.language == lang ? "bg-blue-200 border border-blue-400" : "bg-gray-100"} dark:text-gray-200`}>
-                        <Text>{lang}</Text>
-                      </TouchableOpacity>
-                    )
-                  })}
-              </ScrollView>
-            </View>
-          </Modal>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={tw`flex flex-row flex-wrap bg-white p-4 dark:bg-slate-800 dark:text-gray-200 pr-2 rounded-xl items-center mb-1`}
-          onPress={() => setModalServerVisible(!modalServerVisible)}>
-          <Server size={24} color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`mr-3`} />
-          <Text style={tw`flex-grow ml-3 text-lg font-HKGrotesk-Medium dark:text-gray-200`}>Server Settings</Text>
-          <ArrowRight size={24} color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`mr-3`} />
-          <Modal
-            animationType="slide"
-            style={tw`bg-black`}
-            visible={modalServerVisible}
-            hardwareAccelerated={true}
-            onRequestClose={() => {
-              setModalServerVisible(!modalServerVisible)
-            }}>
-            <View style={tw`flex flex-col p-5`}>
-              <Text style={tw`text-2xl font-bold mb-5`}>Server Settings</Text>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {Object.keys(i18n.services.resourceStore.data)
-                  .map((lang) => {
-                    return (
-                      <TouchableOpacity key={lang}
-                        onPress={() => {
-                          i18n.changeLanguage(lang)
-                          setModalServerVisible(!modalServerVisible)
-                        }}
-                        style={tw`text-lg w-full font-HKGrotesk-Medium p-4 rounded-xl mb-1 ${i18n.language == lang ? "bg-blue-200 border border-blue-400" : "bg-gray-100"} dark:text-gray-200`}>
-                        <Text>{lang}</Text>
-                      </TouchableOpacity>
-                    )
-                  })}
-              </ScrollView>
-            </View>
-          </Modal>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={tw`flex flex-row flex-wrap bg-white p-4 dark:bg-slate-800 dark:text-gray-200 pr-2 rounded-xl items-center mb-1`}
-          onPress={() => setModalUserPrefVisible(!modalUserPrefVisible)}>
-          <Settings2 size={24} color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`mr-3`} />
-          <Text style={tw`flex-grow ml-3 text-lg font-HKGrotesk-Medium dark:text-gray-200`}>App Preferences</Text>
-          <ArrowRight size={24} color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`mr-3`} />
-
-          <Modal
-            animationType="slide"
-            style={tw`bg-black`}
-            visible={modalUserPrefVisible}
-            hardwareAccelerated={true}
-            onRequestClose={() => {
-              setModalUserPrefVisible(!modalUserPrefVisible)
-            }}>
-            <View style={tw`flex flex-col p-5`}>
-              <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
-                <Text style={tw`text-2xl font-bold mb-5 w-5/6`}>User Preferences</Text>
-                <CircleX size={24} color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4`}
-                  onPress={() => { setModalUserPrefVisible(!modalUserPrefVisible) }} />
-              </View>
-
-              <ScrollView showsVerticalScrollIndicator={false}>
-                <TouchableOpacity
-                  style={tw`text-lg w-full font-HKGrotesk-Medium p-4 rounded-xl mb-1 bg-blue-200 border border-blue-400 dark:text-gray-200`}>
-                  <Text>KM/Miles</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={tw`text-lg w-full font-HKGrotesk-Medium p-4 rounded-xl mb-1  bg-blue-200 border border-blue-400 dark:text-gray-200`}>
-                  <Text>Date Format</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={tw`text-lg w-full font-HKGrotesk-Medium p-4 rounded-xl mb-1  bg-blue-200 border border-blue-400 dark:text-gray-200`}>
-                  <Text>Currency</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={tw`text-lg w-full font-HKGrotesk-Medium p-4 rounded-xl mb-1  bg-blue-200 border border-blue-400 dark:text-gray-200`}>
-                  <Text>Opt-in Crash log</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={tw`text-lg w-full font-HKGrotesk-Medium p-4 rounded-xl mb-1  bg-blue-200 border border-blue-400 dark:text-gray-200`}>
-                  <Text>Date format</Text>
-                </TouchableOpacity>
-              </ScrollView>
-            </View>
-          </Modal>
-        </TouchableOpacity>
-
-
-        <TouchableOpacity style={tw`flex flex-row flex-wrap bg-white p-4 dark:bg-slate-800 dark:text-gray-200 pr-2 rounded-xl items-center mb-1`}>
-          <BadgeInfo size={24} color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`mr-3`} />
-          <Text style={tw`flex-grow ml-3 text-lg font-HKGrotesk-Medium dark:text-gray-200`}>About</Text>
-          <ArrowRight size={24} color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`mr-3`} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={tw`flex flex-row flex-wrap bg-white p-4 dark:bg-slate-800 dark:text-gray-200 pr-2 rounded-xl items-center mb-1`}>
-          <Scale size={24} color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`mr-3`} />
-          <Text style={tw`flex-grow ml-3 text-lg font-HKGrotesk-Medium dark:text-gray-200`}>Licenses</Text>
-          <ArrowRight size={24} color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`mr-3`} />
-        </TouchableOpacity>
-
-      </View>
-      <TouchableOpacity style={tw`bg-white mt-8 p-4 dark:bg-blue-900 dark:text-gray-200 pr-2 rounded-full border border-blue-800 dark:border-0 mb-10`}>
-        <Text style={tw`text-lg font-HKGrotesk-Medium dark:text-gray-200 text-blue-950 text-center`}>Rate App on {Platform.OS == 'android' ? 'PlayStore' : 'App Store'}</Text>
-      </TouchableOpacity>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 

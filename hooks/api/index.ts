@@ -38,4 +38,8 @@ export {
 export {
   useGetAllVehicles,
 } from "./use-get-vehicleinfos"
+export {
+  useGetUserInfo,
+} from "./use-get-userinfo"
+
 

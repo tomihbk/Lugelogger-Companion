@@ -1,42 +1,50 @@
-import assert from "assert"
 import Axios, { AxiosRequestHeaders, InternalAxiosRequestConfig } from "axios"
 import { encode as base64Encode } from "base-64"
 import { encode as utf8Encode } from "utf8"
+import ServerSettingsStore from "~/stores/serverSettingsStore"
 
-// This ensures environment variables are set
-assert(
-  process.env.EXPO_PUBLIC_API_URL,
-  "env variable not set: EXPO_PUBLIC_API_URL"
-)
-assert(
-  process.env.EXPO_PUBLIC_API_USERNAME,
-  "env variable not set: EXPO_PUBLIC_API_USERNAME"
-)
-assert(
-  process.env.EXPO_PUBLIC_API_PASSWORD,
-  "env variable not set: EXPO_PUBLIC_API_PASSWORD"
-)
-
-const username = process.env.EXPO_PUBLIC_API_USERNAME!
-const password = process.env.EXPO_PUBLIC_API_PASSWORD!
-const basicAuthToken = base64Encode(utf8Encode(`${username}:${password}`))
+const getServerSettings = () => {
+  const savedSettings = ServerSettingsStore.getState().getSettings()
+  
+  return {
+    baseURL: savedSettings?.serverURL || process.env.EXPO_PUBLIC_API_URL || '',
+    username: savedSettings?.username || process.env.EXPO_PUBLIC_API_USERNAME || '',
+    password: savedSettings?.password || process.env.EXPO_PUBLIC_API_PASSWORD || '',
+  }
+}
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
+  const { username, password, baseURL } = getServerSettings()
+  
   if (!config.headers) {
     config.headers = {} as AxiosRequestHeaders
   }
 
+  if (baseURL && config.baseURL !== baseURL) {
+    config.baseURL = baseURL
+  }
+
+  const basicAuthToken = base64Encode(utf8Encode(`${username}:${password}`))
   config.headers.authorization = `Basic ${basicAuthToken}`
   config.headers["Content-Type"] = "multipart/form-data" // Very important ! This took me ages to resolve it ;(
+  
   return config
 }
 
+const { baseURL } = getServerSettings()
+
 export const axios = Axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL,
+  baseURL: baseURL,
 })
 
 // Add request interceptor for authentication
 axios.interceptors.request.use(authRequestInterceptor)
+
+// Helper function to update axios instance when settings change
+export const updateAxiosSettings = () => {
+  const { baseURL } = getServerSettings()
+  axios.defaults.baseURL = baseURL
+}
 
 // axios.interceptors.request.use(request => {
 //   console.log('Starting Request', JSON.stringify(request, null, 2))

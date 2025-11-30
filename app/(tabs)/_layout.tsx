@@ -9,12 +9,12 @@ import tw from "~/tw.config"
 import { useDeviceContext } from "twrnc"
 
 export default function TabLayout() {
-  const globalStoreThemeColor = useThemeStore((color)=> color.colorScheme)
+  const globalStoreThemeColor = useThemeStore((color) => color.colorScheme)
 
   useDeviceContext(tw, {
     observeDeviceColorSchemeChanges: false,
     initialColorScheme: globalStoreThemeColor,
-  });
+  })
 
   const { colorScheme: colorSchemeStore } = useThemeStore()
 
@@ -23,14 +23,14 @@ export default function TabLayout() {
       <StatusBar style={colorSchemeStore == 'light' ? 'dark' : 'light'} />
 
       <Tabs
-      sceneContainerStyle={{ backgroundColor: colorSchemeStore == 'light' ? '#fafafa' : '#564' }} // Body background color
-      screenOptions={{
-        // tabBarActiveTintColor: '#000',
-        // tabBarInactiveTintColor: '#fff',
-        headerShown: false,
-        headerStyle: { backgroundColor: colorSchemeStore == 'light' ? '#fafafa' : '#0d1117' }, // Header background color
-        tabBarBackground: () => <View style={tw`bg-white h-full mx-4 rounded-tr-2xl rounded-tl-2xl`} />,
-        tabBarStyle:{
+        sceneContainerStyle={{ backgroundColor: colorSchemeStore == 'light' ? '#fafafa' : '#564' }} // Body background color
+        screenOptions={{
+          // tabBarActiveTintColor: '#000',
+          // tabBarInactiveTintColor: '#fff',
+          headerShown: false,
+          headerStyle: { backgroundColor: colorSchemeStore == 'light' ? '#fafafa' : '#0d1117' }, // Header background color
+          tabBarBackground: () => <View style={tw`bg-white h-full mx-4 rounded-tr-2xl rounded-tl-2xl`} />,
+          tabBarStyle: {
             position: 'absolute',
             shadowColor: 'transparent',
             height: 58,
@@ -41,7 +41,7 @@ export default function TabLayout() {
             marginBottom: 7,
           },
         }}>
-{/* <Tabs
+        {/* <Tabs
         key={tw.memoBuster}
         screenOptions={{
           headerShadowVisible: false,
@@ -81,5 +81,5 @@ export default function TabLayout() {
           }} />
       </Tabs>
     </>
-  );
+  )
 }

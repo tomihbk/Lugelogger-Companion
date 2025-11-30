@@ -30,8 +30,10 @@ export default function garage() {
       
         {isError &&
           <View style={tw`h-full w-full justify-center`}>
-            <Text>API Error {error.message}</Text>
-            <Text>Make sure the server is running and server setting has been correctly setup</Text>
+            <View style={tw`border border-red-500 bg-red-50 p-4 rounded-lg mb-4`}>
+            <Text style={tw`font-HKGrotesk-SemiBold`}>API Error : {error.message}</Text>
+            <Text style={tw`font-HKGrotesk-Regular`}>Make sure the server is running and server setting has been correctly configured</Text>
+            </View>
             <Pressable onPress={() => refetch()} style={tw`mb-4`}>
               <Text style={tw`mt-4 p-2 bg-blue-500 text-white font-HKGrotesk-Medium rounded-full text-base text-center`}>
                 Retry

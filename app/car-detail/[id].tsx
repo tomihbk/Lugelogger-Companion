@@ -98,7 +98,8 @@ const CarDetail = () => {
         flashListRef.current.scrollToOffset({ offset: 0, animated: true })
       }
 
-      if (Array.isArray(dataSource) && !('metric' in (dataSource[0] || {})))  {
+      // this if condition skips if the datasource is ReminderRecord
+      if (Array.isArray(dataSource) && !('metric' in (dataSource[0] || {}))) {
         const orderedDataByLatestDate = dataSource
           .slice()
           .sort((a, b) => {

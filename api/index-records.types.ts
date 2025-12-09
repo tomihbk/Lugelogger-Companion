@@ -22,6 +22,17 @@ export type FuelRecordAdd = RecordBase &
     missedFuelUp: boolean
   }[]
 
+export type ReminderRecord = {
+  description: string
+  dueOdometer: string
+  dueDate: string
+  metric: "Date" | "Odometer" | "Both"
+  userMetric?: "Date" | "Odometer" | "Both"
+  notes?: string
+  tags?: string
+  urgency?: string
+}[]
+
 export type VehicleInfo = {
   id: number
   imageLocation: string

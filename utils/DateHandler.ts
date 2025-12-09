@@ -2,7 +2,16 @@ const locale = Intl.DateTimeFormat().resolvedOptions().locale
 
 const DateHandler = (
   date: string,
-  getISODate: boolean = false
+  getISODate: boolean = false,
+  format: {
+    year?: "2-digit" | "numeric",
+    month?: "short" | "2-digit" | "numeric",
+    day?: "2-digit" | "numeric",
+  } = {
+    year: "2-digit",
+    month: "short",
+    day: "2-digit",
+  }
 ): Date | string => {
   if (!getISODate) {
     const [MM, DD, YYYY] = date.split("/")
@@ -11,11 +20,7 @@ const DateHandler = (
       parseInt(YYYY),
       parseInt(MM) - 1,
       parseInt(DD)
-    ).toLocaleDateString(locale, {
-      //year: "2-digit",
-      month: "short",
-      day: "2-digit",
-    })
+    ).toLocaleDateString(locale, format)
   } else {
     const [MM, DD, YYYY] = date.split("/").map((part) => parseInt(part, 10))
     return new Date(YYYY, MM - 1, DD)

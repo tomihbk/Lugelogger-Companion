@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { useForm, Controller } from "react-hook-form"
-import { useAddServiceRecord, useAddOdometerRecord, useAddRepairRecord, useAddUpgradeRecord, useAddFuelRecord, useAddTaxRecord, useLastOdometerRecord } from '~/hooks/api/index'
-import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore } from '~/stores/RecordButtons'
+import { useAddServiceRecord, useAddOdometerRecord, useAddRepairRecord, useAddUpgradeRecord, useAddFuelRecord, useAddTaxRecord, useLastOdometerRecord, useAddReminderRecord } from '~/hooks/api/index'
+import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore, ReminderFunctionStore } from '~/stores/RecordButtons'
 import { OdometerFunctionStoreProp } from '~/stores/RecordButtons/odometerFunctionStore'
 import { useTranslation } from 'react-i18next'
 import TagInput from '~/components/TagInput'
@@ -27,11 +27,15 @@ const NewRecord = () => {
     const { mutateAsync: addUpgradeRecord } = useAddUpgradeRecord()
     const { mutateAsync: addFuelRecord } = useAddFuelRecord()
     const { mutateAsync: addTaxRecord } = useAddTaxRecord()
+    const { mutateAsync: addReminderRecord } = useAddReminderRecord()
     const [openDatePickerModal, setOpenDatePickerModal] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
     const [initialOdometerEditable, setInitialOdometerEditable] = useState(false)
     const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
     const { data: lastOdometerReading } = useLastOdometerRecord(CarId)
+    const [showMetricFieldDueDate, setShowMetricFieldDueDate] = useState(true)
+    const [showMetricFieldDueOdometer, setShowMetricFieldDueOdometer] = useState(false)
+    let convertedDate: string
 
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
@@ -44,7 +48,10 @@ const NewRecord = () => {
             ConsumedFuel: "",
             IsFulltoFull: false,
             MissedFuelUp: false,
-            Tags: ""
+            Tags: "",
+            metric: "Date" as const,
+            DueOdometer: "",
+            DueDate: new Date()
         },
         mode: "onChange"
     })
@@ -59,11 +66,18 @@ const NewRecord = () => {
         IsFulltoFull: boolean;
         MissedFuelUp: boolean;
         Tags: string;
+        metric: "Date" | "Odometer" | "Both";
+        DueDate: Date;
+        DueOdometer: string;
     }
     const handleForm = async (formData: formDataType) => {
         //console.log("formData : " + JSON.stringify(formData))
 
-        const convertedDate = ConvertUTCToUSFormat(formData.Date.toISOString())
+        if (currentActionType?.key === ReminderFunctionStore.key) {
+            convertedDate = ConvertUTCToUSFormat(formData.DueDate.toISOString())
+        } else {
+            convertedDate = ConvertUTCToUSFormat(formData.Date.toISOString())
+        }
 
         // Convert comma-separated tags to space-separated string
         const tags = formData.Tags ? formData.Tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '').join(' ') : ''
@@ -106,6 +120,12 @@ const NewRecord = () => {
                         taxRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, notes: formData.Notes, tags }]
                     })
                     break
+                case ReminderFunctionStore.key:
+                    await addReminderRecord({
+                        vehicleId: CarId,
+                        reminderRecord: [{ description: formData.Description, dueDate: convertedDate, dueOdometer: formData.DueOdometer, metric: formData.metric, notes: formData.Notes, tags }]
+                    })
+                    break
                 default:
                     break
             }
@@ -116,6 +136,23 @@ const NewRecord = () => {
         //console.log("Error odo Type : " + JSON.stringify(errors))
     }
 
+    const showMetricField = (option: formDataType["metric"]) => {
+        switch (option) {
+            case "Date":
+                setShowMetricFieldDueDate(true)
+                setShowMetricFieldDueOdometer(false)
+                break
+            case "Odometer":
+                setShowMetricFieldDueDate(false)
+                setShowMetricFieldDueOdometer(true)
+                break
+            case "Both":
+                setShowMetricFieldDueDate(true)
+                setShowMetricFieldDueOdometer(true)
+                break
+        }
+    }
+
     useEffect(() => {
         const actionTypeMap = {
             [OdometerFunctionStore.key]: OdometerFunctionStore,
@@ -124,6 +161,7 @@ const NewRecord = () => {
             [UpgradeFunctionStore.key]: UpgradeFunctionStore,
             [FuelFunctionStore.key]: FuelFunctionStore,
             [TaxFunctionStore.key]: TaxFunctionStore,
+            [ReminderFunctionStore.key]: ReminderFunctionStore
         }
         setCurrentActionType(actionTypeMap[actionType] || OdometerFunctionStore)
     }, [actionType])
@@ -145,6 +183,127 @@ const NewRecord = () => {
                     <Text style={tw`font-HKGrotesk-Bold text-lg text-center mb-2 text-[${currentActionType?.buttonColor}]`}>New {actionType.toString()} Record</Text>
 
                     <View>
+                        {currentActionType?.visibleFields.description && currentActionType?.key === ReminderFunctionStore.key &&
+                            <>
+                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>{t("Description")}
+                                    {!currentActionType.mandatoryFields.description && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
+                                <Controller control={control} rules={{ required: currentActionType.mandatoryFields.description }}
+                                    render={({ field: { onChange, onBlur, value } }) => (
+                                        <TextInput
+                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 h-21 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Description && 'border-red-700' || ''}`}
+                                            onBlur={onBlur}
+                                            onChangeText={onChange}
+                                            returnKeyType='next'
+                                            multiline={true}
+                                            textAlignVertical="top"
+                                            value={value} />)} name="Description" />
+                            </>}
+                        {errors.Description && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
+                        
+                        {currentActionType?.key === ReminderFunctionStore.key && (
+                            <>
+                                <Text style={tw`font-HKGrotesk-SemiBold text-base mb-1`}>Remind me by:</Text>
+                                <Controller
+                                    control={control}
+                                    name="metric"
+                                    rules={{ required: currentActionType.mandatoryFields.metric }}
+                                    render={({ field: { onChange, value } }) => (
+                                        <View style={tw`flex-row flex-wrap gap-2 mb-4`}>
+                                            {(['Date', 'Odometer', 'Both'] as const).map((option) => (
+                                                <Pressable
+                                                    key={option}
+                                                    onPress={() => { 
+                                                        onChange(option)
+                                                        showMetricField(option)
+                                                     }}
+                                                    style={tw`flex-row p-2 rounded-lg border flex-grow justify-center ${value === option ? `bg-[${currentActionType?.buttonColor}]/0 border-[${currentActionType?.buttonColor}]` : 'border-gray-300 bg-gray-50'}`}
+                                                >
+                                                    <Text style={tw`font-HKGrotesk-Medium text-center ${value === option ? `text-[${currentActionType?.buttonColor}]` : 'text-gray-600'}`}>
+                                                        {option}
+                                                    </Text>
+                                                </Pressable>
+                                            ))}
+                                        </View>
+                                    )}
+                                />
+                            </>
+                        )}
+
+                        {currentActionType?.visibleFields.dueDate && showMetricFieldDueDate &&
+                            <>
+                                <Text style={tw`font-HKGrotesk-SemiBold text-base mb-1`}>Due {t("Date")}
+                                </Text>
+                                <Controller control={control} name="DueDate" rules={{ required: currentActionType.mandatoryFields.dueDate || showMetricFieldDueDate }}
+                                    render={({ field: { onChange, value } }) => (
+                                        <>
+                                            <Pressable onPress={() => setOpenDatePickerModal(true)}>
+                                                <View>
+                                                    <TextInput
+                                                        style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg text-black dark:text-white
+                                                    border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 
+                                                    bg-gray-100 dark:bg-[${currentActionType?.buttonColor}]/40 border p-2 mb-2 pr-10 ${errors.DueDate && 'border-red-700' || ''}`}
+                                                        readOnly={true}
+                                                        value={value.toLocaleDateString(Intl.DateTimeFormat().resolvedOptions().locale, {
+                                                            weekday: 'long',
+                                                            year: 'numeric',
+                                                            month: '2-digit',
+                                                            day: '2-digit'
+                                                        })} />
+                                                    <View style={tw`absolute right-4 top-3`}>
+                                                        <CalendarDays size={22} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                    </View>
+                                                </View>
+                                            </Pressable>
+                                            <DatePicker modal locale={Intl.DateTimeFormat().resolvedOptions().locale} mode='date' open={openDatePickerModal} date={value} theme='light' // TODO handle dark mode
+                                                onConfirm={(date) => {
+                                                    setOpenDatePickerModal(false)
+                                                    onChange(date)
+                                                }}
+                                                onCancel={() => {
+                                                    setOpenDatePickerModal(false)
+                                                }}
+                                            />
+                                        </>
+                                    )}
+                                />
+                            </>
+                        }
+
+                        {currentActionType?.visibleFields.dueOdometer && showMetricFieldDueOdometer &&
+                            <>
+                                <Text style={tw`font-HKGrotesk-SemiBold text-base mb-1`}>Due {t("Odometer")}</Text>
+                                <Controller control={control} rules={{
+                                    required: { value: currentActionType.mandatoryFields.dueOdometer || showMetricFieldDueOdometer, message: "Required Field and must be a number" }
+                                }}
+                                    render={({ field: { onChange, onBlur, value } }) => (
+                                        <View style={tw`relative flex-row items-center`}>
+                                            <TextInput
+                                                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.DueOdometer && showMetricFieldDueOdometer && 'border-red-700' || ''}`}
+                                                onBlur={onBlur}
+                                                onChangeText={(text) => {
+                                                    // Only allow numbers
+                                                    const numericValue = text.replace(/[^0-9]/g, '')
+                                                    onChange(numericValue);
+                                                }}
+                                                value={value}
+                                                returnKeyType='next'
+                                                keyboardType="numeric"
+                                                placeholder={`Last Odometer : ${NumberHandler(parseInt(lastOdometerReading?.toString() || '0'))} ${preferredDistanceMeasurement}`}
+                                                inputMode="numeric" />
+                                            <View style={tw`absolute right-4 top-3`}>
+                                                <GaugeCircle size={22} color={tint(0.6, currentActionType?.buttonColor)} />
+                                            </View>
+                                        </View>
+                                    )}
+                                    name="DueOdometer" />
+                                {errors.DueOdometer &&
+                                    <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400 -mt-1 mb-1`}>
+                                        Required Field
+                                    </Text>
+                                }
+                            </>
+                        }
+
                         {currentActionType?.visibleFields.date &&
                             <>
                                 <Text style={tw`font-HKGrotesk-SemiBold text-base mb-1`}>{t("Date")}
@@ -155,7 +314,7 @@ const NewRecord = () => {
                                     render={({ field: { onChange, value } }) => (
                                         <>
                                             <Pressable onPress={() => setOpenDatePickerModal(true)}>
-                                                <View style={tw`relative flex-row items-center`}>
+                                                <View>
                                                     <TextInput
                                                         style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg text-black dark:text-white
                                                     border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 
@@ -303,7 +462,7 @@ const NewRecord = () => {
                         }
                         {errors.Cost && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
 
-                        {currentActionType?.visibleFields.description &&
+                        {currentActionType?.visibleFields.description && currentActionType?.key != ReminderFunctionStore.key &&
                             <>
                                 <Text style={tw`font-HKGrotesk-SemiBold text-base`}>{t("Description")}
                                     {!currentActionType.mandatoryFields.description && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
@@ -318,7 +477,7 @@ const NewRecord = () => {
                                             textAlignVertical="top"
                                             value={value} />)} name="Description" />
                             </>}
-                        {errors.Description && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
+                        {errors.Description && currentActionType?.key != ReminderFunctionStore.key && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
 
                         {currentActionType?.visibleFields.fuelConsumed &&
                             <>

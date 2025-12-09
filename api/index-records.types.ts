@@ -16,17 +16,18 @@ export type FuelRecordGet = {
   useUKMPG: boolean
 }[]
 export type FuelRecordAdd = RecordBase &
-{
+  {
     fuelConsumed: string
     isFillToFull: boolean
     missedFuelUp: boolean
-}[]
+  }[]
 
 export type ReminderRecord = {
   description: string
   dueOdometer: string
   dueDate: string
   metric: "Date" | "Odometer" | "Both"
+  userMetric?: "Date" | "Odometer" | "Both"
   notes?: string
   tags?: string
   urgency?: string

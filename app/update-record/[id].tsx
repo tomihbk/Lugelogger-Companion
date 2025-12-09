@@ -30,8 +30,8 @@ const UpdateRecord = () => {
     const [openDatePickerModal, setOpenDatePickerModal] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
     const [initialOdometerEditable, setInitialOdometerEditable] = useState(false)
-    const [showMetricFieldDueDate, setShowMetricFieldDueDate] = useState(_data.metric === "Date" || _data.metric === "Both")
-    const [showMetricFieldDueOdometer, setShowMetricFieldDueOdometer] = useState(_data.metric === "Odometer" || _data.metric === "Both")
+    const [showMetricFieldDueDate, setShowMetricFieldDueDate] = useState(_data.userMetric === "Date" || _data.userMetric === "Both")
+    const [showMetricFieldDueOdometer, setShowMetricFieldDueOdometer] = useState(_data.userMetric === "Odometer" || _data.userMetric === "Both")
     let convertedDate: string
 
     const { control, handleSubmit, formState: { errors } } = useForm({
@@ -46,7 +46,7 @@ const UpdateRecord = () => {
             IsFillToFull: _data.isFillToFull || false,
             MissedFuelUp: _data.missedFuelUp || false,
             Tags: _data.tags || "",
-            Metric: _data.metric || "Date",
+            Metric: _data.userMetric || "Date",
             DueOdometer: _data.dueOdometer || "",
             DueDate: _data.dueDate ? DateHandler(_data.dueDate, true) as Date : new Date()
         },

@@ -2,7 +2,7 @@ import { View, Text, Pressable, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import GlobalStateStore from '~/stores/globalStateStore'
 import tw from '~/tw.config'
-import DateHandler, { GetWeekday } from '~/utils/DateHandler'
+import DateHandler from '~/utils/DateHandler'
 import { RecordBase } from '~/api/records-base.types'
 import { ReminderRecord } from '~/api/index-records.types'
 import { useDeleteReminderRecord } from '~/hooks/api/use-get-reminderrecords'
@@ -22,8 +22,6 @@ const ReminderCard = ({ item, selectedButtonHexColor }: { item: ReminderCardProp
     const handleDelete = async (id: number) => {
         await deleteReminderRecord({ recordID: id })
     }
-    console.log("reminderCard : " + JSON.stringify(item))
-    console.log("item.metric : " + item.metric)
     const urgentColorHandler = () => {
         switch (item.urgency) {
             case 'PastDue':
@@ -40,7 +38,7 @@ const ReminderCard = ({ item, selectedButtonHexColor }: { item: ReminderCardProp
     }
 
     const metricHandler = () => {
-        switch (item.metric) {
+        switch (item.userMetric) {
             case 'Odometer':
                 return `${NumberHandler(parseInt(item.dueOdometer))} ${preferredDistanceMeasurement}`
             case 'Date':
@@ -63,7 +61,7 @@ const ReminderCard = ({ item, selectedButtonHexColor }: { item: ReminderCardProp
                 <View style={tw`flex flex-row flex-wrap justify-between`}>
                     <Text style={tw`font-HKGrotesk-Bold text-lg w-4/6`}>{metricHandler()}</Text>
                     <Text style={tw`font-HKGrotesk-Bold align-middle rounded-lg text-sm text-center w-2/6 ${urgentColorHandler()}`}>{item.urgency.replace(/([A-Z])/g, ' $1').trim()}</Text>
-                    {item.metric === 'Both' &&
+                    {item.userMetric === 'Both' &&
                         <Text style={tw`font-HKGrotesk-Bold text-lg`}>or {NumberHandler(parseInt(item.dueOdometer))} {preferredDistanceMeasurement}
                         </Text>}
                 </View>

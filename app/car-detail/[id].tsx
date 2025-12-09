@@ -98,7 +98,7 @@ const CarDetail = () => {
         flashListRef.current.scrollToOffset({ offset: 0, animated: true })
       }
 
-      if (Array.isArray(dataSource) && !('metric' in (dataSource[0] || {})))  {
+      if (Array.isArray(dataSource) && !('userMetric' in (dataSource[0] || {})))  {
         const orderedDataByLatestDate = dataSource
           .slice()
           .sort((a, b) => {
@@ -107,7 +107,7 @@ const CarDetail = () => {
             return dateB.getTime() - dateA.getTime(); // Most recent first
           })
         setSelectedDataSet(orderedDataByLatestDate)
-      } else if (Array.isArray(dataSource) && dataSource.length > 0 && 'metric' in dataSource[0]) {
+      } else if (Array.isArray(dataSource) && dataSource.length > 0 && 'userMetric' in dataSource[0]) {
         setSelectedDataSet(calculateOrderedDataByUrgency(dataSource as ReminderRecord))
       } else {
         setSelectedDataSet([])
@@ -155,7 +155,7 @@ const CarDetail = () => {
   }, [selectedDataSet])
 
   useEffect(() => {
-    if (OdometerRecords || ServiceRecords || RepairRecords || UpgradeRecords || FuelRecords || ReminderRecords) {
+    if (OdometerRecords || ServiceRecords || RepairRecords || UpgradeRecords || FuelRecords || TaxRecords || ReminderRecords) {
       changeDataSet(selectedTabName)
       setSelectedTabName(selectedTabName)
     }
@@ -219,11 +219,11 @@ const CarDetail = () => {
       }
 
       // If urgency is the same, sort by dueDate or dueOdometer
-      if (a.metric === 'Date' || a.metric === 'Both') {
+      if (a.userMetric === 'Date' || a.userMetric === 'Both') {
         const dateA = DateHandler(a.dueDate, true) as Date;
         const dateB = DateHandler(b.dueDate, true) as Date;
         return dateA.getTime() - dateB.getTime(); // Earlier dates first
-      } else if (a.metric === 'Odometer') {
+      } else if (a.userMetric === 'Odometer') {
         return parseInt(a.dueOdometer) - parseInt(b.dueOdometer); // Lower odometer first
       }
       return 0
@@ -302,15 +302,10 @@ const CarDetail = () => {
             onScrollBeginDrag={() => setShowPlusButton(false)}
             renderItem={({ index, item }) => {
 
-              let currentYear = (DateHandler(item.date, true) as Date).getFullYear()
-              let previousItem = index > 0 && selectedDataSet ? selectedDataSet[index - 1] : null
-              let previousYear = previousItem
-                ? (DateHandler(previousItem.date, true) as Date).getFullYear()
-                : null
-              let showYearHeader = (index === 0 || currentYear !== previousYear) && currentYear < currentWorldYear
+              let previousYear, showYearHeader, previousItem, currentYear
 
-              // This if condition will skip for ReminderRecord
-              if (!('metric' in (item))) {
+              // Section will be skipped for ReminderRecord
+              if (!('userMetric' in (item))) {
                 currentYear = (DateHandler(item.date, true) as Date).getFullYear()
                 previousItem = index > 0 && selectedDataSet ? selectedDataSet[index - 1] : null
                 previousYear = previousItem
@@ -356,7 +351,6 @@ const CarDetail = () => {
               selectedButtonHexColor={selectedButtonHexColor}
               selectedTabName={selectedTabName}
               carId={CarId}
-              lastOdometer={Array.isArray(selectedDataSet) && selectedDataSet.length > 0 && selectedTabName !== TaxFunctionStore.key && 'odometer' in selectedDataSet[0] ? selectedDataSet[0].odometer : undefined}
             />
           }
         </>

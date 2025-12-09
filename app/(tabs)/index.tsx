@@ -14,21 +14,9 @@ export default function Home() {
     <ScrollView showsVerticalScrollIndicator={false}>
       {/* <Redirect href="/(tabs)/garage" /> */}
       <Stack.Screen options={{ title: 'Home', headerShown: false }} />
-      <View style={tw`flex p-5 mb-13`}>
+      <View style={tw`p-5 py-0 mb-16`}>
         <Text style={tw`text-2xl mt-4 font-HKGrotesk-Black`}>Hi Thomas</Text>
         <Text style={tw`text-sm mb-4 font-HKGrotesk-Regular`}>How&apos;s the car doing ?</Text>
-        <View style={tw`rounded-full overflow-hidden mb-4`}>
-          <Pressable android_ripple={{ color: '#f87171', borderless: false, foreground: true }}
-            style={tw`rounded-full`} onPress={() => {
-              try {
-                console.log("trying to add new data...")
-              } catch (Err) { console.error(Err) }
-            }}>
-            <Text style={tw`p-4 bg-red-200 font-HKGrotesk-Medium rounded-full text-center`}>
-              Add New Service Record
-            </Text>
-          </Pressable>
-        </View>
 
         <FavoriteCarShowcase Name="Porsche 911 Carrera 3.2" Mileage="320125km" PlateNumber="ZH47589" Year="1985" CarPhotoUri="https://www.williamscrawford.co.uk/wp-content/uploads/2023/09/Porsche-911-carrera-3.2-polo-red-for-sale-williams-crawford-40.jpg" />
 

@@ -1,12 +1,12 @@
 import { GestureResponderEvent, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { Construction, ClipboardCheck, Fuel, PackagePlus, NotepadText, Landmark, Gauge } from 'lucide-react-native'
+import { Construction, ClipboardCheck, Fuel, PackagePlus, NotepadText, Landmark, Gauge, BellRing } from 'lucide-react-native'
 import tw from '~/tw.config';
 
 type ServiceButtonProps = {
     ButtonTitle: string;
     ThemeHexColor: string;
-    LucideIconName: "construction" | "clipboard-check" | "fuel" | "package-plus" | "notepad-text" | "landmark" | "gauge" | undefined;
+    LucideIconName: "construction" | "clipboard-check" | "fuel" | "package-plus" | "notepad-text" | "landmark" | "gauge" | "bell" | undefined;
     OnPress: ((event: GestureResponderEvent) => void) | undefined;
 }
 
@@ -27,6 +27,8 @@ const ServiceButton = (props: ServiceButtonProps) => {
                 return <Landmark style={tw`self-start`} color={props.ThemeHexColor} size={25} />
             case 'gauge':
                 return <Gauge style={tw`self-start`} color={props.ThemeHexColor} size={25} />
+            case 'bell':
+                return <BellRing style={tw`self-start`} color={props.ThemeHexColor} size={25} />
         }
     }
 

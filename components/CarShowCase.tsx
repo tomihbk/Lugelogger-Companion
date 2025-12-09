@@ -26,6 +26,7 @@ const CarShowCase = (props: CarShowCaseProps) => {
     // So I just used the uri directly and it worked. it's not the best way to do it, but it 1am in the morning and I'm mentally exhausted.
 
     // TODO: Remove this once the image is fetched via axios
+    // TODO: Remove hardcoded basic auth and use secure storage instead
     const username = process.env.EXPO_PUBLIC_API_USERNAME!
     const password = process.env.EXPO_PUBLIC_API_PASSWORD!
     const basicAuthToken = base64Encode(utf8Encode(`${username}:${password}`))

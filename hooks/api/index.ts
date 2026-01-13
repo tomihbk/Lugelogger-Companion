@@ -37,6 +37,7 @@ export {
 } from "./use-get-taxrecords"
 export {
   useGetAllVehicles,
+  useGetVehicle
 } from "./use-get-vehicleinfos"
 export {
   useGetUserInfo,

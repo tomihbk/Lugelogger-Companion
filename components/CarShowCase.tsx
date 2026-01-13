@@ -8,6 +8,7 @@ import GlobalStateStore from '~/stores/globalStateStore'
 import { useLastOdometerRecord } from '~/hooks/api/use-get-odometerrecords'
 import { encode as base64Encode } from "base-64"
 import { encode as utf8Encode } from "utf8"
+import ServerSettingsStore from '~/stores/serverSettingsStore'
 
 type CarShowCaseProps = {
     Year: number
@@ -22,13 +23,19 @@ const CarShowCase = (props: CarShowCaseProps) => {
     const { data: lastOdometerRecord } = useLastOdometerRecord(props.carId)
     const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
 
+    const { getSettings, setSettings } = ServerSettingsStore()
+    const savedSettings = getSettings()
+
     // I wasted 5 hours on this trying to call the image via proper way by using axios, but it was not working.
     // So I just used the uri directly and it worked. it's not the best way to do it, but it 1am in the morning and I'm mentally exhausted.
 
     // TODO: Remove this once the image is fetched via axios
     // TODO: Remove hardcoded basic auth and use secure storage instead
-    const username = process.env.EXPO_PUBLIC_API_USERNAME!
-    const password = process.env.EXPO_PUBLIC_API_PASSWORD!
+    const username = savedSettings?.username 
+    const password = savedSettings?.password
+
+    // const username = process.env.EXPO_PUBLIC_API_USERNAME!
+    // const password = process.env.EXPO_PUBLIC_API_PASSWORD!
     const basicAuthToken = base64Encode(utf8Encode(`${username}:${password}`))
 
     return (

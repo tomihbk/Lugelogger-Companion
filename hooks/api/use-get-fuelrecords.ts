@@ -1,27 +1,25 @@
+import { useMutation, useQuery } from "@tanstack/react-query"
 import {
-  InvalidateQueryFilters,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query"
-import { getFuelRecords, addFuelRecord, updateFuelRecord, deleteFuelRecord } from "~/api/fuel-records"
+  getFuelRecords,
+  addFuelRecord,
+  updateFuelRecord,
+  deleteFuelRecord,
+} from "~/api/fuel-records"
 import type { FuelRecordAdd, FuelRecordGet } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 
 const QUERY_KEY = "fuelrecords"
 const _queryClient = queryClient
 
-export const getQueryKey = (
-  vehicleId: number,
-  requestType?: string,
-  fuelRecord?: FuelRecordGet | FuelRecordAdd
-) => {
-  if (fuelRecord) return [QUERY_KEY, vehicleId, fuelRecord]
-  return [QUERY_KEY, requestType, vehicleId]
+export const fuelRecordKeys = {
+  all: (vehicleId: number) => [QUERY_KEY, vehicleId] as const,
+  detail: (vehicleId: number, recordId: number) =>
+    [QUERY_KEY, vehicleId, recordId] as const,
 }
 
 export const useFuelRecords = (vehicleId: number) => {
   const query = useQuery<FuelRecordAdd | FuelRecordGet>({
-    queryKey: getQueryKey(vehicleId, "all-fuel-data"),
+    queryKey: fuelRecordKeys.all(vehicleId),
     queryFn: async () => await getFuelRecords(vehicleId),
   })
   return query
@@ -38,10 +36,10 @@ export const useAddFuelRecord = () => {
     }) => await addFuelRecord(vehicleId, fuelRecord),
     onError: (err) => console.error("useAddFuelRecord error : " + err),
     onSuccess: (_, variables) => {
-      const { vehicleId, fuelRecord } = variables
-      _queryClient.invalidateQueries(
-        getQueryKey(vehicleId, undefined, fuelRecord) as InvalidateQueryFilters
-      )
+      const { vehicleId } = variables
+      _queryClient.invalidateQueries({
+        queryKey: fuelRecordKeys.all(vehicleId),
+      })
     },
   })
   return query
@@ -56,11 +54,10 @@ export const useUpdateFuelRecord = () => {
       recordID: number
       fuelRecord: FuelRecordAdd
     }) => await updateFuelRecord(recordID, fuelRecord),
-    onSuccess: (_, variables) => {
-      const { recordID, fuelRecord } = variables
-      _queryClient.invalidateQueries(
-        getQueryKey(recordID, undefined, fuelRecord) as InvalidateQueryFilters
-      )
+    onSuccess: () => {
+      _queryClient.invalidateQueries({
+        queryKey: [QUERY_KEY],
+      })
     },
   })
   return query
@@ -68,16 +65,12 @@ export const useUpdateFuelRecord = () => {
 
 export const useDeleteFuelRecord = () => {
   const query = useMutation({
-    mutationFn: async ({
-      recordID,
-    }: {
-      recordID: number
-    }) => await deleteFuelRecord(recordID),
-    onSuccess: (_, variables) => {
-      const { recordID } = variables
-      _queryClient.invalidateQueries(
-        getQueryKey(recordID, undefined) as InvalidateQueryFilters
-      )
+    mutationFn: async ({ recordID }: { recordID: number }) =>
+      await deleteFuelRecord(recordID),
+    onSuccess: () => {
+      _queryClient.invalidateQueries({
+        queryKey: [QUERY_KEY],
+      })
     },
   })
   return query

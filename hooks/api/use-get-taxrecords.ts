@@ -6,7 +6,6 @@ import {
 import { getTaxRecords, addTaxRecord, updateTaxRecord, deleteTaxRecord } from "~/api/tax-records"
 import type { TaxRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
-import { deleteServiceRecord } from "~/api/service-records"
 
 const QUERY_KEY = "taxrecords"
 const _queryClient = queryClient

@@ -16,8 +16,9 @@ import ModernSwitch from '~/components/ModernSwitch'
 
 const UpdateRecord = () => {
     const { t } = useTranslation()
-    const { id, actionType, data }: { id: string, actionType: string, data: any } = useLocalSearchParams()
+    const { id, actionType, data, vehicleId }: { id: string, actionType: string, data: any, vehicleId: string } = useLocalSearchParams()
     const _recordID = parseInt(id)
+    const _vehicleID = parseInt(vehicleId)
     const _data = JSON.parse(data)
     const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>(OdometerFunctionStore)
     const { mutateAsync: updateServiceRecord } = useUpdateServiceRecord()
@@ -109,6 +110,7 @@ const UpdateRecord = () => {
                 case FuelFunctionStore.key:
                     await updateFuelRecord({
                         recordID: _recordID,
+                        vehicleId: _vehicleID,
                         fuelRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, fuelConsumed: formData.ConsumedFuel, isFillToFull: formData.IsFillToFull, missedFuelUp: formData.MissedFuelUp, tags }]
                     })
                     break

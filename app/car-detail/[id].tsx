@@ -64,7 +64,10 @@ const CarDetail = () => {
   const [daysSinceLastRecord, setDaysSinceLastRecord] = useState<number>(0)
   const [atStart, setAtStart] = useState(true)
 
-  const changeDataSet = async (serviceName: string) => {
+  const changeDataSet = async (serviceName: string, options?: { scrollToTop?: boolean }) => {
+
+    const shouldScroll = options?.scrollToTop ?? false
+
     try {
       let dataSource: RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | ReminderRecord | undefined;
       switch (serviceName) {
@@ -94,11 +97,11 @@ const CarDetail = () => {
           break
       }
 
-      if (flashListRef.current) {
+      if (flashListRef.current && shouldScroll) {
         flashListRef.current.scrollToOffset({ offset: 0, animated: true })
       }
 
-      if (Array.isArray(dataSource) && !('userMetric' in (dataSource[0] || {})))  {
+      if (Array.isArray(dataSource) && !('userMetric' in (dataSource[0] || {}))) {
         const orderedDataByLatestDate = dataSource
           .slice()
           .sort((a, b) => {
@@ -279,7 +282,7 @@ const CarDetail = () => {
             onClick={() => {
               setSelectedTabName(button.key)
               setSelectedButtonHexColor(button.color)
-              changeDataSet(button.key)
+              changeDataSet(button.key, { scrollToTop: true })
             }}
             selectedTabName={selectedTabName} />
         ))}
@@ -317,7 +320,7 @@ const CarDetail = () => {
               const renderCard = () => {
                 switch (selectedTabName) {
                   case FuelFunctionStore.key:
-                    return <FuelCard item={item} odometerDelta={odometerDelta[index]} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <FuelCard item={item} odometerDelta={odometerDelta[index]} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId} />
                   case OdometerFunctionStore.key:
                     return <OdometerCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
                   case ServiceFunctionStore.key:

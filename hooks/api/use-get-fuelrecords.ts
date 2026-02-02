@@ -7,19 +7,13 @@ import {
 } from "~/api/fuel-records"
 import type { FuelRecordAdd, FuelRecordGet } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
+import { recordKeys } from "./queryKeys"
 
-const QUERY_KEY = "fuelrecords"
 const _queryClient = queryClient
-
-export const fuelRecordKeys = {
-  all: (vehicleId: number) => [QUERY_KEY, vehicleId] as const,
-  detail: (vehicleId: number, recordId: number) =>
-    [QUERY_KEY, vehicleId, recordId] as const,
-}
 
 export const useFuelRecords = (vehicleId: number) => {
   const query = useQuery<FuelRecordAdd | FuelRecordGet>({
-    queryKey: fuelRecordKeys.all(vehicleId),
+    queryKey: recordKeys.fuel.allRecords(vehicleId),
     queryFn: async () => await getFuelRecords(vehicleId),
   })
   return query
@@ -28,9 +22,11 @@ export const useFuelRecords = (vehicleId: number) => {
 export const useAddFuelRecord = () => {
   const query = useMutation({
     mutationFn: async ({
+      recordID,
       vehicleId,
       fuelRecord,
     }: {
+      recordID: number
       vehicleId: number
       fuelRecord: FuelRecordAdd
     }) => await addFuelRecord(vehicleId, fuelRecord),
@@ -38,7 +34,7 @@ export const useAddFuelRecord = () => {
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
-        queryKey: fuelRecordKeys.all(vehicleId),
+        queryKey: recordKeys.fuel.allRecords(vehicleId),
       })
     },
   })
@@ -49,14 +45,16 @@ export const useUpdateFuelRecord = () => {
   const query = useMutation({
     mutationFn: async ({
       recordID,
+      vehicleId,
       fuelRecord,
     }: {
       recordID: number
+      vehicleId: number
       fuelRecord: FuelRecordAdd
     }) => await updateFuelRecord(recordID, fuelRecord),
-    onSuccess: () => {
+    onSuccess: (_, { vehicleId }) => {
       _queryClient.invalidateQueries({
-        queryKey: [QUERY_KEY],
+        queryKey: recordKeys.fuel.allRecords(vehicleId),
       })
     },
   })
@@ -65,11 +63,16 @@ export const useUpdateFuelRecord = () => {
 
 export const useDeleteFuelRecord = () => {
   const query = useMutation({
-    mutationFn: async ({ recordID }: { recordID: number }) =>
-      await deleteFuelRecord(recordID),
-    onSuccess: () => {
+    mutationFn: async ({
+      recordID,
+      vehicleId,
+    }: {
+      recordID: number
+      vehicleId: number
+    }) => await deleteFuelRecord(recordID),
+    onSuccess: (_, { vehicleId }) => {
       _queryClient.invalidateQueries({
-        queryKey: [QUERY_KEY],
+        queryKey: recordKeys.fuel.allRecords(vehicleId),
       })
     },
   })

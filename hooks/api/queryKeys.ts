@@ -22,9 +22,8 @@ export const recordKeys = {
 
   reminder: {
     root: REMINDER_KEY,
-    allRecords: (vehicleId: number) => [...REMINDER_KEY, vehicleId] as const,
-    oneRecord: (vehicleId: number, recordId: number) =>
-      [...REMINDER_KEY, vehicleId, recordId] as const,
+    allRecords: (vehicleId: number) =>
+      [REMINDER_KEY, "allRecords", vehicleId] as const,
   },
 
   repair: {

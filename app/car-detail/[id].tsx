@@ -332,7 +332,7 @@ const CarDetail = () => {
                   case UpgradeFunctionStore.key:
                     return <UpgradeCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId}/>
                   case ReminderFunctionStore.key:
-                    return <ReminderCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <ReminderCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId}/>
                   // default:
                   //   return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
                 }

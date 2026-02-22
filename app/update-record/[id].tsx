@@ -126,6 +126,7 @@ const UpdateRecord = () => {
                 case ReminderFunctionStore.key:
                     await updateReminderRecord({
                         recordID: _recordID,
+                        vehicleId: _vehicleID,
                         reminderRecord: [{ description: formData.Description, dueDate: convertedDate, dueOdometer: formData.DueOdometer, metric: formData.Metric, notes: formData.Notes, tags }]
                     })
                     break

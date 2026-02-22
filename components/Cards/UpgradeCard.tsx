@@ -14,13 +14,13 @@ import NumberHandler from '~/utils/NumberHandler'
 
 type UpgradeCardProps = RecordBase[0] & UpgradeRecord[0]
 
-const UpgradeCard = ({ item, selectedButtonHexColor }: { item: UpgradeCardProps, selectedButtonHexColor: string }) => {
+const UpgradeCard = ({ item, selectedButtonHexColor, vehicleId  }: { item: UpgradeCardProps, selectedButtonHexColor: string, vehicleId: number }) => {
     const { preferredCurrencySymbol, preferredDistanceMeasurement } = GlobalStateStore((state) => state)
     const [showDeleteButton, setShowDeleteButton] = useState(false)
     const { mutateAsync: deleteUpgradeRecord } = useDeleteUpgradeRecord()
 
     const handleDelete = async (id: number) => {
-        await deleteUpgradeRecord({ recordID: id })
+        await deleteUpgradeRecord({ recordID: id, vehicleId })
     }
 
     return (
@@ -31,7 +31,7 @@ const UpgradeCard = ({ item, selectedButtonHexColor }: { item: UpgradeCardProps,
             onPress={() => {
                 router.push({
                     pathname: "/update-record/[id]",
-                    params: { id: item.id?.toString(), actionType: UpgradeFunctionStore.key, data: JSON.stringify(item) }
+                    params: { id: item.id?.toString(), actionType: UpgradeFunctionStore.key, data: JSON.stringify(item), vehicleId }
                 })
             }}>
             <View style={tw`flex flex-row flex-wrap justify-between`}>

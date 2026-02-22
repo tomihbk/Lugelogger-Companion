@@ -105,6 +105,7 @@ const UpdateRecord = () => {
                 case UpgradeFunctionStore.key:
                     await updateUpgradeRecord({
                         recordID: _recordID,
+                        vehicleId: _vehicleID,
                         upgradeRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break

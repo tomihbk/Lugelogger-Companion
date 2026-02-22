@@ -29,9 +29,8 @@ export const recordKeys = {
 
   repair: {
     root: REPAIR_KEY,
-    allRecords: (vehicleId: number) => [...REPAIR_KEY, vehicleId] as const,
-    oneRecord: (vehicleId: number, recordId: number) =>
-      [...REPAIR_KEY, vehicleId, recordId] as const,
+    allRecords: (vehicleId: number) =>
+      [REPAIR_KEY, "allRecords", vehicleId] as const,
   },
 
   service: {
@@ -49,8 +48,7 @@ export const recordKeys = {
 
   upgrade: {
     root: UPGRADE_KEY,
-    allRecords: (vehicleId: number) => [...UPGRADE_KEY, vehicleId] as const,
-    oneRecord: (vehicleId: number, recordId: number) =>
-      [...UPGRADE_KEY, vehicleId, recordId] as const,
+    allRecords: (vehicleId: number) =>
+      [UPGRADE_KEY, "allRecords", vehicleId] as const,
   },
 }

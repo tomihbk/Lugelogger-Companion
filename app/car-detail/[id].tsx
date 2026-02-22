@@ -326,15 +326,15 @@ const CarDetail = () => {
                   case ServiceFunctionStore.key:
                     return <ServiceCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId}/>
                   case TaxFunctionStore.key:
-                    return <TaxCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <TaxCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId}/>
                   case RepairFunctionStore.key:
                     return <RepairCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId}/>
                   case UpgradeFunctionStore.key:
                     return <UpgradeCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId}/>
                   case ReminderFunctionStore.key:
                     return <ReminderCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
-                  default:
-                    return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                  // default:
+                  //   return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
                 }
               }
               return (

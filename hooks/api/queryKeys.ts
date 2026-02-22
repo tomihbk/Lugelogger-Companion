@@ -41,9 +41,8 @@ export const recordKeys = {
 
   tax: {
     root: TAX_KEY,
-    allRecords: (vehicleId: number) => [...TAX_KEY, vehicleId] as const,
-    oneRecord: (vehicleId: number, recordId: number) =>
-      [...TAX_KEY, vehicleId, recordId] as const,
+    allRecords: (vehicleId: number) =>
+      [TAX_KEY, "allRecords", vehicleId] as const,
   },
 
   upgrade: {

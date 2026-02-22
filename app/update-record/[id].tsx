@@ -119,6 +119,7 @@ const UpdateRecord = () => {
                 case TaxFunctionStore.key:
                     await updateTaxRecord({
                         recordID: _recordID,
+                        vehicleId: _vehicleID,
                         taxRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, notes: formData.Notes, tags }]
                     })
                     break

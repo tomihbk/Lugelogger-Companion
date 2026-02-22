@@ -15,10 +15,8 @@ export const recordKeys = {
 
   odometer: {
     root: ODOMETER_KEY,
-    allRecords: (vehicleId: number) => [...ODOMETER_KEY, vehicleId] as const,
-    last: (vehicleId: number) => [...ODOMETER_KEY, vehicleId, "last"] as const,
-    oneRecord: (vehicleId: number, recordId: number) =>
-      [...ODOMETER_KEY, vehicleId, recordId] as const,
+    allRecords: (vehicleId: number) => [ODOMETER_KEY, "allRecords", vehicleId] as const,
+    last: (vehicleId: number) => [ODOMETER_KEY, "last", vehicleId] as const
   },
 
   reminder: {

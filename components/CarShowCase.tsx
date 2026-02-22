@@ -41,7 +41,7 @@ const CarShowCase = (props: CarShowCaseProps) => {
     return (
         <TouchableOpacity style={tw`mb-5 z-50`} onPress={() => router.push({
             pathname: "/car-detail/[id]",
-            params: { id: props.carId as number, actionType: "odometer" } // TODO: change to "home" for production
+            params: { id: props.carId, actionType: "odometer" } // TODO: change to "home" for production
         })}>
             <ImageBackground source={{ uri: `${props.CarPhotoUri}`, headers: { Authorization: `Basic ${basicAuthToken}` } }} onError={({ nativeEvent }) => {
                 console.warn('ImageBackground failed:', nativeEvent);

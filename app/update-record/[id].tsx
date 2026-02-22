@@ -69,8 +69,6 @@ const UpdateRecord = () => {
         DueOdometer: string;
     }
     const handleForm = async (formData: formDataType) => {
-        //console.log("formData : " + JSON.stringify(formData))
-
         if (currentActionType?.key === ReminderFunctionStore.key) {
             convertedDate = ConvertUTCToUSFormat(formData.DueDate.toISOString())
         } else {
@@ -92,6 +90,7 @@ const UpdateRecord = () => {
                 case OdometerFunctionStore.key:
                     await updateOdometerRecord({
                         recordID: _recordID,
+                        vehicleId: _vehicleID,
                         odometerRecord: [{ date: convertedDate, initialOdometer: formData.InitialOdometer, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break

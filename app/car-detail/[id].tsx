@@ -26,7 +26,7 @@ import ReminderCard from '~/components/Cards/ReminderCard'
 const CarDetail = () => {
   const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
 
-  const carId = parseInt(CarId.toString())
+  const carId = parseInt(CarId)
   const { data: ServiceRecords, isPending: isServiceRecordsFetching } = useServiceRecords(carId)
   const { data: OdometerRecords, isPending: isOdometerRecordsFetching } = useOdometerRecords(carId)
   const { data: RepairRecords, isPending: isRepairRecordsFetching } = useRepairRecords(carId)
@@ -322,7 +322,7 @@ const CarDetail = () => {
                   case FuelFunctionStore.key:
                     return <FuelCard item={item} odometerDelta={odometerDelta[index]} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId} />
                   case OdometerFunctionStore.key:
-                    return <OdometerCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <OdometerCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId}/>
                   case ServiceFunctionStore.key:
                     return <ServiceCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
                   case TaxFunctionStore.key:

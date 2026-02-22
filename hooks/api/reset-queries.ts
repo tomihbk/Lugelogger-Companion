@@ -1,13 +1,14 @@
 import { queryClient } from "~/app/_layout"
+import { recordKeys } from "./queryKeys"
 
 const ALL_RECORD_KEYS = [
-  "fuelrecords",
-  "odometerrecords",
-  "repairrecords",
-  "servicerecords",
-  "reminderrecords",
-  "taxrecords",
-  "upgraderecords",
+  ...recordKeys.fuel.root,
+  ...recordKeys.odometer.root,
+  ...recordKeys.repair.root,
+  ...recordKeys.service.root,
+  ...recordKeys.reminder.root,
+  ...recordKeys.tax.root,
+  ...recordKeys.upgrade.root,
   "userinfo",
   "vehiclelist",
 ] as const

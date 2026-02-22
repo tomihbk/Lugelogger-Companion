@@ -15,8 +15,9 @@ export const recordKeys = {
 
   odometer: {
     root: ODOMETER_KEY,
-    allRecords: (vehicleId: number) => [ODOMETER_KEY, "allRecords", vehicleId] as const,
-    last: (vehicleId: number) => [ODOMETER_KEY, "last", vehicleId] as const
+    allRecords: (vehicleId: number) =>
+      [ODOMETER_KEY, "allRecords", vehicleId] as const,
+    last: (vehicleId: number) => [ODOMETER_KEY, "last", vehicleId] as const,
   },
 
   reminder: {
@@ -35,9 +36,8 @@ export const recordKeys = {
 
   service: {
     root: SERVICE_KEY,
-    allRecords: (vehicleId: number) => [...SERVICE_KEY, vehicleId] as const,
-    oneRecord: (vehicleId: number, recordId: number) =>
-      [...SERVICE_KEY, vehicleId, recordId] as const,
+    allRecords: (vehicleId: number) =>
+      [SERVICE_KEY, "allRecords", vehicleId] as const,
   },
 
   tax: {

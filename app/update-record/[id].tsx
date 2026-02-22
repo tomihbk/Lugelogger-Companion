@@ -84,6 +84,7 @@ const UpdateRecord = () => {
                 case ServiceFunctionStore.key:
                     await updateServiceRecord({
                         recordID: _recordID,
+                        vehicleId: _vehicleID,
                         serviceRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break

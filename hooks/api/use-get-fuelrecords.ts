@@ -22,11 +22,9 @@ export const useFuelRecords = (vehicleId: number) => {
 export const useAddFuelRecord = () => {
   const query = useMutation({
     mutationFn: async ({
-      recordID,
       vehicleId,
       fuelRecord,
     }: {
-      recordID: number
       vehicleId: number
       fuelRecord: FuelRecordAdd
     }) => await addFuelRecord(vehicleId, fuelRecord),

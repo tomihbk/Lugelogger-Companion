@@ -1,27 +1,19 @@
+import { useMutation, useQuery } from "@tanstack/react-query"
 import {
-  InvalidateQueryFilters,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query"
-import { getTaxRecords, addTaxRecord, updateTaxRecord, deleteTaxRecord } from "~/api/tax-records"
+  getTaxRecords,
+  addTaxRecord,
+  updateTaxRecord,
+  deleteTaxRecord,
+} from "~/api/tax-records"
 import type { TaxRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
+import { recordKeys } from "./queryKeys"
 
-const QUERY_KEY = "taxrecords"
 const _queryClient = queryClient
-
-export const getQueryKey = (
-  vehicleId: number,
-  requestType?: string,
-  taxRecord?: TaxRecord
-) => {
-  if (taxRecord) return [QUERY_KEY, vehicleId, taxRecord]
-  return [QUERY_KEY, requestType, vehicleId]
-}
 
 export const useTaxRecords = (vehicleId: number) => {
   const query = useQuery<TaxRecord>({
-    queryKey: getQueryKey(vehicleId, "all-tax-data"),
+    queryKey: recordKeys.tax.allRecords(vehicleId),
     queryFn: async () => await getTaxRecords(vehicleId),
   })
   return query
@@ -38,10 +30,10 @@ export const useAddTaxRecord = () => {
     }) => await addTaxRecord(vehicleId, taxRecord),
     onError: (err) => console.error("useAddTaxRecord error : " + err),
     onSuccess: (_, variables) => {
-      const { vehicleId, taxRecord } = variables
-      _queryClient.invalidateQueries(
-        getQueryKey(vehicleId, undefined, taxRecord) as InvalidateQueryFilters
-      )
+      const { vehicleId } = variables
+      _queryClient.invalidateQueries({
+        queryKey: recordKeys.tax.allRecords(vehicleId),
+      })
     },
   })
   return query
@@ -51,16 +43,18 @@ export const useUpdateTaxRecord = () => {
   const query = useMutation({
     mutationFn: async ({
       recordID,
+      vehicleId,
       taxRecord,
     }: {
       recordID: number
+      vehicleId: number
       taxRecord: TaxRecord
     }) => await updateTaxRecord(recordID, taxRecord),
     onSuccess: (_, variables) => {
-      const { recordID, taxRecord } = variables
-      _queryClient.invalidateQueries(
-        getQueryKey(recordID, undefined, taxRecord) as InvalidateQueryFilters
-      )
+      const { vehicleId } = variables
+      _queryClient.invalidateQueries({
+        queryKey: recordKeys.tax.allRecords(vehicleId),
+      })
     },
   })
   return query
@@ -70,14 +64,16 @@ export const useDeleteTaxRecord = () => {
   const query = useMutation({
     mutationFn: async ({
       recordID,
+      vehicleId,
     }: {
       recordID: number
+      vehicleId: number
     }) => await deleteTaxRecord(recordID),
     onSuccess: (_, variables) => {
-      const { recordID } = variables
-      _queryClient.invalidateQueries(
-        getQueryKey(recordID, undefined) as InvalidateQueryFilters
-      )
+      const { vehicleId } = variables
+      _queryClient.invalidateQueries({
+        queryKey: recordKeys.tax.allRecords(vehicleId),
+      })
     },
   })
   return query

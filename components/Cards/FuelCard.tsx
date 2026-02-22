@@ -12,7 +12,7 @@ import NumberHandler from '~/utils/NumberHandler'
 import Tag from '../TagComponent'
 import { Droplet } from 'lucide-react-native'
 
-const FuelCard = ({ item, odometerDelta, selectedButtonHexColor }: { item: RecordBase[0], odometerDelta: number, selectedButtonHexColor: string }) => {
+const FuelCard = ({ item, odometerDelta, selectedButtonHexColor, vehicleId }: { item: RecordBase[0], odometerDelta: number, selectedButtonHexColor: string, vehicleId: number }) => {
     const { preferredCurrencySymbol, preferredDistanceMeasurement, preferredLiquidMeasurement } = GlobalStateStore((state) => state)
 
     const cost = parseFloat(item.cost).toFixed(2)
@@ -24,9 +24,8 @@ const FuelCard = ({ item, odometerDelta, selectedButtonHexColor }: { item: Recor
     const { mutateAsync: deleteFuelRecord } = useDeleteFuelRecord()
 
     const handleDelete = async (id: number) => {
-        await deleteFuelRecord({ recordID: id })
+        await deleteFuelRecord({ recordID: id, vehicleId })
     }
-
 
     return (
         <View style={tw`mb-2`}>
@@ -35,7 +34,7 @@ const FuelCard = ({ item, odometerDelta, selectedButtonHexColor }: { item: Recor
                 onPress={() => {
                     router.push({
                         pathname: "/update-record/[id]",
-                        params: { id: item.id?.toString(), actionType: FuelFunctionStore.key, data: JSON.stringify(item) }
+                        params: { id: item.id?.toString(), actionType: FuelFunctionStore.key, data: JSON.stringify(item), vehicleId }
                     })
                 }}>
                 <View style={tw`flex flex-row flex-wrap justify-between`}>

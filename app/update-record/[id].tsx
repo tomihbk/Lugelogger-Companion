@@ -16,8 +16,9 @@ import ModernSwitch from '~/components/ModernSwitch'
 
 const UpdateRecord = () => {
     const { t } = useTranslation()
-    const { id, actionType, data }: { id: string, actionType: string, data: any } = useLocalSearchParams()
+    const { id, actionType, data, vehicleId }: { id: string, actionType: string, data: any, vehicleId: string } = useLocalSearchParams()
     const _recordID = parseInt(id)
+    const _vehicleID = parseInt(vehicleId)
     const _data = JSON.parse(data)
     const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>(OdometerFunctionStore)
     const { mutateAsync: updateServiceRecord } = useUpdateServiceRecord()
@@ -68,8 +69,6 @@ const UpdateRecord = () => {
         DueOdometer: string;
     }
     const handleForm = async (formData: formDataType) => {
-        //console.log("formData : " + JSON.stringify(formData))
-
         if (currentActionType?.key === ReminderFunctionStore.key) {
             convertedDate = ConvertUTCToUSFormat(formData.DueDate.toISOString())
         } else {
@@ -85,42 +84,49 @@ const UpdateRecord = () => {
                 case ServiceFunctionStore.key:
                     await updateServiceRecord({
                         recordID: _recordID,
+                        vehicleId: _vehicleID,
                         serviceRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
                 case OdometerFunctionStore.key:
                     await updateOdometerRecord({
                         recordID: _recordID,
+                        vehicleId: _vehicleID,
                         odometerRecord: [{ date: convertedDate, initialOdometer: formData.InitialOdometer, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
                 case RepairFunctionStore.key:
                     await updateRepairRecord({
                         recordID: _recordID,
+                        vehicleId: _vehicleID,
                         repairRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
                 case UpgradeFunctionStore.key:
                     await updateUpgradeRecord({
                         recordID: _recordID,
+                        vehicleId: _vehicleID,
                         upgradeRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, tags }]
                     })
                     break
                 case FuelFunctionStore.key:
                     await updateFuelRecord({
                         recordID: _recordID,
+                        vehicleId: _vehicleID,
                         fuelRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, odometer: formData.Odometer, notes: formData.Notes, fuelConsumed: formData.ConsumedFuel, isFillToFull: formData.IsFillToFull, missedFuelUp: formData.MissedFuelUp, tags }]
                     })
                     break
                 case TaxFunctionStore.key:
                     await updateTaxRecord({
                         recordID: _recordID,
+                        vehicleId: _vehicleID,
                         taxRecord: [{ cost: formData.Cost, date: convertedDate, description: formData.Description, notes: formData.Notes, tags }]
                     })
                     break
                 case ReminderFunctionStore.key:
                     await updateReminderRecord({
                         recordID: _recordID,
+                        vehicleId: _vehicleID,
                         reminderRecord: [{ description: formData.Description, dueDate: convertedDate, dueOdometer: formData.DueOdometer, metric: formData.Metric, notes: formData.Notes, tags }]
                     })
                     break

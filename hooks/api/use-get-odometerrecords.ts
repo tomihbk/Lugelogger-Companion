@@ -1,8 +1,4 @@
-import {
-  InvalidateQueryFilters,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import {
   getOdometerRecords,
   addOdometerRecord,
@@ -12,22 +8,13 @@ import {
 } from "~/api/odometer-records"
 import type { OdometerRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
+import { recordKeys } from "./queryKeys"
 
-const QUERY_KEY = "odometerrecords"
 const _queryClient = queryClient
-
-export const getQueryKey = (
-  vehicleId: number,
-  requestType?: string,
-  odometerRecord?: OdometerRecord
-) => {
-  if (odometerRecord) return [QUERY_KEY, vehicleId, odometerRecord]
-  return [QUERY_KEY, requestType,vehicleId]
-}
 
 export const useOdometerRecords = (vehicleId: number) => {
   const query = useQuery<OdometerRecord>({
-    queryKey: getQueryKey(vehicleId, "all-odometer-data"),
+    queryKey: recordKeys.odometer.allRecords(vehicleId),
     queryFn: async () => await getOdometerRecords(vehicleId),
   })
   return query
@@ -35,7 +22,7 @@ export const useOdometerRecords = (vehicleId: number) => {
 
 export const useLastOdometerRecord = (vehicleId: number) => {
   const query = useQuery<OdometerRecord>({
-    queryKey: getQueryKey(vehicleId, "last-odometer-data"),
+    queryKey: recordKeys.odometer.last(vehicleId),
     queryFn: async () => await getLastOdometerRecord(vehicleId),
   })
   return query
@@ -51,10 +38,10 @@ export const useAddOdometerRecord = () => {
       odometerRecord: OdometerRecord
     }) => await addOdometerRecord(vehicleId, odometerRecord),
     onSuccess: (_, variables) => {
-      const { vehicleId, odometerRecord } = variables
-      _queryClient.invalidateQueries(
-        getQueryKey(vehicleId, undefined, odometerRecord) as InvalidateQueryFilters
-      )
+      const { vehicleId } = variables
+      _queryClient.invalidateQueries({
+        queryKey: recordKeys.odometer.allRecords(vehicleId),
+      })
     },
   })
   return query
@@ -64,16 +51,17 @@ export const useUpdateOdometerRecord = () => {
   const query = useMutation({
     mutationFn: async ({
       recordID,
+      vehicleId,
       odometerRecord,
     }: {
       recordID: number
+      vehicleId: number
       odometerRecord: OdometerRecord
     }) => await updateOdometerRecord(recordID, odometerRecord),
-    onSuccess: (_, variables) => {
-      const { recordID, odometerRecord } = variables
-      _queryClient.invalidateQueries(
-        getQueryKey(recordID, undefined, odometerRecord) as InvalidateQueryFilters
-      )
+    onSuccess: (_, { vehicleId }) => {
+      _queryClient.invalidateQueries({
+        queryKey: recordKeys.odometer.allRecords(vehicleId),
+      })
     },
   })
   return query
@@ -83,14 +71,16 @@ export const useDeleteOdometerRecord = () => {
   const query = useMutation({
     mutationFn: async ({
       recordID,
+      vehicleId,
     }: {
       recordID: number
+      vehicleId: number
     }) => await deleteOdometerRecord(recordID),
     onSuccess: (_, variables) => {
-      const { recordID } = variables
-      _queryClient.invalidateQueries(
-        getQueryKey(recordID, undefined) as InvalidateQueryFilters
-      )
+      const { vehicleId } = variables
+      _queryClient.invalidateQueries({
+        queryKey: recordKeys.odometer.allRecords(vehicleId),
+      })
     },
   })
   return query

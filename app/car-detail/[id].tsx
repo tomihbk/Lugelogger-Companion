@@ -26,7 +26,7 @@ import ReminderCard from '~/components/Cards/ReminderCard'
 const CarDetail = () => {
   const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
 
-  const carId = parseInt(CarId.toString())
+  const carId = parseInt(CarId)
   const { data: ServiceRecords, isPending: isServiceRecordsFetching } = useServiceRecords(carId)
   const { data: OdometerRecords, isPending: isOdometerRecordsFetching } = useOdometerRecords(carId)
   const { data: RepairRecords, isPending: isRepairRecordsFetching } = useRepairRecords(carId)
@@ -64,7 +64,10 @@ const CarDetail = () => {
   const [daysSinceLastRecord, setDaysSinceLastRecord] = useState<number>(0)
   const [atStart, setAtStart] = useState(true)
 
-  const changeDataSet = async (serviceName: string) => {
+  const changeDataSet = async (serviceName: string, options?: { scrollToTop?: boolean }) => {
+
+    const shouldScroll = options?.scrollToTop ?? false
+
     try {
       let dataSource: RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | ReminderRecord | undefined;
       switch (serviceName) {
@@ -94,11 +97,11 @@ const CarDetail = () => {
           break
       }
 
-      if (flashListRef.current) {
+      if (flashListRef.current && shouldScroll) {
         flashListRef.current.scrollToOffset({ offset: 0, animated: true })
       }
 
-      if (Array.isArray(dataSource) && !('userMetric' in (dataSource[0] || {})))  {
+      if (Array.isArray(dataSource) && !('userMetric' in (dataSource[0] || {}))) {
         const orderedDataByLatestDate = dataSource
           .slice()
           .sort((a, b) => {
@@ -279,7 +282,7 @@ const CarDetail = () => {
             onClick={() => {
               setSelectedTabName(button.key)
               setSelectedButtonHexColor(button.color)
-              changeDataSet(button.key)
+              changeDataSet(button.key, { scrollToTop: true })
             }}
             selectedTabName={selectedTabName} />
         ))}
@@ -317,21 +320,21 @@ const CarDetail = () => {
               const renderCard = () => {
                 switch (selectedTabName) {
                   case FuelFunctionStore.key:
-                    return <FuelCard item={item} odometerDelta={odometerDelta[index]} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <FuelCard item={item} odometerDelta={odometerDelta[index]} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId} />
                   case OdometerFunctionStore.key:
-                    return <OdometerCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <OdometerCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId}/>
                   case ServiceFunctionStore.key:
-                    return <ServiceCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <ServiceCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId}/>
                   case TaxFunctionStore.key:
-                    return <TaxCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <TaxCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId}/>
                   case RepairFunctionStore.key:
-                    return <RepairCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <RepairCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId}/>
                   case UpgradeFunctionStore.key:
-                    return <UpgradeCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <UpgradeCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId}/>
                   case ReminderFunctionStore.key:
-                    return <ReminderCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
-                  default:
-                    return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <ReminderCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId}/>
+                  // default:
+                  //   return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
                 }
               }
               return (

@@ -14,13 +14,13 @@ import NumberHandler from '~/utils/NumberHandler'
 
 type ReminderCardProps = RecordBase[0] & ReminderRecord[0]
 
-const ReminderCard = ({ item, selectedButtonHexColor }: { item: ReminderCardProps, selectedButtonHexColor: string }) => {
+const ReminderCard = ({ item, selectedButtonHexColor, vehicleId }: { item: ReminderCardProps, selectedButtonHexColor: string, vehicleId: number }) => {
     const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
     const [showDeleteButton, setShowDeleteButton] = useState(false)
     const { mutateAsync: deleteReminderRecord } = useDeleteReminderRecord()
 
     const handleDelete = async (id: number) => {
-        await deleteReminderRecord({ recordID: id })
+        await deleteReminderRecord({ recordID: id, vehicleId })
     }
     const urgentColorHandler = () => {
         switch (item.urgency) {
@@ -55,7 +55,7 @@ const ReminderCard = ({ item, selectedButtonHexColor }: { item: ReminderCardProp
                 onPress={() => {
                     router.push({
                         pathname: "/update-record/[id]",
-                        params: { id: item.id?.toString(), actionType: ReminderFunctionStore.key, data: JSON.stringify(item) }
+                        params: { id: item.id?.toString(), actionType: ReminderFunctionStore.key, data: JSON.stringify(item), vehicleId }
                     })
                 }}>
                 <View style={tw`flex flex-row flex-wrap justify-between`}>

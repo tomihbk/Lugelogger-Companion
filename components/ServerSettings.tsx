@@ -5,6 +5,7 @@ import { encode as base64Encode } from 'base-64'
 import tw from '~/tw.config'
 import ServerSettingsStore from '~/stores/serverSettingsStore'
 import { ENDPOINT } from '~/api/user-info'
+import { refreshAllQueries } from '~/hooks/api/reset-queries'
 
 type ServerSettingsProps = {
     initial?: { serverURL?: string; username?: string; password?: string }
@@ -77,9 +78,9 @@ const ServerSettings: React.FC<ServerSettingsProps> = ({
 
     const handleSave = (values: { serverURL: string; username: string; password: string }) => {
         setSettings(values)
-        if (onSave) {
-            onSave()
-        }
+        // Refresh all queries when server changes
+        refreshAllQueries()
+        if (onSave) onSave()
     }
 
     return (

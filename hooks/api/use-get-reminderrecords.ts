@@ -1,28 +1,19 @@
+import { useMutation, useQuery } from "@tanstack/react-query"
 import {
-  InvalidateQueryFilters,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query"
-import { getReminderRecords, addReminderRecord, updateReminderRecord } from "~/api/reminder-records"
+  getReminderRecords,
+  addReminderRecord,
+  updateReminderRecord,
+} from "~/api/reminder-records"
 import type { ReminderRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 import { deleteReminderRecord } from "~/api/reminder-records"
+import { recordKeys } from "./queryKeys"
 
-const QUERY_KEY = "reminderrecords"
 const _queryClient = queryClient
-
-export const getQueryKey = (
-  vehicleId: number,
-  requestType?: string,
-  reminderRecord?: ReminderRecord
-) => {
-  if (reminderRecord) return [QUERY_KEY, vehicleId, reminderRecord]
-  return [QUERY_KEY, requestType, vehicleId]
-}
 
 export const useReminderRecords = (vehicleId: number) => {
   const query = useQuery<ReminderRecord>({
-    queryKey: getQueryKey(vehicleId, "all-reminder-data"),
+    queryKey: recordKeys.reminder.allRecords(vehicleId),
     queryFn: async () => await getReminderRecords(vehicleId),
   })
   return query
@@ -39,10 +30,10 @@ export const useAddReminderRecord = () => {
     }) => await addReminderRecord(vehicleId, reminderRecord),
     onError: (err) => console.error("useAddReminderRecord error : " + err),
     onSuccess: (_, variables) => {
-      const { vehicleId, reminderRecord } = variables
-      _queryClient.invalidateQueries(
-        getQueryKey(vehicleId, undefined, reminderRecord) as InvalidateQueryFilters
-      )
+      const { vehicleId } = variables
+      _queryClient.invalidateQueries({
+        queryKey: recordKeys.reminder.allRecords(vehicleId),
+      })
     },
   })
   return query
@@ -52,16 +43,18 @@ export const useUpdateReminderRecord = () => {
   const query = useMutation({
     mutationFn: async ({
       recordID,
+      vehicleId,
       reminderRecord,
     }: {
       recordID: number
+      vehicleId: number
       reminderRecord: ReminderRecord
     }) => await updateReminderRecord(recordID, reminderRecord),
     onSuccess: (_, variables) => {
-      const { recordID, reminderRecord } = variables
-      _queryClient.invalidateQueries(
-        getQueryKey(recordID, undefined, reminderRecord) as InvalidateQueryFilters
-      )
+      const { vehicleId } = variables
+      _queryClient.invalidateQueries({
+        queryKey: recordKeys.reminder.allRecords(vehicleId),
+      })
     },
   })
   return query
@@ -71,14 +64,16 @@ export const useDeleteReminderRecord = () => {
   const query = useMutation({
     mutationFn: async ({
       recordID,
+      vehicleId,
     }: {
       recordID: number
+      vehicleId: number
     }) => await deleteReminderRecord(recordID),
     onSuccess: (_, variables) => {
-      const { recordID } = variables
-      _queryClient.invalidateQueries(
-        getQueryKey(recordID, undefined) as InvalidateQueryFilters
-      )
+      const { vehicleId } = variables
+      _queryClient.invalidateQueries({
+        queryKey: recordKeys.reminder.allRecords(vehicleId),
+      })
     },
   })
   return query

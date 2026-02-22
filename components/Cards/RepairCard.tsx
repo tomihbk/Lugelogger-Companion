@@ -14,13 +14,13 @@ import NumberHandler from '~/utils/NumberHandler'
 
 type RepairCardProps = RecordBase[0] & RepairRecord[0]
 
-const RepairCard = ({ item, selectedButtonHexColor }: { item: RepairCardProps, selectedButtonHexColor: string }) => {
+const RepairCard = ({ item, selectedButtonHexColor, vehicleId }: { item: RepairCardProps, selectedButtonHexColor: string, vehicleId: number }) => {
     const { preferredCurrencySymbol, preferredDistanceMeasurement } = GlobalStateStore((state) => state)
     const [showDeleteButton, setShowDeleteButton] = useState(false)
     const { mutateAsync: deleteRepairRecord } = useDeleteRepairRecord()
 
     const handleDelete = async (id: number) => {
-        await deleteRepairRecord({ recordID: id })
+        await deleteRepairRecord({ recordID: id, vehicleId })
     }
 
     return (
@@ -31,7 +31,7 @@ const RepairCard = ({ item, selectedButtonHexColor }: { item: RepairCardProps, s
             onPress={() => {
                 router.push({
                     pathname: "/update-record/[id]",
-                    params: { id: item.id?.toString(), actionType: RepairFunctionStore.key, data: JSON.stringify(item) }
+                    params: { id: item.id?.toString(), actionType: RepairFunctionStore.key, data: JSON.stringify(item), vehicleId }
                 })
             }}>
             <View style={tw`flex flex-row flex-wrap justify-between`}>

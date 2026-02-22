@@ -26,7 +26,7 @@ export const useGetAllVehicles = () => {
 
 export const useGetVehicle = (vehicleId: number) => {
   const query = useQuery<VehicleInfo>({
-    queryKey: getQueryKey("all-vehicule-data", vehicleId),
+    queryKey: getQueryKey("vehicule-data", vehicleId),
     queryFn: async () => await getVehicle(vehicleId),
   })
   return query

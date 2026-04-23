@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text, Image, Dimensions, StyleSheet } from 'react-native'
+import React from 'react'
+import { View, Text, Dimensions, StyleSheet } from 'react-native'
 import tw from '~/tw.config'
 import { LinearGradient } from 'expo-linear-gradient'
 import GlobalStateStore from '~/stores/globalStateStore'
 import { Calendar, Gauge } from 'lucide-react-native'
-import * as FileSystem from 'expo-file-system'
-import ImageColors from 'react-native-image-colors'
+import AuthenticatedImage from './AuthenticatedImage'
+import { useFetchImageAccent } from '~/hooks/useFetchImageAccent'
 
 type FavoriteCarShowCaseProps = {
     Year: string
@@ -20,37 +20,15 @@ const FavoriteCarShowcase = (props: FavoriteCarShowCaseProps) => {
     const CARD_HEIGHT = width * 0.15
 
     const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
-    const [avgColor, setAvgColor] = useState('#000000') // fallback color
-
-    // Fetch average color on mount
-    useEffect(() => {
-        const fetchColor = async () => {
-            try {
-                const localUri = FileSystem.cacheDirectory + 'auth.jpg'
-                const authHeader = 'Basic ' + btoa(`xxxxxxxxxx`)
-
-                const result = await FileSystem.downloadAsync(props.CarPhotoUri, localUri, {
-                    headers: { Authorization: authHeader },
-                })
-
-                const colors = await ImageColors.getColors(result.uri, { fallback: '#000000' })
-                setAvgColor(String(colors?.vibrant) || '#000000')
-            } catch (err) {
-                console.error('Average color error:', err)
-                setAvgColor('#000000')
-            }
-        }
-
-        fetchColor()
-    }, [props.CarPhotoUri])
+    const avgColor = useFetchImageAccent(props.CarPhotoUri)
 
     return (
         <View style={{ marginBottom: 16 }}>
             <View style={[tw`relative overflow-hidden rounded-3xl h-[${CARD_HEIGHT}]`]}>
-                <Image
-                    source={{ uri: props.CarPhotoUri }}
+                <AuthenticatedImage
+                    uri={props.CarPhotoUri}
                     style={StyleSheet.absoluteFill}
-                    resizeMode="cover"/>
+                    resizeMode="cover" />
 
                 <LinearGradient
                     colors={[avgColor, 'transparent']}

@@ -9,7 +9,7 @@ import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, Upgra
 export default function GroupActionButtons() {
     const favoriteCarID = GlobalStateStore((state) => state.favoriteCarId)
     const pathname = "/car-detail/[id]"
-    
+
     return (
         <View style={tw`flex flex-wrap flex-row justify-between gap-3 my-5`}>
             <ActionButton ButtonTitle="Odo" LucideIconName="gauge" ThemeHexColor={OdometerFunctionStore.buttonColor} OnPress={() => {
@@ -37,11 +37,11 @@ export default function GroupActionButtons() {
                     pathname, params: { id: favoriteCarID, actionType: FuelFunctionStore.key }
                 })
             }} />
-            <ActionButton ButtonTitle="Taxes" LucideIconName="landmark" ThemeHexColor={TaxFunctionStore.buttonColor} OnPress={() => {
+            {/* <ActionButton ButtonTitle="Taxes" LucideIconName="landmark" ThemeHexColor={TaxFunctionStore.buttonColor} OnPress={() => {
                 router.push({
                     pathname, params: { id: favoriteCarID, actionType: TaxFunctionStore.key }
                 })
-            }} />
+            }} /> */}
             <ActionButton ButtonTitle="Reminder" LucideIconName="bell" ThemeHexColor={ReminderFunctionStore.buttonColor} OnPress={() => {
                 router.push({
                     pathname, params: { id: favoriteCarID, actionType: ReminderFunctionStore.key }

@@ -1,9 +1,8 @@
 import React from "react"
-import { Tabs } from "expo-router"
+import { Stack, Tabs } from "expo-router"
 import { Home, Warehouse, Settings } from 'lucide-react-native'
 import { View } from 'react-native'
 import "../../i18n/i18n.config"
-import { StatusBar } from "expo-status-bar"
 import useThemeStore from "~/stores/themeStore"
 import tw from "~/tw.config"
 import { useDeviceContext } from "twrnc"
@@ -20,25 +19,31 @@ export default function TabLayout() {
 
   return (
     <>
-      <StatusBar style={colorSchemeStore == 'light' ? 'dark' : 'light'} />
-
+      <Stack.Screen options={{
+        statusBarStyle: colorSchemeStore == 'light' ? 'dark' : 'light',
+        statusBarColor: colorSchemeStore == 'light' ? '#fafafa' : '#564',
+      }} />
       <Tabs
         sceneContainerStyle={{ backgroundColor: colorSchemeStore == 'light' ? '#fafafa' : '#564' }} // Body background color
         screenOptions={{
           // tabBarActiveTintColor: '#000',
           // tabBarInactiveTintColor: '#fff',
           headerShown: false,
-          headerStyle: { backgroundColor: colorSchemeStore == 'light' ? '#fafafa' : '#0d1117' }, // Header background color
-          tabBarBackground: () => <View style={tw`bg-white h-full mx-4 rounded-tr-2xl rounded-tl-2xl`} />,
+          tabBarBackground: () =>
+            <View
+              style={[tw`bg-white h-full mx-4 rounded-tr-2xl rounded-tl-2xl shadow-2xl shadow-blue-700/80`,
+              { shadowOffset: { width: 0, height: -5 }, elevation: 18 }]} />,
           tabBarStyle: {
             position: 'absolute',
             shadowColor: 'transparent',
-            height: 58,
+            height: 62,
             borderColor: 'transparent',
             borderWidth: 0,
           },
           tabBarLabelStyle: {
             marginBottom: 7,
+            fontFamily: "HankenGrotesk-Bold",
+            fontSize: 12,
           },
         }}>
         {/* <Tabs

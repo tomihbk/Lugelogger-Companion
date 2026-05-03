@@ -86,11 +86,14 @@ const NextReminderCard = ({ carId }: ReminderCardProps) => {
     }
 
     if (!nextReminder) {
-        return false
+        return (
+            <View style={tw`rounded-2xl p-4 mt-4 bg-white shadow-2xl dark:shadow-none shadow-blue-900/20`}>
+                <Text style={tw`font-HKGrotesk-Medium`}>All good, no upcoming reminders 🎉</Text>
+            </View>)
     }
 
     return (
-        <View style={tw`mt-6 bg-white rounded-xl p-4`}>
+        <View style={tw`mt-6 bg-white rounded-xl p-4 shadow-lg shadow-red-900/20`}>
             <View style={tw`flex-row items-start gap-4`}>
                 <View style={tw`flex items-center justify-center h-10 w-10 rounded-xl bg-red-100`}>
                     <Bell size={24} color="rgba(220,38,38,1)" />

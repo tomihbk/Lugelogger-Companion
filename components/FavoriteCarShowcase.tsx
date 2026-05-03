@@ -1,13 +1,15 @@
 import React from 'react'
-import { View, Text, Dimensions, StyleSheet } from 'react-native'
+import { View, Text, Dimensions, StyleSheet, TouchableOpacity } from 'react-native'
 import tw from '~/tw.config'
 import { LinearGradient } from 'expo-linear-gradient'
 import GlobalStateStore from '~/stores/globalStateStore'
 import { Calendar, Gauge } from 'lucide-react-native'
 import AuthenticatedImage from './AuthenticatedImage'
 import { useFetchImageAccent } from '~/hooks/useFetchImageAccent'
+import { router } from 'expo-router'
 
 type FavoriteCarShowCaseProps = {
+    CarID: number
     Year: string
     PlateNumber: string
     Mileage: string
@@ -18,13 +20,18 @@ type FavoriteCarShowCaseProps = {
 const FavoriteCarShowcase = (props: FavoriteCarShowCaseProps) => {
     const { width } = Dimensions.get('window')
     const CARD_HEIGHT = width * 0.15
+    const pathname = "/car-detail/[id]"
 
     const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
     const avgColor = useFetchImageAccent(props.CarPhotoUri)
 
     return (
-        <View style={{ marginBottom: 16 }}>
-            <View style={[tw`relative overflow-hidden rounded-3xl h-[${CARD_HEIGHT}]`]}>
+        <TouchableOpacity style={tw`mb-4`} onPress={() => {
+            router.push({
+                pathname, params: { id: props.CarID, actionType: "home" }
+            })
+        }}>
+            <View style={[tw`relative overflow-hidden rounded-3xl h-[${CARD_HEIGHT}] shadow-xl dark:shadow-none shadow-blue-900/80`]}>
                 <AuthenticatedImage
                     uri={props.CarPhotoUri}
                     style={StyleSheet.absoluteFill}
@@ -63,7 +70,7 @@ const FavoriteCarShowcase = (props: FavoriteCarShowCaseProps) => {
                     </View>
                 </LinearGradient>
             </View>
-        </View>
+        </TouchableOpacity>
     )
 }
 

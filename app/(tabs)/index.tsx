@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import { Redirect, Stack } from 'expo-router'
 import { useTranslation } from 'react-i18next'
-import { View, Text, ScrollView } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import tw from '~/tw.config'
 import GroupActionButtons from "~/components/GroupActionButtons"
 import FavoriteCarShowcase from "~/components/FavoriteCarShowcase"
@@ -9,9 +9,9 @@ import { useGetUserInfo } from "~/hooks/api"
 import CapitalizeFirstLetter from "~/utils/StringCapitalizer"
 import GlobalStateStore from '~/stores/globalStateStore'
 import { useGetVehicle } from "~/hooks/api"
-import { VehicleInfo } from "~/api/index-records.types"
 import ServerSettingsStore from "~/stores/serverSettingsStore"
 import NextReminderCard from "~/components/Cards/NextReminderCard"
+import GreetingHeader from "~/components/GreetingHeader"
 
 
 export default function Home() {
@@ -27,7 +27,8 @@ export default function Home() {
 
   useEffect(() => {
     console.log("Vehicle Data:", vehicleWithoutStats)
-  }, [vehicleWithoutStats])
+    console.log("vehicleWithStats:", vehicleWithStats)
+  }, [vehicleWithoutStats, vehicleWithStats])
 
   console.log("Favorite Car ID in Home:", savedSettings)
 
@@ -36,11 +37,9 @@ export default function Home() {
       {/* <Redirect href="/(tabs)/garage" /> */}
       <Stack.Screen options={{ title: 'Home', headerShown: false }} />
       <View style={tw`p-5 py-0 mb-16`}>
-        <Text style={tw`text-2xl mt-4 font-HKGrotesk-Black`}>Hi {CapitalizeFirstLetter(UserInfo?.username as string)}</Text>
-        <Text style={tw`text-sm mb-4 font-HKGrotesk-Regular`}>How&apos;s the car doing ?</Text>
+        <GreetingHeader brand={vehicleWithoutStats.make} userName={CapitalizeFirstLetter(UserInfo?.username as string)} />
 
-
-        {!isPending && <FavoriteCarShowcase Name={`${vehicleWithoutStats.make} ${vehicleWithoutStats.model}`} PlateNumber={vehicleWithoutStats.licensePlate} Year={vehicleWithoutStats.year} CarPhotoUri={`${savedSettings?.serverURL}${vehicleWithoutStats.imageLocation}`} Mileage={vehicleWithStats.lastReportedOdometer} />}
+        {!isPending && <FavoriteCarShowcase Name={`${vehicleWithoutStats.make} ${vehicleWithoutStats.model}`} PlateNumber={vehicleWithoutStats.licensePlate} Year={vehicleWithoutStats.year} CarPhotoUri={`${savedSettings?.serverURL}${vehicleWithoutStats.imageLocation}`} Mileage={vehicleWithStats.lastReportedOdometer} CarID={favoriteCarId} />}
 
         <GroupActionButtons />
 

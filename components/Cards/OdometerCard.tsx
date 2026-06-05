@@ -13,7 +13,7 @@ import Tag from '~/components/TagComponent'
 import NumberHandler from '~/utils/NumberHandler'
 type OdometerCardProps = RecordBase[0] & OdometerRecord[0]
 
-const OdometerCard = ({ item, selectedButtonHexColor }: { item: OdometerCardProps, selectedButtonHexColor: string }) => {
+const OdometerCard = ({ item, selectedButtonHexColor, vehicleId }: { item: OdometerCardProps, selectedButtonHexColor: string, vehicleId: number}) => {
     const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
     const [showDeleteButton, setShowDeleteButton] = useState(false)
     const { mutateAsync: deleteOdometerRecord } = useDeleteOdometerRecord()
@@ -24,7 +24,7 @@ const OdometerCard = ({ item, selectedButtonHexColor }: { item: OdometerCardProp
     }
 
     const handleDelete = async (id: number) => {
-        await deleteOdometerRecord({ recordID: id })
+        await deleteOdometerRecord({ recordID: id, vehicleId })
     }
 
     return (
@@ -35,7 +35,7 @@ const OdometerCard = ({ item, selectedButtonHexColor }: { item: OdometerCardProp
                 onPress={() => {
                     router.push({
                         pathname: "/update-record/[id]",
-                        params: { id: item.id?.toString(), actionType: OdometerFunctionStore.key, data: JSON.stringify(item) }
+                        params: { id: item.id?.toString(), actionType: OdometerFunctionStore.key, data: JSON.stringify(item), vehicleId }
                     })
                 }}>
                 <View style={tw`flex flex-row flex-wrap justify-between`}>

@@ -13,13 +13,13 @@ import Tag from '../TagComponent'
 
 type TaxCardProps = RecordBase[0] & TaxRecord[0]
 
-const TaxCard = ({ item, selectedButtonHexColor }: { item: TaxCardProps, selectedButtonHexColor: string }) => {
+const TaxCard = ({ item, selectedButtonHexColor, vehicleId }: { item: TaxCardProps, selectedButtonHexColor: string, vehicleId: number }) => {
     const { preferredCurrencySymbol } = GlobalStateStore((state) => state)
     const [showDeleteButton, setShowDeleteButton] = useState(false)
     const { mutateAsync: deleteTaxRecord } = useDeleteTaxRecord()
 
     const handleDelete = async (id: number) => {
-        await deleteTaxRecord({ recordID: id })
+        await deleteTaxRecord({ recordID: id, vehicleId })
     }
 
     return (
@@ -30,7 +30,7 @@ const TaxCard = ({ item, selectedButtonHexColor }: { item: TaxCardProps, selecte
                 onPress={() => {
                     router.push({
                         pathname: "/update-record/[id]",
-                        params: { id: item.id?.toString(), actionType: TaxFunctionStore.key, data: JSON.stringify(item) }
+                        params: { id: item.id?.toString(), actionType: TaxFunctionStore.key, data: JSON.stringify(item), vehicleId }
                     })
                 }}>
                 <View style={tw`flex flex-row flex-wrap justify-between`}>

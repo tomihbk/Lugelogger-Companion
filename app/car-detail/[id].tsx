@@ -9,7 +9,6 @@ import { FuelRecordAdd, OdometerRecord, FuelRecordGet, ReminderRecord } from '~/
 import { OdometerFunctionStore, ServiceFunctionStore, RepairFunctionStore, UpgradeFunctionStore, FuelFunctionStore, TaxFunctionStore, ReminderFunctionStore } from '~/stores/RecordButtons'
 import GlobalStateStore from '~/stores/globalStateStore'
 import FuelCard from '~/components/Cards/FuelCard'
-import RecordCard from '~/components/Cards/RecordCard'
 import NewRecordButton from '~/components/NewRecordButton'
 import PillRecordNavigation from '~/components/PillRecordNavigation'
 import { OdometerStats, FuelStats, RepairStats, ServiceStats, TaxStats, UpgradeStats } from '~/components/StatsComponents'
@@ -26,7 +25,7 @@ import ReminderCard from '~/components/Cards/ReminderCard'
 const CarDetail = () => {
   const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
 
-  const carId = parseInt(CarId.toString())
+  const carId = parseInt(CarId)
   const { data: ServiceRecords, isPending: isServiceRecordsFetching } = useServiceRecords(carId)
   const { data: OdometerRecords, isPending: isOdometerRecordsFetching } = useOdometerRecords(carId)
   const { data: RepairRecords, isPending: isRepairRecordsFetching } = useRepairRecords(carId)
@@ -55,7 +54,6 @@ const CarDetail = () => {
   const [totalExpense, setTotalExpense] = useState<number>(0)
   const [totalDistance, setTotalDistance] = useState<number>(0)
   const averageExpense = (Math.round((totalExpense / (selectedDataSet?.length || 1)) * 10) / 10)
-  let didInit = false
   const odometerDeltas: number[] = []
   const scrollViewRef = useRef<ScrollView>(null)
   const flashListRef = useRef<FlashList<any>>(null)
@@ -64,7 +62,10 @@ const CarDetail = () => {
   const [daysSinceLastRecord, setDaysSinceLastRecord] = useState<number>(0)
   const [atStart, setAtStart] = useState(true)
 
-  const changeDataSet = async (serviceName: string) => {
+  const changeDataSet = async (serviceName: string, options?: { scrollToTop?: boolean }) => {
+
+    const shouldScroll = options?.scrollToTop ?? false
+
     try {
       let dataSource: RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | ReminderRecord | undefined;
       switch (serviceName) {
@@ -94,11 +95,11 @@ const CarDetail = () => {
           break
       }
 
-      if (flashListRef.current) {
+      if (flashListRef.current && shouldScroll) {
         flashListRef.current.scrollToOffset({ offset: 0, animated: true })
       }
 
-      if (Array.isArray(dataSource) && !('userMetric' in (dataSource[0] || {})))  {
+      if (Array.isArray(dataSource) && !('userMetric' in (dataSource[0] || {}))) {
         const orderedDataByLatestDate = dataSource
           .slice()
           .sort((a, b) => {
@@ -118,12 +119,20 @@ const CarDetail = () => {
   }
 
   useEffect(() => {
-    if (!didInit) {  // ✅ Only runs once per app load, might run two times in development
-      didInit = true
-      setSelectedTabName(actionType)
-      changeDataSet(actionType)
+    if (!actionType) return
+
+    setSelectedTabName(actionType)
+
+    const button = ActionButtons.find(b => b.key === actionType)
+    if (button) {
+      setSelectedButtonHexColor(button.color)
     }
-  }, [])
+  }, [actionType])
+
+  useEffect(() => {
+    if (!selectedTabName) return
+    changeDataSet(selectedTabName, { scrollToTop: true })
+  }, [selectedTabName, OdometerRecords, ServiceRecords, RepairRecords, UpgradeRecords, FuelRecords, TaxRecords, ReminderRecords]) // TODO Add other records services with time
 
   useEffect(() => {
     if (Array.isArray(selectedDataSet) && selectedDataSet.length > 0 && 'cost' in selectedDataSet[0]) {
@@ -146,23 +155,19 @@ const CarDetail = () => {
     } else {
       setDaysSinceLastRecord(0)
     }
+
     // this section handles when a tab is selected, the tab name is focused and should be shown.
+    if (selectedTabName === 'home' && scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ x: -100, animated: true })
+      return
+    }
+
     const selectedTabIndex = ActionButtons.findIndex(button => button.key === selectedTabName);
     if (scrollViewRef.current && selectedTabIndex !== -1) {
       const scrollPosition = selectedTabIndex * (Dimensions.get('window').width / ActionButtons.length * 2);
       scrollViewRef.current.scrollTo({ x: scrollPosition, animated: true });
     }
   }, [selectedDataSet])
-
-  useEffect(() => {
-    if (OdometerRecords || ServiceRecords || RepairRecords || UpgradeRecords || FuelRecords || TaxRecords || ReminderRecords) {
-      changeDataSet(selectedTabName)
-      setSelectedTabName(selectedTabName)
-    }
-    return () => {
-      setSelectedTabName(actionType)
-    }
-  }, [OdometerRecords, ServiceRecords, RepairRecords, UpgradeRecords, FuelRecords, TaxRecords, ReminderRecords]) // TODO Add other records services with time
 
   const calculateTotalExpense = (recordDataObject: RecordBase) => {
     let totalCost = 0
@@ -265,7 +270,7 @@ const CarDetail = () => {
         headerShadowVisible: false,
         headerShown: true,
         headerStyle: { backgroundColor: `#f2f2f2` },
-        headerTitle: () => <Text style={tw`text-xl dark:text-white font-HKGrotesk-Medium`} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>,
+        headerTitle: () => <Text style={tw`text-xl dark:text-white font-HKGrotesk-Medium`} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>, // TODO: Change to dynamic title based on car details
         statusBarStyle: 'dark',
         statusBarColor: '#f2f2f2',
         headerTransparent: false,
@@ -279,7 +284,7 @@ const CarDetail = () => {
             onClick={() => {
               setSelectedTabName(button.key)
               setSelectedButtonHexColor(button.color)
-              changeDataSet(button.key)
+              changeDataSet(button.key, { scrollToTop: true })
             }}
             selectedTabName={selectedTabName} />
         ))}
@@ -317,21 +322,21 @@ const CarDetail = () => {
               const renderCard = () => {
                 switch (selectedTabName) {
                   case FuelFunctionStore.key:
-                    return <FuelCard item={item} odometerDelta={odometerDelta[index]} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <FuelCard item={item} odometerDelta={odometerDelta[index]} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId} />
                   case OdometerFunctionStore.key:
-                    return <OdometerCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <OdometerCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId} />
                   case ServiceFunctionStore.key:
-                    return <ServiceCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <ServiceCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId} />
                   case TaxFunctionStore.key:
-                    return <TaxCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <TaxCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId} />
                   case RepairFunctionStore.key:
-                    return <RepairCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <RepairCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId} />
                   case UpgradeFunctionStore.key:
-                    return <UpgradeCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <UpgradeCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId} />
                   case ReminderFunctionStore.key:
-                    return <ReminderCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
-                  default:
-                    return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
+                    return <ReminderCard item={item} selectedButtonHexColor={selectedButtonHexColor} vehicleId={carId} />
+                  // default:
+                  //   return <RecordCard item={item} selectedButtonHexColor={selectedButtonHexColor} />
                 }
               }
               return (

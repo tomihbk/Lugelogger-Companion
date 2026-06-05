@@ -1,40 +1,52 @@
-import React from "react"
-import { Redirect, Stack } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { View, Text, ScrollView, Pressable } from 'react-native';
-import tw from '~/tw.config';
-import GroupActionButtons from "~/components/GroupActionButtons";
-import NextReminder from "~/components/NextReminder";
-import FavoriteCarShowcase from "~/components/FavoriteCarShowcase";
+import React, { useEffect } from "react"
+import { Redirect, Stack } from 'expo-router'
+import { useTranslation } from 'react-i18next'
+import { View, ScrollView } from 'react-native'
+import tw from '~/tw.config'
+import GroupActionButtons from "~/components/GroupActionButtons"
+import FavoriteCarShowcase from "~/components/FavoriteCarShowcase"
+import { useGetUserInfo } from "~/hooks/api"
+import CapitalizeFirstLetter from "~/utils/StringCapitalizer"
+import GlobalStateStore from '~/stores/globalStateStore'
+import { useGetVehicle } from "~/hooks/api"
+import ServerSettingsStore from "~/stores/serverSettingsStore"
+import NextReminderCard from "~/components/Cards/NextReminderCard"
+import GreetingHeader from "~/components/GreetingHeader"
+
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
+  const { favoriteCarId } = GlobalStateStore((state) => state)
+  const { data: UserInfo } = useGetUserInfo()
+  const { data: vehicleData, isPending } = useGetVehicle(favoriteCarId)
+  const { getSettings } = ServerSettingsStore()
+  const savedSettings = getSettings()
+
+  const vehicleWithoutStats = vehicleData?.[0]?.vehicleData ?? {}
+  const vehicleWithStats = vehicleData?.[0] ?? {}
+
+  useEffect(() => {
+    console.log("Vehicle Data:", vehicleWithoutStats)
+    console.log("vehicleWithStats:", vehicleWithStats)
+  }, [vehicleWithoutStats, vehicleWithStats])
+
+  console.log("Favorite Car ID in Home:", savedSettings)
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       {/* <Redirect href="/(tabs)/garage" /> */}
       <Stack.Screen options={{ title: 'Home', headerShown: false }} />
-      <View style={tw`flex p-5 mb-13`}>
-        <Text style={tw`text-2xl mt-4 font-HKGrotesk-Black`}>Hi Thomas</Text>
-        <Text style={tw`text-sm mb-4 font-HKGrotesk-Regular`}>How&apos;s the car doing ?</Text>
-        <View style={tw`rounded-full overflow-hidden mb-4`}>
-          <Pressable android_ripple={{ color: '#f87171', borderless: false, foreground: true }}
-            style={tw`rounded-full`} onPress={() => {
-              try {
-                console.log("trying to add new data...")
-              } catch (Err) { console.error(Err) }
-            }}>
-            <Text style={tw`p-4 bg-red-200 font-HKGrotesk-Medium rounded-full text-center`}>
-              Add New Service Record
-            </Text>
-          </Pressable>
-        </View>
+      <View style={tw`p-5 py-0 mb-16`}>
+        <GreetingHeader brand={vehicleWithoutStats.make} userName={CapitalizeFirstLetter(UserInfo?.username as string)} />
 
-        <FavoriteCarShowcase Name="Porsche 911 Carrera 3.2" Mileage="320125km" PlateNumber="ZH47589" Year="1985" CarPhotoUri="https://www.williamscrawford.co.uk/wp-content/uploads/2023/09/Porsche-911-carrera-3.2-polo-red-for-sale-williams-crawford-40.jpg" />
+        {!isPending && <FavoriteCarShowcase Name={`${vehicleWithoutStats.make} ${vehicleWithoutStats.model}`} PlateNumber={vehicleWithoutStats.licensePlate} Year={vehicleWithoutStats.year} CarPhotoUri={`${savedSettings?.serverURL}${vehicleWithoutStats.imageLocation}`} Mileage={vehicleWithStats.lastReportedOdometer} CarID={favoriteCarId} />}
 
         <GroupActionButtons />
-        <NextReminder DueDate="10/25/2024" DueOdometer="185643KM" Urgency="urgent" Description="Change left tire Hankook or Continental. Make sure to change air filters and padding breaks..." />
+
+        <View style={tw`-mt-3 mb-4`}>
+          <NextReminderCard carId={favoriteCarId} />
+        </View>
       </View>
     </ScrollView>
-  );
+  )
 }

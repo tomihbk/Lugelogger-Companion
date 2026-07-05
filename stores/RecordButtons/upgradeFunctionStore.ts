@@ -2,14 +2,17 @@ import { IsFieldVisible } from "./visible-field.types"
 
 export interface UpgradeFunctionStoreProp {
   key: string
-  buttonColor: string
+  buttonColor: { light: string; dark: string }
   visibleFields: IsFieldVisible
   mandatoryFields: IsFieldVisible
 }
 
 const UpgradeFunctionStore: UpgradeFunctionStoreProp = {
   key: "upgrade",
-  buttonColor: "#E00004",
+    buttonColor: {
+    light: "#E00004",
+    dark: "#FF4D4F",
+  },
   visibleFields: {
     date: true,
     initialOdometer: false,

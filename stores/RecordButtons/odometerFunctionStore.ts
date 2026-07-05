@@ -1,14 +1,17 @@
 import { IsFieldVisible } from "./visible-field.types"
 export interface OdometerFunctionStoreProp {
   key: string
-  buttonColor: string
+  buttonColor: { light: string; dark: string }
   visibleFields: IsFieldVisible
   mandatoryFields: IsFieldVisible
 }
 
 const OdometerFunctionStore: OdometerFunctionStoreProp = {
   key: "odometer",
-  buttonColor: "#C09F1A",
+  buttonColor: {
+    light: "#C09F1A",
+    dark: "#D4B84A",
+  },
   visibleFields: {
     date: true,
     initialOdometer: true,

@@ -2,14 +2,17 @@ import { IsFieldVisible } from "./visible-field.types"
 
 export interface RepairFunctionStoreProp {
   key: string
-  buttonColor: string
+  buttonColor: { light: string; dark: string }
   visibleFields: IsFieldVisible
   mandatoryFields: IsFieldVisible
 }
 
 const RepairFunctionStore: RepairFunctionStoreProp = {
   key: "repair",
-  buttonColor: "#00892B",
+  buttonColor: {
+    light: "#00892B",
+    dark: "#34C95E",
+  },
   visibleFields: {
     date: true,
     initialOdometer: false,

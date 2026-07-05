@@ -2,14 +2,17 @@ import { IsFieldVisible } from "./visible-field.types"
 
 export interface FuelFunctionStoreProp {
   key: string
-  buttonColor: string
+  buttonColor: { light: string; dark: string }
   visibleFields: IsFieldVisible
   mandatoryFields: IsFieldVisible
 }
 
 const FuelFunctionStore: FuelFunctionStoreProp = {
   key: "fuel",
-  buttonColor: "#009476",
+    buttonColor: {
+    light: "#009476",
+    dark: "#00C49A",
+  },
   visibleFields: {
     date: true,
     initialOdometer: false,

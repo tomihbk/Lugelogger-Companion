@@ -2,14 +2,17 @@ import { IsFieldVisible } from "./visible-field.types"
 
 export interface TaxFunctionStoreProp {
   key: string
-  buttonColor: string
+  buttonColor: { light: string; dark: string }
   visibleFields: IsFieldVisible
   mandatoryFields: IsFieldVisible
 }
 
 const TaxFunctionStore: TaxFunctionStoreProp = {
   key: "tax",
-  buttonColor: "#5e636e",
+    buttonColor: {
+    light: "#5e636e",
+    dark: "#5B7FFF",
+  },
   visibleFields: {
     date: true,
     initialOdometer: false,

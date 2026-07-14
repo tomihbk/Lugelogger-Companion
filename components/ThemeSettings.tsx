@@ -2,6 +2,7 @@ import React from "react"
 import { ScrollView, TouchableOpacity, Text, View } from "react-native"
 import { Sun, Moon, Smartphone, LucideIcon } from "lucide-react-native"
 import tw from "~/tw.config"
+import { useTheme } from "~/hooks/useTheme"
 
 type ThemeSettingProps = {
     colorSchemeStore: 'light' | 'dark' | 'system'
@@ -19,44 +20,54 @@ type ThemeOptionProps = {
     iconColor: string
 }
 
-const ThemeOption = ({ icon: Icon, label, description, isSelected, onPress, iconColor }: ThemeOptionProps) => (
-    <TouchableOpacity
-        onPress={onPress}
-        style={[
-            tw`mb-3 rounded-2xl p-5 border-2`,
-            isSelected
-                ? tw`bg-blue-50 border-blue-500`
-                : tw`bg-white border-gray-200`
-        ]}
-    >
-        <View style={tw`flex-row items-center mb-2`}>
-            <View style={[
-                tw`rounded-full p-3`,
-                isSelected ? tw`bg-blue-500` : tw`bg-gray-100`
-            ]}>
-                <Icon
-                    size={24}
-                    color={isSelected ? "#ffffff" : iconColor}
-                />
-            </View>
-            <View style={tw`flex-1 ml-4`}>
-                <Text style={tw`text-lg font-HKGrotesk-Bold ${isSelected ? 'text-blue-900' : 'text-gray-900'}`}>
-                    {label}
-                </Text>
-                <Text style={tw`text-sm font-HKGrotesk-Regular ${isSelected ? 'text-blue-700' : 'text-gray-600'} mt-1`}>
-                    {description}
-                </Text>
-            </View>
-            {isSelected && (
-                <View style={tw`bg-blue-500 rounded-full w-6 h-6 items-center justify-center`}>
-                    <Text style={tw`text-white font-HKGrotesk-Bold text-xs`}>✓</Text>
+const ThemeOption = ({ icon: Icon, label, description, isSelected, onPress, iconColor }: ThemeOptionProps) => {
+    const theme = useTheme()
+
+    return (
+        <TouchableOpacity
+            onPress={onPress}
+            style={[
+                tw`mb-3 rounded-3xl p-5 border-2`,
+                {
+                    backgroundColor: isSelected
+                        ? theme.colors.background.subtle
+                        : theme.colors.background.default,
+                    borderColor: isSelected
+                        ? theme.colors.border.selected
+                        : theme.colors.border.unselected,
+                },
+            ]}
+        >
+            <View style={tw`flex-row items-center mb-2`}>
+                <View style={[
+                    tw`rounded-full p-3`,
+                    isSelected ? tw`bg-blue-500` : tw`bg-gray-100`
+                ]}>
+                    <Icon
+                        size={24}
+                        color={isSelected ? "#ffffff" : iconColor}
+                    />
                 </View>
-            )}
-        </View>
-    </TouchableOpacity>
-)
+                <View style={tw`flex-1 ml-4`}>
+                    <Text style={[tw`text-lg font-HKGrotesk-Bold`, { color: isSelected ? theme.colors.text.selected : theme.colors.text.primary }]}>
+                        {label}
+                    </Text>
+                    <Text style={[tw`text-sm font-HKGrotesk-Regular`, { color: isSelected ? theme.colors.text.selected : theme.colors.text.primary }]} mt-1>
+                        {description}
+                    </Text>
+                </View>
+                {isSelected && (
+                    <View style={tw`bg-blue-500 rounded-full w-6 h-6 items-center justify-center`}>
+                        <Text style={tw`text-white font-HKGrotesk-Bold text-xs`}>✓</Text>
+                    </View>
+                )}
+            </View>
+        </TouchableOpacity>
+    )
+}
 
 const ThemeSetting = ({ colorSchemeStore, setColorSchemeStore, setModalThemeVisible, modalThemeVisible }: ThemeSettingProps) => {
+    const theme = useTheme()
     const themes = [
         {
             id: 'light',
@@ -83,10 +94,9 @@ const ThemeSetting = ({ colorSchemeStore, setColorSchemeStore, setModalThemeVisi
 
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
-            <Text style={tw`text-sm font-HKGrotesk-Regular text-gray-600 mb-6`}>
+            <Text style={[tw`text-sm font-HKGrotesk-Regular mb-6`, { color: theme.colors.text.secondary }]}>
                 Select your preferred color scheme for the app
             </Text>
-
             {themes.map((theme) => (
                 <ThemeOption
                     key={theme.id}

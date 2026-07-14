@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { View, Text, ScrollView, Modal, Platform, TouchableOpacity, SafeAreaView, Linking } from "react-native"
 import tw from "~/tw.config"
-
 import i18n from "~/i18n/i18n.config"
 import { Palette, ArrowRight, Languages, BadgeInfo, Scale, Settings2, Server, GitBranch, ArrowLeft } from 'lucide-react-native'
 import useThemeStore from "~/stores/themeStore"
@@ -17,9 +16,12 @@ import ServerSettings from "~/components/ServerSettings"
 import AboutScreen from "~/components/AboutPage"
 import LicensesScreen from "~/components/LicencePage"
 import ThemeSetting from "~/components/ThemeSettings"
+import { useTheme } from "~/hooks/useTheme"
 
 const Settings = () => {
   const { t } = useTranslation()
+  const theme = useTheme()
+
   const { colorScheme: colorSchemeStore, setColorScheme: setColorSchemeStore } = useThemeStore()
   const [colorScheme, toggleColorScheme, setColorScheme] = useAppColorScheme(tw)
   const { preferredDistanceMeasurement, setPreferredDistanceMeasurement, setOptInCrashReports, optInCrashReports, preferredCurrencySymbol } = GlobalStateStore((state) => state)
@@ -38,30 +40,26 @@ const Settings = () => {
   const [modalAboutVisible, setModalAboutVisible] = useState(false)
   const [modalLicenseVisible, setModalLicenseVisible] = useState(false)
 
-
   // Sync Zustand store with twrnc
   useEffect(() => {
     setColorScheme(colorSchemeStore) // Set the twrnc color scheme whenever Zustand changes
-    console.log("store : " + colorSchemeStore + " | twrn theme : " + colorScheme)
+    //console.log("store : " + colorSchemeStore + " | twrn theme : " + colorScheme)
   }, [colorSchemeStore, colorScheme])
-
 
   return (
     <SafeAreaView>
-      <ScrollView showsVerticalScrollIndicator={false} style={tw`p-5`}>
+      <ScrollView showsVerticalScrollIndicator={false} style={tw`p-5 pt-3`}>
         <Stack.Screen options={{ title: 'Settings', headerShown: false }} />
         <View style={tw`flex flex-col`}>
-          <Text style={tw`w-5/12 text-2xl font-HKGrotesk-Black mb-5`}>{t("Settings")}</Text>
-          <Text style={tw`font-HKGrotesk-Regular mb-1 text-gray-600 dark:text-gray-200`}>Personalisation</Text>
-
-          <View style={tw`flex flex-col bg-[#fafcff] border-[#a6cdff]/30 border rounded-2xl dark:bg-slate-800 dark:border-gray-700`}>
+          <Text style={[tw`w-5/12 text-2xl font-HKGrotesk-Black mb-5`, { color: theme.colors.text.primary }]}>{t("Settings")}</Text>
+          <Text style={[tw`font-HKGrotesk-Regular mb-1`, { color: theme.colors.text.primary }]}>Personalisation</Text>
+          <View style={[tw`flex flex-col border rounded-2xl`, { backgroundColor: theme.colors.background.subtle, borderColor: theme.colors.brand.primary + "60" }]}>
             <SettingRow
-              icon={<Palette size={20} color={colorSchemeStore == "dark" ? "white" : "black"} />}
+              icon={<Palette size={20} color={theme.colors.text.primary} />}
               label="Theme"
               onPress={() => setModalThemeVisible(!modalThemeVisible)}
-              color={colorSchemeStore == "dark" ? "white" : '#a6cdff'}
-              style={tw`border-b border-blue-100`}>
-              <ArrowRight size={20} color={colorSchemeStore == "dark" ? "white" : '#a6cdff'} />
+              color={theme.colors.text.primary}>
+              <ArrowRight size={20} color={theme.colors.text.primary} />
               <Modal
                 animationType="slide"
                 visible={modalThemeVisible}
@@ -69,11 +67,11 @@ const Settings = () => {
                 onRequestClose={() => {
                   setModalThemeVisible(!modalThemeVisible)
                 }}>
-                <View style={tw`flex flex-col flex-1 p-5 dark:bg-slate-800`}>
+                <View style={[tw`flex flex-col flex-1 p-5`, { backgroundColor: theme.colors.background.default }]}>
                   <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
-                    <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                    <ArrowLeft color={theme.colors.text.primary} style={tw`w-full p-4 pl-0`}
                       onPress={() => { setModalThemeVisible(!modalThemeVisible) }} />
-                    <Text style={tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`} numberOfLines={1}>Theme Settings</Text>
+                    <Text style={[tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`, { color: theme.colors.text.primary }]} numberOfLines={1}>Theme Settings</Text>
                   </View>
                   <ScrollView showsVerticalScrollIndicator={false}>
 
@@ -83,50 +81,29 @@ const Settings = () => {
                       setModalThemeVisible={setModalThemeVisible}
                       modalThemeVisible={modalThemeVisible}
                     />
-                    {/* <SettingRow
-                      icon={null}
-                      label="Light"
-                      onPress={() => {
-                        setColorSchemeStore('light')
-                        setModalThemeVisible(!modalThemeVisible)
-                      }}
-                      color={colorSchemeStore == "light" ? "#2563eb" : "#a6cdff"}
-                      style={tw`${colorSchemeStore == "light" ? "bg-blue-200 border border-blue-400" : "bg-gray-100"} dark:text-gray-200`}
-                    />
-                    <SettingRow
-                      icon={null}
-                      label="Dark"
-                      onPress={() => {
-                        setColorSchemeStore('dark')
-                        setModalThemeVisible(!modalThemeVisible)
-                      }}
-                      color={colorSchemeStore == "dark" ? "#2563eb" : "#a6cdff"}
-                      style={tw`${colorSchemeStore == "dark" ? "bg-blue-200 border border-blue-400" : "bg-gray-100"} dark:text-gray-200`}
-                    /> */}
                   </ScrollView>
                 </View>
               </Modal>
             </SettingRow>
 
             <SettingRow
-              icon={<Languages size={20} color={colorSchemeStore == "dark" ? "white" : "black"} />}
+              icon={<Languages size={20} color={theme.colors.text.primary} />}
               label="Language"
               onPress={() => setModalLanguageVisibile(!modalLanguageVisible)}
-              color={colorSchemeStore == "dark" ? "white" : '#a6cdff'}>
-              <ArrowRight size={20} color={colorSchemeStore == "dark" ? "white" : '#a6cdff'} />
+              color={theme.colors.text.primary}>
+              <ArrowRight size={20} color={theme.colors.text.primary} />
               <Modal
                 animationType="slide"
-                style={tw`bg-black`}
                 visible={modalLanguageVisible}
                 hardwareAccelerated={true}
                 onRequestClose={() => {
                   setModalLanguageVisibile(!modalLanguageVisible)
                 }}>
-                <View style={tw`flex flex-col p-5`}>
+                <View style={[tw`flex flex-col p-5 h-full`, { backgroundColor: theme.colors.background.default }]}>
                   <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
-                    <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                    <ArrowLeft color={theme.colors.text.primary} style={tw`w-full p-4 pl-0`}
                       onPress={() => { setModalLanguageVisibile(!modalLanguageVisible) }} />
-                    <Text style={tw`text-2xl mb-5 w-5/6 font-HKGrotesk-Bold`} numberOfLines={1}>Language Settings</Text>
+                    <Text style={[tw`text-2xl mb-5 w-5/6 font-HKGrotesk-Bold`, { color: theme.colors.text.primary }]} numberOfLines={1}>Language Settings</Text>
                   </View>
                   <ScrollView showsVerticalScrollIndicator={false}>
                     {Object.keys(i18n.services.resourceStore.data)
@@ -140,7 +117,15 @@ const Settings = () => {
                             setModalLanguageVisibile(!modalLanguageVisible)
                           }}
                           color={i18n.language == lang ? "#2563eb" : "#a6cdff"}
-                          style={tw`${i18n.language == lang ? "bg-blue-50 border border-blue-400" : "bg-gray-100"} dark:text-gray-200 py-7 mb-4`}
+                          style={tw.style(
+                            i18n.language === lang
+                              ? "border-2 py-7 mb-4"
+                              : "py-7 mb-4",
+                            {
+                              backgroundColor: theme.colors.background.subtle,
+                              borderColor: theme.colors.brand.primary,
+                            }
+                          )}
                         />
                       ))}
                   </ScrollView>
@@ -149,49 +134,47 @@ const Settings = () => {
             </SettingRow>
           </View>
 
-          <Text style={tw`font-HKGrotesk-Regular mt-4 mb-1 text-gray-600 dark:text-gray-200`}>Preferences</Text>
-          <View style={tw`flex flex-col bg-[#fafcff] border-[#a6cdff]/30 border rounded-2xl dark:bg-slate-800 dark:border-gray-700`}>
+          <Text style={[tw`font-HKGrotesk-Regular mt-4 mb-1`, { color: theme.colors.text.primary }]}>Preferences</Text>
+          <View style={[tw`flex flex-col border rounded-2xl`, { backgroundColor: theme.colors.background.subtle, borderColor: theme.colors.brand.primary + "60" }]}>
 
             <SettingRow
-              icon={<Settings2 size={20} color={colorSchemeStore == "dark" ? "white" : "black"} />}
+              icon={<Settings2 size={20} color={theme.colors.text.primary} />}
               label="App Preferences"
               onPress={() => setModalUserPrefVisible(!modalUserPrefVisible)}
-              color={colorSchemeStore == "dark" ? "white" : '#a6cdff'}
-              style={tw`border-b border-blue-100`}
-            >
-              <ArrowRight size={20} color={colorSchemeStore == "dark" ? "white" : '#a6cdff'} />
+              color={theme.colors.text.primary}>
+              <ArrowRight size={20} color={theme.colors.text.primary} />
 
               <Modal
                 animationType="slide"
-                style={tw`bg-black`}
                 visible={modalUserPrefVisible}
                 hardwareAccelerated={true}
                 onRequestClose={() => {
                   setModalUserPrefVisible(!modalUserPrefVisible)
                 }}>
-                <View style={tw`flex flex-col p-5`}>
+                <View style={[tw`flex flex-col p-5 h-full`, { backgroundColor: theme.colors.background.default }]}>
                   <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
-                    <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                    <ArrowLeft color={theme.colors.text.primary} style={tw`w-full p-4 pl-0`}
                       onPress={() => { setModalUserPrefVisible(!modalUserPrefVisible) }} />
-                    <Text style={tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`} numberOfLines={1}>User Preferences</Text>
+                    <Text style={[tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`, { color: theme.colors.text.primary }]} numberOfLines={1}>User Preferences</Text>
                   </View>
 
                   <ScrollView showsVerticalScrollIndicator={false}>
                     <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
-                      <Text style={tw`text-base font-HKGrotesk-Regular dark:text-gray-200`}>Use Miles</Text>
+                      <Text style={[tw`text-base font-HKGrotesk-Regular `, { color: theme.colors.text.primary }]}>Use Miles</Text>
                       <ModernSwitch
                         onValueChange={(val) => setPreferredDistanceMeasurement(val ? "mi" : "km")}
                         value={preferredDistanceMeasurement === "mi"}
-                        activeColor={"#2563eb"}
+                        //activeColor={"#2563eb"}
+                        activeColor={theme.colors.brand.primary}
                       />
                     </View>
                     <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
-                      <Text style={tw`text-base font-HKGrotesk-Regular dark:text-gray-200`}>Currency</Text>
+                      <Text style={[tw`text-base font-HKGrotesk-Regular`, { color: theme.colors.text.primary }]}>Currency</Text>
                       <CurrencySelector savedCurrencyCode={preferredCurrencySymbol} />
                     </View>
 
                     <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
-                      <Text style={tw`text-base font-HKGrotesk-Regular dark:text-gray-200`}>Opt-in Crash log</Text>
+                      <Text style={[tw`text-base font-HKGrotesk-Regular`, { color: theme.colors.text.primary }]}>Opt-in Crash log</Text>
                       <ModernSwitch
                         onValueChange={() => setOptInCrashReports(!optInCrashReports)}
                         value={!!optInCrashReports}
@@ -204,25 +187,24 @@ const Settings = () => {
             </SettingRow>
 
             <SettingRow
-              icon={<Server size={20} color={colorSchemeStore == "dark" ? "white" : "black"} />}
+              icon={<Server size={20} color={theme.colors.text.primary} />}
               label="Server Settings"
               onPress={() => setModalServerVisible(!modalServerVisible)}
-              color={colorSchemeStore == "dark" ? "white" : '#a6cdff'}
-            >
-              <ArrowRight size={20} color={colorSchemeStore == "dark" ? "white" : '#a6cdff'} />
+              color={theme.colors.text.primary}>
+              <ArrowRight size={20} color={theme.colors.text.primary} />
               <Modal
                 animationType="slide"
-                style={tw`bg-black`}
                 visible={modalServerVisible}
                 hardwareAccelerated={true}
                 onRequestClose={() => {
                   setModalServerVisible(!modalServerVisible)
                 }}>
-                <View style={tw`flex flex-col p-5`}>
+
+                <View style={[tw`flex flex-col p-5 h-full`, { backgroundColor: theme.colors.background.default }]}>
                   <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
-                    <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                    <ArrowLeft color={theme.colors.text.primary} style={tw`w-full p-4 pl-0`}
                       onPress={() => { setModalServerVisible(!modalServerVisible) }} />
-                    <Text style={tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`} numberOfLines={1}>Server Settings</Text>
+                    <Text style={[tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`, { color: theme.colors.text.primary }]} numberOfLines={1}>Server Settings</Text>
                   </View>
                   <ScrollView showsVerticalScrollIndicator={false}>
                     <ServerSettings onSave={() => { setModalServerVisible(!modalServerVisible) }} />
@@ -232,30 +214,27 @@ const Settings = () => {
             </SettingRow>
           </View>
 
-          <Text style={tw`font-HKGrotesk-Regular mt-4 mb-1 text-gray-600 dark:text-gray-200`}>More</Text>
-          <View style={tw`flex flex-col bg-[#fafcff] border-[#a6cdff]/30 border rounded-2xl dark:bg-slate-800 dark:border-gray-700`}>
+          <Text style={[tw`font-HKGrotesk-Regular mt-4 mb-1`, { color: theme.colors.text.primary }]}>More</Text>
+          <View style={[tw`flex flex-col border rounded-2xl`, { backgroundColor: theme.colors.background.subtle, borderColor: theme.colors.brand.primary + "60" }]}>
 
             <SettingRow
-              icon={<BadgeInfo size={20} color={colorSchemeStore == "dark" ? "white" : "black"} />}
+              icon={<BadgeInfo size={20} color={theme.colors.text.primary} />}
               label="About"
               onPress={() => { setModalAboutVisible(!modalAboutVisible) }}
-              color={colorSchemeStore == "dark" ? "white" : '#a6cdff'}
-              style={tw`border-b border-blue-100`}
-            >
-              <ArrowRight size={20} color={colorSchemeStore == "dark" ? "white" : '#a6cdff'} />
+              color={theme.colors.text.primary}>
+              <ArrowRight size={20} color={theme.colors.text.primary} />
               <Modal
                 animationType="slide"
-                style={tw`bg-black`}
                 visible={modalAboutVisible}
                 hardwareAccelerated={true}
                 onRequestClose={() => {
                   setModalAboutVisible(!modalAboutVisible)
                 }}>
-                <View style={tw`flex flex-col p-5`}>
+                <View style={[tw`flex flex-col p-5 pb-0 h-full`, { backgroundColor: theme.colors.background.default }]}>
                   <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
-                    <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                    <ArrowLeft color={theme.colors.text.primary} style={tw`w-full p-4 pl-0`}
                       onPress={() => { setModalAboutVisible(!modalAboutVisible) }} />
-                    <Text style={tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`} numberOfLines={1}>About</Text>
+                    <Text style={[tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`, { color: theme.colors.text.primary }]} numberOfLines={1}>About</Text>
                   </View>
                   <ScrollView showsVerticalScrollIndicator={false}>
                     <AboutScreen />
@@ -265,27 +244,23 @@ const Settings = () => {
             </SettingRow>
 
             <SettingRow
-              icon={<Scale size={20} color={colorSchemeStore == "dark" ? "white" : "black"} />}
+              icon={<Scale size={20} color={theme.colors.text.primary} />}
               label="Licenses"
               onPress={() => { setModalLicenseVisible(!modalLicenseVisible) }}
-              color={colorSchemeStore == "dark" ? "white" : '#a6cdff'}
-              style={tw`border-b border-blue-100`}
-            >
-              <ArrowRight size={20} color={colorSchemeStore == "dark" ? "white" : '#a6cdff'} />
-
+              color={theme.colors.text.primary}>
+              <ArrowRight size={20} color={theme.colors.text.primary} />
               <Modal
                 animationType="slide"
-                style={tw`bg-black`}
                 visible={modalLicenseVisible}
                 hardwareAccelerated={true}
                 onRequestClose={() => {
                   setModalLicenseVisible(!modalLicenseVisible)
                 }}>
-                <View style={tw`flex flex-col p-5`}>
+                <View style={[tw`flex flex-col p-5 pb-0 h-full`, { backgroundColor: theme.colors.background.default }]}>
                   <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
-                    <ArrowLeft color={colorSchemeStore == "dark" ? "white" : "black"} style={tw`w-full p-4 pl-0`}
+                    <ArrowLeft color={theme.colors.text.primary} style={tw`w-full p-4 pl-0`}
                       onPress={() => { setModalLicenseVisible(!modalLicenseVisible) }} />
-                    <Text style={tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`} numberOfLines={1}>Licenses</Text>
+                    <Text style={[tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`, { color: theme.colors.text.primary }]} numberOfLines={1}>Licenses</Text>
                   </View>
                   <ScrollView showsVerticalScrollIndicator={false}>
                     <LicensesScreen />
@@ -295,19 +270,26 @@ const Settings = () => {
             </SettingRow>
 
             <SettingRow
-              icon={<GitBranch size={20} color={colorSchemeStore == "dark" ? "white" : "black"} />}
+              icon={<GitBranch size={20} color={theme.colors.text.primary} />}
               label="Github"
               onPress={() => { Linking.openURL("https://github.com/hargata/lubelog") }}
               // TODO : Add your repo link
-              color={colorSchemeStore == "dark" ? "white" : '#a6cdff'}
-            >
-              <ArrowRight size={20} color={colorSchemeStore == "dark" ? "white" : '#a6cdff'} />
+              color={theme.colors.text.primary}>
+              <ArrowRight size={20} color={theme.colors.text.primary} />
             </SettingRow>
           </View>
         </View>
-        <TouchableOpacity style={tw`bg-white mt-4 p-2 dark:bg-blue-900 dark:text-gray-200 pr-2 rounded-full border border-blue-800 dark:border-0 mb-10`}>
-          <Text style={tw`text-lg font-HKGrotesk-Medium dark:text-gray-200 text-blue-950 text-center`}>Rate App on {Platform.OS == 'android' ? 'PlayStore' : 'App Store'}</Text>
-          {/* // TODO : Add link to app store / play store */}
+        <TouchableOpacity style={[tw`mt-6 p-2 rounded-full border`, { backgroundColor: theme.colors.background.default, color: theme.colors.text.primary, borderColor: theme.colors.brand.primary + "60" }]} onPress={() => {
+          if (Platform.OS === 'ios') {
+            Linking.openURL('itms-apps://apps.apple.com/app/idYOUR_APP_ID?action=write-review');
+          } else if (Platform.OS === 'android') {
+            Linking.openURL('market://details?id=YOUR_PACKAGE_NAME');
+          } {/* // TODO : Add link to app store / play store */}
+        }}>
+          <View style={tw`flex flex-row items-center justify-center`}>
+            <Text style={[tw`text-lg font-HKGrotesk-Medium text-center`, { color: theme.colors.text.primary }]}>Rate App on {Platform.OS == 'android' ? 'PlayStore' : 'App Store'}</Text>
+            <ArrowRight size={20} color={theme.colors.text.primary} />
+          </View>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

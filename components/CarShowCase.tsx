@@ -24,9 +24,9 @@ const CarShowCase = (props: CarShowCaseProps) => {
     return (
         <TouchableOpacity style={tw`mb-5 z-50`} onPress={() => router.push({
             pathname: "/car-detail/[id]",
-            params: { id: props.carId, actionType: "odometer" } // TODO: change to "home" for production
+            params: { id: props.carId, actionType: "home" }
         })}>
-            <View style={tw`w-full h-52 rounded-2xl overflow-hidden`}>
+            <View style={tw`w-full h-52 rounded-2xl overflow-hidden shadow-sm shadow-gray-800`}>
                 <AuthenticatedImage uri={props.CarPhotoUri} resizeMode="cover" style={tw`absolute w-full h-full`} />
                 <LinearGradient
                     colors={['rgba(0,5,55,1)', 'transparent']}
@@ -34,8 +34,8 @@ const CarShowCase = (props: CarShowCaseProps) => {
                     start={{ x: 0, y: 1 }}
                     end={{ x: 0, y: .3 }}>
                     <View style={tw`flex flex-col h-full justify-between`}>
-                        <TouchableOpacity style={tw`self-end p-5`} onPress={() => setFavoriteCar(props.carId)}>
-                            <Heart color={favoriteCarId != props.carId ? "white" : "red"} size={24} />
+                        <TouchableOpacity style={tw`self-end m-5`} onPress={() => setFavoriteCar(props.carId)}>
+                            <Heart color={favoriteCarId != props.carId ? "white" : "red"} fill={favoriteCarId != props.carId ? "rgba(0,0,0,0)" : "red"} size={24} />
                         </TouchableOpacity>
                         <View style={tw`flex-row flex-wrap w-full pb-5 px-5`}>
                             <Text style={tw`w-4/6 text-white text-base font-HKGrotesk-Bold`}>{props.Name}</Text>

@@ -1,7 +1,9 @@
 import { GestureResponderEvent, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Construction, ClipboardCheck, Fuel, PackagePlus, NotepadText, Landmark, Gauge, BellRing } from 'lucide-react-native'
-import tw from '~/tw.config';
+import tw from '~/tw.config'
+import useThemeStore from '~/stores/themeStore'
+import { shade } from 'polished'
 
 type ServiceButtonProps = {
     ButtonTitle: string;
@@ -11,6 +13,7 @@ type ServiceButtonProps = {
 }
 
 const ServiceButton = (props: ServiceButtonProps) => {
+    const { colorScheme: colorSchemeStore } = useThemeStore()
     const IconSet = () => {
         switch (props.LucideIconName) {
             case 'construction':
@@ -33,9 +36,12 @@ const ServiceButton = (props: ServiceButtonProps) => {
     }
 
     return (
-        <TouchableOpacity onPress={props.OnPress} style={tw`flex flex-col size-24 p-3 rounded-2xl bg-white dark:bg-[${props.ThemeHexColor}]/20 justify-between shadow-md dark:shadow-none shadow-[${props.ThemeHexColor}]/40 `}>
+        <TouchableOpacity onPress={props.OnPress} style={[tw`flex flex-col size-24 p-3 mb-2 rounded-2xl justify-between shadow-lg`, {
+            backgroundColor: colorSchemeStore === 'dark' ? shade(0.7, props.ThemeHexColor) : 'white',
+            shadowColor: props.ThemeHexColor + "40"
+        }]} >
             {IconSet()}
-            <Text style={tw`text-base text-[${props.ThemeHexColor}] font-HKGrotesk-Bold`} >{props.ButtonTitle || 'Repairs'}</Text>
+            <Text style={[tw`text-base font-HKGrotesk-Bold`, { color: props.ThemeHexColor }]} >{props.ButtonTitle}</Text>
         </TouchableOpacity>
     )
 }

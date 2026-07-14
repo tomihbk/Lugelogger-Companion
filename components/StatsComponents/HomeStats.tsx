@@ -2,6 +2,7 @@ import { View } from 'react-native'
 import React from 'react'
 import tw from '~/tw.config'
 import StatsComponent from '../StatsComponent'
+import { useTheme } from '~/hooks/useTheme'
 
 type HomeStatsPropType = {
     totalRecords: number
@@ -10,10 +11,11 @@ type HomeStatsPropType = {
 
 const HomeStats = (props: HomeStatsPropType) => {
 
+    const theme = useTheme()
     const monthlyAverageExpense = Math.round(props.totalExpensesPerMonth.reduce((sum, item) => sum + (item.totalMonthlyCost || 0), 0) / 12)
 
     return (
-        <View style={tw`flex-row flex-wrap gap-3 bg-white p-3 rounded-[2.1rem]`}>
+        <View style={[tw`flex-row flex-wrap gap-3 p-3 rounded-[2.1rem]`, { backgroundColor: theme.colors.surface.neutral }]}>
             <StatsComponent
                 symbol="money"
                 themeColor="#f28800"

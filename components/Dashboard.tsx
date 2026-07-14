@@ -14,10 +14,12 @@ import ExpenseOverview from './ExpenseOverview'
 import DateHandler from '~/utils/DateHandler'
 import MonthlyExpensesChart from './MonthlyExpensesChart'
 import HomeStats from './StatsComponents/HomeStats'
+import { useTheme } from '~/hooks/useTheme'
 
 const Dashboard = () => {
   const { id: CarId }: { id: string } = useLocalSearchParams()
   const carId = parseInt(CarId.toString())
+  const theme = useTheme()
 
   const { data: ServiceRecords } = useServiceRecords(carId)
   const { data: RepairRecords } = useRepairRecords(carId)
@@ -101,7 +103,7 @@ const Dashboard = () => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <View style={tw`flex-1 bg-gray-100 gap-3 mb-3`}>
+      <View style={[tw`flex-1 gap-3 mb-3`, { backgroundColor: theme.colors.background.default }]}>
         <ExpenseOverview
           yearFilter={yearFilter}
           setYearFilter={setYearFilter}

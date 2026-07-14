@@ -13,6 +13,8 @@ import { CalendarDays, GaugeCircle, Info, PenSquare, CircleDollarSign, FuelIcon,
 import { tint } from 'polished'
 import DatePicker from 'react-native-date-picker'
 import ModernSwitch from '~/components/ModernSwitch'
+import useThemeStore from '~/stores/themeStore'
+import { useTheme } from '~/hooks/useTheme'
 
 const UpdateRecord = () => {
     const { t } = useTranslation()
@@ -20,6 +22,7 @@ const UpdateRecord = () => {
     const _recordID = parseInt(id)
     const _vehicleID = parseInt(vehicleId)
     const _data = JSON.parse(data)
+    const { colorScheme } = useThemeStore()
     const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>(OdometerFunctionStore)
     const { mutateAsync: updateServiceRecord } = useUpdateServiceRecord()
     const { mutateAsync: updateOdometerRecord } = useUpdateOdometerRecord()
@@ -34,6 +37,7 @@ const UpdateRecord = () => {
     const [showMetricFieldDueDate, setShowMetricFieldDueDate] = useState(_data.userMetric === "Date" || _data.userMetric === "Both")
     const [showMetricFieldDueOdometer, setShowMetricFieldDueOdometer] = useState(_data.userMetric === "Odometer" || _data.userMetric === "Both")
     let convertedDate: string
+    const theme = useTheme()
 
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
@@ -171,12 +175,12 @@ const UpdateRecord = () => {
     }, [actionType])
 
     return (
-        <SafeAreaView style={tw`flex flex-col p-4 pb-0 w-full h-full dark:bg-slate-900`}>
+        <SafeAreaView style={[tw`flex flex-col p-4 pb-0 w-full h-full dark:bg-slate-900`, { backgroundColor: theme.colors.background.default }]}>
             <Stack.Screen options={{
                 headerShadowVisible: false,
                 headerShown: true,
                 headerStyle: { backgroundColor: `transparent` },
-                headerTitle: () => <Text style={tw`text-xl dark:text-white font-HKGrotesk-Medium`} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>,
+                headerTitle: () => <Text style={tw`text-xl dark:text-white font-HKGrotesk-Medium`} numberOfLines={1}>{_data.Name}</Text>,
                 statusBarStyle: 'dark',
                 statusBarColor: '#f2f2f2',
                 headerTransparent: true,
@@ -184,7 +188,7 @@ const UpdateRecord = () => {
             <View style={tw`mt-9`}>
                 <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={"handled"}
                     style={tw`p-4 pt-0`}>
-                    <Text style={tw`font-HKGrotesk-Bold text-lg text-center mb-2 text-[${currentActionType?.buttonColor}]`}>Update {actionType.toString()} Record</Text>
+                    <Text style={tw`font-HKGrotesk-Bold text-lg text-center mb-2 text-[${currentActionType?.buttonColor[colorScheme]}]`}>Update {actionType.toString()} Record</Text>
 
                     <View>
                         {currentActionType?.visibleFields.description && currentActionType?.key === ReminderFunctionStore.key &&
@@ -194,7 +198,7 @@ const UpdateRecord = () => {
                                 <Controller control={control} rules={{ required: currentActionType.mandatoryFields.description }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <TextInput
-                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 h-21 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Description && 'border-red-700' || ''}`}
+                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor[colorScheme]}]/20 h-21 selection:border-[${currentActionType?.buttonColor[colorScheme]}]/30 bg-gray-100 border p-2 mb-2 ${errors.Description && 'border-red-700' || ''}`}
                                             onBlur={onBlur}
                                             onChangeText={onChange}
                                             returnKeyType='next'
@@ -245,8 +249,8 @@ const UpdateRecord = () => {
                                                 <View>
                                                     <TextInput
                                                         style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg text-black dark:text-white
-                                                    border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 
-                                                    bg-gray-100 dark:bg-[${currentActionType?.buttonColor}]/40 border p-2 mb-2 pr-10 ${errors.DueDate && 'border-red-700' || ''}`}
+                                                    border-[${currentActionType?.buttonColor[colorScheme]}]/20 selection:border-[${currentActionType?.buttonColor[colorScheme]}]/30 
+                                                    bg-gray-100 dark:bg-[${currentActionType?.buttonColor[colorScheme]}]/40 border p-2 mb-2 pr-10 ${errors.DueDate && 'border-red-700' || ''}`}
                                                         readOnly={true}
                                                         value={value.toLocaleDateString(Intl.DateTimeFormat().resolvedOptions().locale, {
                                                             weekday: 'long',
@@ -255,7 +259,7 @@ const UpdateRecord = () => {
                                                             day: '2-digit'
                                                         })} />
                                                     <View style={tw`absolute right-4 top-3`}>
-                                                        <CalendarDays size={22} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                        <CalendarDays size={22} color={tint(0.6, currentActionType?.buttonColor[colorScheme]    )} />
                                                     </View>
                                                 </View>
                                             </Pressable>
@@ -283,7 +287,7 @@ const UpdateRecord = () => {
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <View style={tw`relative flex-row items-center`}>
                                             <TextInput
-                                                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.DueOdometer && showMetricFieldDueOdometer && 'border-red-700' || ''}`}
+                                                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor[colorScheme]}]/20 selection:border-[${currentActionType?.buttonColor[colorScheme]}]/30 bg-gray-100 border p-2 mb-2 ${errors.DueOdometer && showMetricFieldDueOdometer && 'border-red-700' || ''}`}
                                                 onBlur={onBlur}
                                                 onChangeText={(text) => {
                                                     // Only allow numbers
@@ -295,7 +299,7 @@ const UpdateRecord = () => {
                                                 keyboardType="numeric"
                                                 inputMode="numeric" />
                                             <View style={tw`absolute right-4 top-3`}>
-                                                <GaugeCircle size={22} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                <GaugeCircle size={22} color={tint(0.6, currentActionType?.buttonColor[colorScheme])} />
                                             </View>
                                         </View>
                                     )}
@@ -321,8 +325,8 @@ const UpdateRecord = () => {
                                                 <View>
                                                     <TextInput
                                                         style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg text-black dark:text-white
-                                                    border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 
-                                                    bg-gray-100 dark:bg-[${currentActionType?.buttonColor}]/40 border p-2 mb-2 pr-10 ${errors.Date && 'border-red-700' || ''}`}
+                                                    border-[${currentActionType?.buttonColor[colorScheme]}]/20 selection:border-[${currentActionType?.buttonColor[colorScheme]}]/30 
+                                                    bg-gray-100 dark:bg-[${currentActionType?.buttonColor[colorScheme]}]/40 border p-2 mb-2 pr-10 ${errors.Date && 'border-red-700' || ''}`}
                                                         readOnly={true}
                                                         value={value.toLocaleDateString(Intl.DateTimeFormat().resolvedOptions().locale, {
                                                             weekday: 'long',
@@ -331,7 +335,7 @@ const UpdateRecord = () => {
                                                             day: '2-digit'
                                                         })} />
                                                     <View style={tw`absolute right-4 top-3`}>
-                                                        <CalendarDays size={22} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                        <CalendarDays size={22} color={tint(0.6, currentActionType?.buttonColor[colorScheme])} />
                                                     </View>
                                                 </View>
                                             </Pressable>
@@ -358,14 +362,14 @@ const UpdateRecord = () => {
                                         {!currentActionType.mandatoryFields.initialOdometer && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}
                                     </Text>
                                     <Pressable onPress={() => setShowTooltip(!showTooltip)}>
-                                        <Info size={16} color={tint(0.1, currentActionType?.buttonColor)} />
+                                        <Info size={16} color={tint(0.1, currentActionType?.buttonColor[colorScheme])} />
                                     </Pressable>
                                     {showTooltip && (
                                         <View style={tw`absolute right-5 top-6 bg-white dark:bg-slate-800 p-3 rounded-lg shadow-sm z-50 w-64 border border-gray-200 dark:border-slate-700`}>
                                             <View style={tw`flex-row justify-between items-start mb-1`}>
                                                 <Text style={tw`font-HKGrotesk-Bold text-sm dark:text-white`}>Initial Odometer</Text>
                                                 <Pressable onPress={() => setShowTooltip(false)} hitSlop={8}>
-                                                    <X size={16} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                    <X size={16} color={tint(0.6, currentActionType?.buttonColor[colorScheme])} />
                                                 </Pressable>
                                             </View>
                                             <Text style={tw`text-sm text-gray-600 dark:text-gray-300`}>
@@ -379,8 +383,8 @@ const UpdateRecord = () => {
                                         <View style={tw`relative flex-row items-center`}>
                                             <TextInput
                                                 style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg 
-                                            border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 
-                                                bg-gray-100 dark:bg-[${currentActionType?.buttonColor}]/40 border p-2 mb-2
+                                            border-[${currentActionType?.buttonColor[colorScheme]}]/20 selection:border-[${currentActionType?.buttonColor[colorScheme]}]/30 
+                                                bg-gray-100 dark:bg-[${currentActionType?.buttonColor[colorScheme]}]/40 border p-2 mb-2
                                                 dark:text-gray-100 ${errors.InitialOdometer && 'border-red-700' || ''}`}
                                                 onBlur={onBlur}
                                                 onChangeText={onChange}
@@ -390,9 +394,9 @@ const UpdateRecord = () => {
                                             />
                                             <Pressable style={tw`absolute right-1 top-1`}
                                                 onPress={() => setInitialOdometerEditable(!initialOdometerEditable)}>
-                                                <View style={tw`flex flex-row items-center bg-[${currentActionType?.buttonColor}]/10 p-2 rounded-lg gap-2`}>
-                                                    <PenSquare size={22} color={currentActionType?.buttonColor} />
-                                                    <Text style={tw`font-HKGrotesk-Regular text-sm text-gray-500 text-[${currentActionType?.buttonColor}]`}>{t("Edit")}</Text>
+                                                <View style={tw`flex flex-row items-center bg-[${currentActionType?.buttonColor[colorScheme]}]/10 p-2 rounded-lg gap-2`}>
+                                                    <PenSquare size={22} color={currentActionType?.buttonColor[colorScheme]} />
+                                                    <Text style={tw`font-HKGrotesk-Regular text-sm text-gray-500 text-[${currentActionType?.buttonColor[colorScheme]}]`}>{t("Edit")}</Text>
                                                 </View>
                                             </Pressable>
                                         </View>
@@ -413,7 +417,7 @@ const UpdateRecord = () => {
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <View style={tw`relative flex-row items-center`}>
                                             <TextInput
-                                                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Odometer && 'border-red-700' || ''}`}
+                                                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor[colorScheme]}]/20 selection:border-[${currentActionType?.buttonColor[colorScheme]}]/30 bg-gray-100 border p-2 mb-2 ${errors.Odometer && 'border-red-700' || ''}`}
                                                 onBlur={onBlur}
                                                 onChangeText={(text) => {
                                                     // Only allow numbers
@@ -425,7 +429,7 @@ const UpdateRecord = () => {
                                                 keyboardType="numeric"
                                                 inputMode="numeric" />
                                             <View style={tw`absolute right-4 top-3`}>
-                                                <GaugeCircle size={22} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                <GaugeCircle size={22} color={tint(0.6, currentActionType?.buttonColor[colorScheme])} />
                                             </View>
                                         </View>
                                     )}
@@ -446,7 +450,7 @@ const UpdateRecord = () => {
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <View style={tw`relative flex-row items-center`}>
                                             <TextInput
-                                                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Cost && 'border-red-700' || ''}`}
+                                                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor[colorScheme]}]/20 selection:border-[${currentActionType?.buttonColor[colorScheme]}]/30 bg-gray-100 border p-2 mb-2 ${errors.Cost && 'border-red-700' || ''}`}
                                                 onBlur={onBlur}
                                                 onChangeText={(text) => {
                                                     // Only allow numbers
@@ -456,7 +460,7 @@ const UpdateRecord = () => {
                                                 returnKeyType='next'
                                                 value={value} keyboardType="numeric" inputMode="numeric" />
                                             <View style={tw`absolute right-4 top-3`}>
-                                                <CircleDollarSign size={22} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                <CircleDollarSign size={22} color={tint(0.6, currentActionType?.buttonColor[colorScheme])} />
                                             </View>
                                         </View>
                                     )}
@@ -472,7 +476,7 @@ const UpdateRecord = () => {
                                 <Controller control={control} rules={{ required: currentActionType.mandatoryFields.description }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <TextInput
-                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 h-30 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Description && 'border-red-700' || ''}`}
+                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor[colorScheme]}]/20 h-30 selection:border-[${currentActionType?.buttonColor[colorScheme]}]/30 bg-gray-100 border p-2 mb-2 ${errors.Description && 'border-red-700' || ''}`}
                                             onBlur={onBlur}
                                             onChangeText={onChange}
                                             returnKeyType='next'
@@ -490,7 +494,7 @@ const UpdateRecord = () => {
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <View style={tw`relative flex-row items-center`}>
                                             <TextInput
-                                                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.ConsumedFuel && 'border-red-700' || ''}`}
+                                                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor[colorScheme]}]/20 selection:border-[${currentActionType?.buttonColor[colorScheme]}]/30 bg-gray-100 border p-2 mb-2 ${errors.ConsumedFuel && 'border-red-700' || ''}`}
                                                 onBlur={onBlur}
                                                 onChangeText={(text) => {
                                                     // Only allow numbers
@@ -501,7 +505,7 @@ const UpdateRecord = () => {
                                                 inputMode="numeric"
                                                 value={value} />
                                             <View style={tw`absolute right-4 top-3`}>
-                                                <FuelIcon size={22} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                <FuelIcon size={22} color={tint(0.6, currentActionType?.buttonColor[colorScheme])} />
                                             </View>
                                         </View>
                                     )} name="ConsumedFuel" />
@@ -517,7 +521,7 @@ const UpdateRecord = () => {
                                         <ModernSwitch
                                             onValueChange={() => onChange(!value)}
                                             value={value}
-                                            activeColor={currentActionType?.buttonColor}
+                                            activeColor={currentActionType?.buttonColor[colorScheme]}
                                         />
                                     )} name="IsFillToFull" />
                             </View>}
@@ -531,7 +535,7 @@ const UpdateRecord = () => {
                                         <ModernSwitch
                                             onValueChange={() => onChange(!value)}
                                             value={value}
-                                            activeColor={currentActionType?.buttonColor}
+                                            activeColor={currentActionType?.buttonColor[colorScheme]}
                                         />
                                     )} name="MissedFuelUp" />
                             </View>}
@@ -543,7 +547,7 @@ const UpdateRecord = () => {
                                 <Controller control={control} rules={{ required: currentActionType.mandatoryFields.notes }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <TextInput
-                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Notes && 'border-red-700' || ''}`}
+                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor[colorScheme]}]/20 selection:border-[${currentActionType?.buttonColor[colorScheme]}]/30 bg-gray-100 border p-2 mb-2 ${errors.Notes && 'border-red-700' || ''}`}
                                             onBlur={onBlur}
                                             onChangeText={onChange}
                                             returnKeyType='next'
@@ -562,7 +566,7 @@ const UpdateRecord = () => {
                                             value={value}
                                             onChangeText={onChange}
                                             onBlur={onBlur}
-                                            color={currentActionType?.buttonColor}
+                                            color={currentActionType?.buttonColor[colorScheme]}
                                             hasError={!!errors.Tags}
                                         />
                                     )} name="Tags" />
@@ -571,7 +575,7 @@ const UpdateRecord = () => {
                         {errors.Tags && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
 
                         <Pressable onPress={handleSubmit(handleForm)} style={tw`mb-4`}>
-                            <Text style={tw`mt-4 p-2 bg-[${currentActionType?.buttonColor}]/60 text-white font-HKGrotesk-Medium rounded-full text-base text-center`}>
+                            <Text style={tw`mt-4 p-2 bg-[${currentActionType?.buttonColor[colorScheme]}]/60 text-white font-HKGrotesk-Medium rounded-full text-base text-center`}>
                                 Update Record
                             </Text>
                         </Pressable>

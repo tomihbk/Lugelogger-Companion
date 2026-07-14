@@ -26,11 +26,9 @@ export default function Home() {
   const vehicleWithStats = vehicleData?.[0] ?? {}
 
   useEffect(() => {
-    console.log("Vehicle Data:", vehicleWithoutStats)
-    console.log("vehicleWithStats:", vehicleWithStats)
+    // console.log("Vehicle Data:", vehicleWithoutStats)
+    // console.log("vehicleWithStats:", vehicleWithStats)
   }, [vehicleWithoutStats, vehicleWithStats])
-
-  console.log("Favorite Car ID in Home:", savedSettings)
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>

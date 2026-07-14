@@ -7,6 +7,8 @@ import DateHandler from "~/utils/DateHandler"
 import { useLastOdometerRecord } from '~/hooks/api/use-get-odometerrecords'
 
 import GlobalStateStore from "~/stores/globalStateStore"
+import { useTheme } from "~/hooks/useTheme"
+import useThemeStore from "~/stores/themeStore"
 
 type ReminderCardProps = {
     carId: number
@@ -15,6 +17,8 @@ type ReminderCardProps = {
 const NextReminderCard = ({ carId }: ReminderCardProps) => {
     const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
     const { data: lastOdometerRecord } = useLastOdometerRecord(carId)
+    const theme = useTheme()   
+    const { colorScheme: colorSchemeStore } = useThemeStore()
 
     const {
         data: ReminderRecords,
@@ -80,27 +84,27 @@ const NextReminderCard = ({ carId }: ReminderCardProps) => {
     if (isReminderRecordsFetching) {
         return (
             <View style={tw`bg-neutral-900 p-4 rounded-2xl items-center`}>
-                <ActivityIndicator />
+                <ActivityIndicator color={theme.colors.brand.primary}/>
             </View>
         )
     }
 
     if (!nextReminder) {
         return (
-            <View style={tw`rounded-2xl p-4 mt-4 bg-white shadow-2xl dark:shadow-none shadow-blue-900/20`}>
-                <Text style={tw`font-HKGrotesk-Medium`}>All good, no upcoming reminders 🎉</Text>
+            <View style={[tw`rounded-2xl p-4 mt-4 shadow-2xl dark:shadow-none shadow-blue-900/20`, { backgroundColor: theme.colors.background.subtle, shadowColor: theme.colors.surface.card }]}>
+                <Text style={[tw`font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]}>All good, no upcoming reminders 🎉</Text>
             </View>)
     }
 
     return (
-        <View style={tw`mt-6 bg-white rounded-xl p-4 shadow-lg shadow-red-900/20`}>
+        <View style={[tw`mt-6 rounded-xl p-4 shadow-lg shadow-red-900/20`, { backgroundColor: colorSchemeStore === 'dark' ? theme.colors.background.subtle : 'white', shadowColor: theme.colors.surface.card }]}>
             <View style={tw`flex-row items-start gap-4`}>
-                <View style={tw`flex items-center justify-center h-10 w-10 rounded-xl bg-red-100`}>
+                <View style={[tw`flex items-center justify-center h-10 w-10 rounded-xl bg-red-100`, { backgroundColor: colorSchemeStore === 'dark' ? theme.colors.status.danger + "20" : theme.colors.status.danger + "20" }]}>
                     <Bell size={24} color="rgba(220,38,38,1)" />
                 </View>
                 <View style={tw`flex-1`}>
                     <View style={tw`flex-row items-center gap-3 mb-2`}>
-                        <Text style={tw`text-lg font-HKGrotesk-Bold`}>Next Reminder</Text>
+                        <Text style={[tw`text-lg font-HKGrotesk-Bold`, { color: theme.colors.text.primary }]}>Next Reminder</Text>
                         {/* <View style={tw`bg-red-200 px-3 py-1 rounded`}>
                             <Text style={tw`text-xs font-HKGrotesk-Bold`}>
                                 {nextReminder?.urgency && nextReminder?.urgency.replace(/([A-Z])/g, ' $1').trim()}
@@ -108,7 +112,7 @@ const NextReminderCard = ({ carId }: ReminderCardProps) => {
                         </View> */}
                     </View>
 
-                    <Text style={tw`text-sm mb-3 font-HKGrotesk-Medium text-gray-500`}>
+                    <Text style={[tw`text-sm mb-3 font-HKGrotesk-Medium`, { color: theme.colors.text.secondary }]}>
                         {/* Primary (closest) */}
                         {nextReminder.nextDueMetric === "Date" && nextReminder.dueDate
                             ? DateHandler(nextReminder.dueDate).toString()
@@ -131,7 +135,7 @@ const NextReminderCard = ({ carId }: ReminderCardProps) => {
                                 ? DateHandler(nextReminder.dueDate).toString()
                                 : null}
                     </Text>
-                    <Text style={tw`font-HKGrotesk-Medium`}>
+                    <Text style={[tw`font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]}>
                         {nextReminder.description}
                     </Text>
                 </View>

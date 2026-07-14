@@ -10,6 +10,7 @@ import { router } from 'expo-router'
 import { useDeleteTaxRecord } from '~/hooks/api/use-get-taxrecords'
 import DeleteButton from '../DeleteButton'
 import Tag from '../TagComponent'
+import { useTheme } from '~/hooks/useTheme'
 
 type TaxCardProps = RecordBase[0] & TaxRecord[0]
 
@@ -17,6 +18,7 @@ const TaxCard = ({ item, selectedButtonHexColor, vehicleId }: { item: TaxCardPro
     const { preferredCurrencySymbol } = GlobalStateStore((state) => state)
     const [showDeleteButton, setShowDeleteButton] = useState(false)
     const { mutateAsync: deleteTaxRecord } = useDeleteTaxRecord()
+    const theme = useTheme()
 
     const handleDelete = async (id: number) => {
         await deleteTaxRecord({ recordID: id, vehicleId })
@@ -25,7 +27,7 @@ const TaxCard = ({ item, selectedButtonHexColor, vehicleId }: { item: TaxCardPro
     return (
         <View style={tw`mb-2`}>
             <Pressable
-                style={tw`p-4 pt-3 pb-0 bg-white dark:bg-green-950 rounded-tr-3xl rounded-tl-3xl ${item.tags ? 'rounded-bl-none' : 'rounded-3xl p-4 pt-3'}`}
+                style={[tw`p-4 pt-3 pb-0 rounded-tr-3xl rounded-tl-3xl ${item.tags ? 'rounded-bl-none' : 'rounded-3xl p-4 pt-3'}`, { backgroundColor: theme.colors.surface.neutral }]}
                 onLongPress={() => setShowDeleteButton(prev => !prev)}
                 onPress={() => {
                     router.push({
@@ -34,15 +36,15 @@ const TaxCard = ({ item, selectedButtonHexColor, vehicleId }: { item: TaxCardPro
                     })
                 }}>
                 <View style={tw`flex flex-row flex-wrap justify-between`}>
-                    <Text style={tw`font-HKGrotesk-Bold text-lg`}>{DateHandler(item.date).toString()}</Text>
-                    <Text style={tw`font-HKGrotesk-Bold text-lg`}>{preferredCurrencySymbol} {item?.cost}</Text>
+                    <Text style={[tw`font-HKGrotesk-Bold text-lg`, { color: theme.colors.text.primary }]}>{DateHandler(item.date).toString()}</Text>
+                    <Text style={[tw`font-HKGrotesk-Bold text-lg`, { color: theme.colors.text.primary }]}>{preferredCurrencySymbol} {item?.cost}</Text>
                 </View>
-                {item.description && <Text style={tw`bg-[${selectedButtonHexColor}]/5 mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>}
+                {item.description && <Text style={[tw`mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`, { color: theme.colors.text.primary, backgroundColor: selectedButtonHexColor + '20' }]} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>}
 
-                {item.notes && <Text style={tw`bg-[${selectedButtonHexColor}]/5 mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`} numberOfLines={2} ellipsizeMode="tail">{item.notes}</Text>}
+                {item.notes && <Text style={[tw`mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`, { color: theme.colors.text.primary, backgroundColor: selectedButtonHexColor + '20' }]} numberOfLines={2} ellipsizeMode="tail">{item.notes}</Text>}
             </Pressable>
 
-            {item.tags && <View style={tw`px-4 pb-3 bg-white dark:bg-green-950 rounded-br-3xl rounded-bl-3xl`}>
+            {item.tags && <View style={[tw`px-4 pb-3 rounded-br-3xl rounded-bl-3xl`, { backgroundColor: theme.colors.surface.neutral }]}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {item.tags && <Tag tags={item.tags} color={selectedButtonHexColor} />}
                 </ScrollView>

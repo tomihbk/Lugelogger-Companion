@@ -4,9 +4,12 @@ export const lightTheme = {
       default: "#FAFAFA",
       selected: "#eff6ff",
       subtle: "#eff6ff",
+      field: "#FFFFFF",
+
     },
     surface: {
       card: "#FFFFFF",
+      neutral: "#FFFFFF",
     },
     text: {
       primary: "#111111",
@@ -24,6 +27,8 @@ export const lightTheme = {
     },
     status: {
       danger: "#DC2626",
+      successful: "#22c55e",
+      remark: "#fefce8"
     },
   },
 }
@@ -34,9 +39,11 @@ export const darkTheme = {
       default: "#121212",
       selected: "#eff6ff",
       subtle: "#1f2937",
+      field: "#202020",
     },
     surface: {
       card: "#161B22",
+      neutral: "#1E1E1E",
     },
     text: {
       primary: "#FFFFFF",
@@ -54,6 +61,8 @@ export const darkTheme = {
     },
     status: {
       danger: "#EF4444",
+      successful: "#15803d",
+      remark: "#453F03"
     },
   },
 }

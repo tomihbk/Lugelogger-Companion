@@ -27,13 +27,13 @@ const ReminderCard = ({ item, selectedButtonHexColor, vehicleId }: { item: Remin
     const urgentColorHandler = () => {
         switch (item.urgency) {
             case 'PastDue':
-                return 'text-gray-600 dark:text-gray-300 border border-gray-600 dark:border-gray-300 border-2'
+                return 'text-gray-600 dark:text-gray-300 border border-gray-600 dark:border-gray-300'
             case 'VeryUrgent':
                 return 'text-white bg-red-500 dark:bg-red-600'
             case 'Urgent':
                 return 'text-white bg-yellow-500 dark:bg-yellow-600'
             case 'NotUrgent':
-                return 'text-green-600 dark:text-green-400 border border-green-600 dark:border-green-400 border-2'
+                return 'text-green-600 dark:text-green-400 border border-green-600 dark:border-green-400'
             default:
                 return ''
         }

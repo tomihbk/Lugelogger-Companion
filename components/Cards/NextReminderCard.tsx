@@ -8,7 +8,6 @@ import { useLastOdometerRecord } from '~/hooks/api/use-get-odometerrecords'
 
 import GlobalStateStore from "~/stores/globalStateStore"
 import { useTheme } from "~/hooks/useTheme"
-import useThemeStore from "~/stores/themeStore"
 
 type ReminderCardProps = {
     carId: number
@@ -18,7 +17,6 @@ const NextReminderCard = ({ carId }: ReminderCardProps) => {
     const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
     const { data: lastOdometerRecord } = useLastOdometerRecord(carId)
     const theme = useTheme()   
-    const { colorScheme: colorSchemeStore } = useThemeStore()
 
     const {
         data: ReminderRecords,
@@ -97,9 +95,9 @@ const NextReminderCard = ({ carId }: ReminderCardProps) => {
     }
 
     return (
-        <View style={[tw`mt-6 rounded-xl p-4 shadow-lg shadow-red-900/20`, { backgroundColor: colorSchemeStore === 'dark' ? theme.colors.background.subtle : 'white', shadowColor: theme.colors.surface.card }]}>
+        <View style={[tw`mt-6 rounded-xl p-4 shadow-lg shadow-red-900/20`, { backgroundColor: theme.colors.surface.neutral, shadowColor: theme.colors.surface.card }]}>
             <View style={tw`flex-row items-start gap-4`}>
-                <View style={[tw`flex items-center justify-center h-10 w-10 rounded-xl bg-red-100`, { backgroundColor: colorSchemeStore === 'dark' ? theme.colors.status.danger + "20" : theme.colors.status.danger + "20" }]}>
+                <View style={[tw`flex items-center justify-center h-10 w-10 rounded-xl bg-red-100`, { backgroundColor: theme.colors.status.danger + "20" }]}>
                     <Bell size={24} color="rgba(220,38,38,1)" />
                 </View>
                 <View style={tw`flex-1`}>

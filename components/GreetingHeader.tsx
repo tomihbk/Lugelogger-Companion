@@ -1,5 +1,6 @@
 import React, { useMemo } from "react"
 import { View, Text } from "react-native"
+import { useTheme } from "~/hooks/useTheme"
 import tw from "~/tw.config"
 
 type Props = {
@@ -42,6 +43,7 @@ const phrasesByTime = {
 
 const GreetingHeader = ({ brand, userName }: Props) => {
     const timeOfDay = getTimeOfDay()
+    const theme = useTheme()
 
     const phrase = useMemo(() => {
         const options = phrasesByTime[timeOfDay]
@@ -51,10 +53,10 @@ const GreetingHeader = ({ brand, userName }: Props) => {
 
     return (
         <View style={tw`mb-4`}>
-            <Text style={tw`text-xl mt-4 font-HKGrotesk-Bold`}>
+            <Text style={[tw`text-xl mt-4 font-HKGrotesk-Bold`, { color: theme.colors.text.primary }]}>
                 {getGreeting(timeOfDay)}, {userName}
             </Text>
-            <Text style={tw`text-sm font-HKGrotesk-Regular text-gray-700`}>{phrase}</Text>
+            <Text style={[tw`text-sm font-HKGrotesk-Regular`, { color: theme.colors.text.secondary }]}>{phrase}</Text>
         </View>
     )
 }

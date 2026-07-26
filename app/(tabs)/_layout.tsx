@@ -6,33 +6,34 @@ import "../../i18n/i18n.config"
 import useThemeStore from "~/stores/themeStore"
 import tw from "~/tw.config"
 import { useDeviceContext } from "twrnc"
+import { useTheme } from "~/hooks/useTheme"
 
 export default function TabLayout() {
   const globalStoreThemeColor = useThemeStore((color) => color.colorScheme)
+  const { colorScheme: colorSchemeStore } = useThemeStore()
+  const theme = useTheme()
 
   useDeviceContext(tw, {
     observeDeviceColorSchemeChanges: false,
     initialColorScheme: globalStoreThemeColor,
   })
 
-  const { colorScheme: colorSchemeStore } = useThemeStore()
-
   return (
     <>
       <Stack.Screen options={{
         statusBarStyle: colorSchemeStore == 'light' ? 'dark' : 'light',
-        statusBarColor: colorSchemeStore == 'light' ? '#fafafa' : '#564',
+        statusBarColor: colorSchemeStore == 'light' ? '#fafafa' : '#121212',
       }} />
       <Tabs
-        sceneContainerStyle={{ backgroundColor: colorSchemeStore == 'light' ? '#fafafa' : '#564' }} // Body background color
+        sceneContainerStyle={{ backgroundColor: theme.colors.background.default }} // Body background color colorSchemeStore == 'light' ? '#fafafa' : '#121212'
         screenOptions={{
           // tabBarActiveTintColor: '#000',
           // tabBarInactiveTintColor: '#fff',
           headerShown: false,
           tabBarBackground: () =>
             <View
-              style={[tw`bg-white h-full mx-4 rounded-tr-2xl rounded-tl-2xl shadow-2xl shadow-blue-700/80`,
-              { shadowOffset: { width: 0, height: -5 }, elevation: 18 }]} />,
+              style={[tw`h-full mx-4 rounded-tr-2xl rounded-tl-2xl shadow-2xl shadow-blue-700/80`,
+              { shadowOffset: { width: 0, height: -5 }, elevation: colorSchemeStore === 'light' ? 18 : 0, backgroundColor: theme.colors.surface.card }]} />,
           tabBarStyle: {
             position: 'absolute',
             shadowColor: 'transparent',

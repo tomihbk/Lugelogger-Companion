@@ -12,6 +12,7 @@ import { useGetVehicle } from "~/hooks/api"
 import ServerSettingsStore from "~/stores/serverSettingsStore"
 import NextReminderCard from "~/components/Cards/NextReminderCard"
 import GreetingHeader from "~/components/GreetingHeader"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 
 export default function Home() {
@@ -26,13 +27,12 @@ export default function Home() {
   const vehicleWithStats = vehicleData?.[0] ?? {}
 
   useEffect(() => {
-    console.log("Vehicle Data:", vehicleWithoutStats)
-    console.log("vehicleWithStats:", vehicleWithStats)
+    // console.log("Vehicle Data:", vehicleWithoutStats)
+    // console.log("vehicleWithStats:", vehicleWithStats)
   }, [vehicleWithoutStats, vehicleWithStats])
 
-  console.log("Favorite Car ID in Home:", savedSettings)
-
   return (
+    <SafeAreaView edges={['top']}>
     <ScrollView showsVerticalScrollIndicator={false}>
       {/* <Redirect href="/(tabs)/garage" /> */}
       <Stack.Screen options={{ title: 'Home', headerShown: false }} />
@@ -48,5 +48,6 @@ export default function Home() {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
   )
 }

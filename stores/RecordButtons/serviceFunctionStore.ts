@@ -2,14 +2,17 @@ import { IsFieldVisible } from "./visible-field.types"
 
 export interface ServiceFunctionStoreProp {
   key: string
-  buttonColor: string
+  buttonColor: { light: string; dark: string }
   visibleFields: IsFieldVisible
   mandatoryFields: IsFieldVisible
 }
 
 const ServiceFunctionStore: ServiceFunctionStoreProp = {
   key: "service",
-  buttonColor: "#1C06DC",
+  buttonColor: {
+    light: "#1C06DC",
+    dark: "#5B7FFF",
+  },
   visibleFields: {
     date: true,
     initialOdometer: false,

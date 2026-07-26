@@ -2,14 +2,17 @@ import { IsFieldVisible } from "./visible-field.types"
 
 export interface ReminderFunctionStoreProp {
   key: string
-  buttonColor: string
+  buttonColor: { light: string; dark: string }
   visibleFields: IsFieldVisible
   mandatoryFields: IsFieldVisible
 }
 
 const ReminderFunctionStore: ReminderFunctionStoreProp = {
   key: "reminder",
-  buttonColor: "#BF0296",
+  buttonColor: {
+    light: "#BF0296",
+    dark: "#E040FB",
+  },
   visibleFields: {
     date: false,
     initialOdometer: false,
@@ -23,7 +26,7 @@ const ReminderFunctionStore: ReminderFunctionStoreProp = {
     tags: true,
     dueOdometer: true,
     dueDate: true,
-    metric: true
+    metric: true,
   },
   mandatoryFields: {
     date: false,
@@ -38,7 +41,7 @@ const ReminderFunctionStore: ReminderFunctionStoreProp = {
     tags: false,
     dueOdometer: false,
     dueDate: false,
-    metric: true
+    metric: true,
   },
 }
 

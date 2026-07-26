@@ -4,6 +4,7 @@ import { Bar, CartesianChart } from 'victory-native'
 import { DashPathEffect, LinearGradient, useFont, vec } from '@shopify/react-native-skia'
 import tw from '~/tw.config'
 import HKGroteskMedium from '../assets/fonts/HankenGrotesk-Medium.ttf'
+import { useTheme } from '~/hooks/useTheme'
 
 interface MonthlyExpensesChartProps {
     data: { month: number; totalMonthlyCost: number }[]
@@ -11,11 +12,13 @@ interface MonthlyExpensesChartProps {
 
 const MonthlyExpensesChart: React.FC<MonthlyExpensesChartProps> = ({ data }) => {
     const font = useFont(HKGroteskMedium, 12)
+    const theme = useTheme()
+
     if (!font) return null
 
     return (
-        <View style={tw`h-65 bg-white rounded-3xl p-4 py-3`}>
-            <Text style={tw`text-lg font-HKGrotesk-Bold mb-2`}>
+        <View style={[tw`h-65 rounded-3xl p-4 py-3`, { backgroundColor: theme.colors.surface.neutral }]}>
+            <Text style={[tw`text-lg font-HKGrotesk-Bold mb-2`, { color: theme.colors.text.primary }]}>
                 Monthly Expenses
             </Text>
             <CartesianChart
@@ -26,7 +29,7 @@ const MonthlyExpensesChart: React.FC<MonthlyExpensesChartProps> = ({ data }) => 
                 domainPadding={{ left: 15, right: 15, top: 2 }}
                 xAxis={{
                     font,
-                    labelColor: "black",
+                    labelColor: theme.colors.text.primary,
                     lineWidth: 0,
                     formatXLabel(value) {
                         const date = new Date(2025, value - 1)
@@ -37,7 +40,7 @@ const MonthlyExpensesChart: React.FC<MonthlyExpensesChartProps> = ({ data }) => 
                 yAxis={[{
                     font,
                     yKeys: ["totalMonthlyCost"],
-                    labelColor: "black",
+                    labelColor: theme.colors.text.primary,
                     lineColor: "#f7a33990",
                     tickCount: 5,
                     linePathEffect: <DashPathEffect intervals={[0, 0]} />,

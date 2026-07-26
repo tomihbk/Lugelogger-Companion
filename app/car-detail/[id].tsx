@@ -20,6 +20,8 @@ import UpgradeCard from '~/components/Cards/UpgradeCard'
 import DateHandler from '~/utils/DateHandler'
 import Dashboard from '~/components/Dashboard'
 import ReminderCard from '~/components/Cards/ReminderCard'
+import useThemeStore from '~/stores/themeStore'
+import { useTheme } from '~/hooks/useTheme'
 
 
 const CarDetail = () => {
@@ -36,16 +38,18 @@ const CarDetail = () => {
 
   const { setSelectedTabName, selectedTabName } = GlobalStateStore((state) => state)
   const currentWorldYear = new Date().getFullYear()
+  const { colorScheme } = useThemeStore()
+  const theme = useTheme()
 
   const ActionButtons = [
     { key: 'home', label: 'Home', color: '#f28900' },
-    { key: OdometerFunctionStore.key, label: 'Odometer', color: OdometerFunctionStore.buttonColor },
-    { key: ServiceFunctionStore.key, label: 'Service', color: ServiceFunctionStore.buttonColor },
-    { key: RepairFunctionStore.key, label: 'Repairs', color: RepairFunctionStore.buttonColor },
-    { key: UpgradeFunctionStore.key, label: 'Upgrades', color: UpgradeFunctionStore.buttonColor },
-    { key: FuelFunctionStore.key, label: 'Fuel', color: FuelFunctionStore.buttonColor },
-    { key: TaxFunctionStore.key, label: 'Taxes', color: TaxFunctionStore.buttonColor },
-    { key: ReminderFunctionStore.key, label: 'Reminders', color: ReminderFunctionStore.buttonColor },
+    { key: OdometerFunctionStore.key, label: 'Odometer', color: OdometerFunctionStore.buttonColor[colorScheme] },
+    { key: ServiceFunctionStore.key, label: 'Service', color: ServiceFunctionStore.buttonColor[colorScheme] },
+    { key: RepairFunctionStore.key, label: 'Repairs', color: RepairFunctionStore.buttonColor[colorScheme] },
+    { key: UpgradeFunctionStore.key, label: 'Upgrades', color: UpgradeFunctionStore.buttonColor[colorScheme] },
+    { key: FuelFunctionStore.key, label: 'Fuel', color: FuelFunctionStore.buttonColor[colorScheme] },
+    { key: TaxFunctionStore.key, label: 'Taxes', color: TaxFunctionStore.buttonColor[colorScheme] },
+    { key: ReminderFunctionStore.key, label: 'Reminders', color: ReminderFunctionStore.buttonColor[colorScheme] },
     // { key: 'notes', label: 'Notes', color: '#BF0296' },
   ]
 
@@ -265,14 +269,15 @@ const CarDetail = () => {
   }
 
   return (
-    <View style={tw`flex flex-col px-3 w-full h-full dark:bg-slate-900`}>
+    <View style={[tw`flex flex-col px-3 w-full h-full`, { backgroundColor: theme.colors.background.default }]}>
       <Stack.Screen options={{
         headerShadowVisible: false,
         headerShown: true,
-        headerStyle: { backgroundColor: `#f2f2f2` },
-        headerTitle: () => <Text style={tw`text-xl dark:text-white font-HKGrotesk-Medium`} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>, // TODO: Change to dynamic title based on car details
-        statusBarStyle: 'dark',
-        statusBarColor: '#f2f2f2',
+        headerTintColor: theme.colors.text.primary, // this handles the back arrow color on the header
+        headerStyle: { backgroundColor: theme.colors.background.default },
+        headerTitle: () => <Text style={[tw`text-xl font-HKGrotesk-Medium`,{ color: theme.colors.text.primary }]} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>, // TODO: Change to dynamic title based on car details
+        statusBarStyle: colorScheme == 'light' ? 'dark' : 'light',
+        statusBarColor: theme.colors.background.default,
         headerTransparent: false,
       }} />
       <ScrollView ref={scrollViewRef} horizontal={true} showsHorizontalScrollIndicator={false}
@@ -292,7 +297,7 @@ const CarDetail = () => {
 
       {(isOdometerRecordsFetching || isServiceRecordsFetching || isRepairRecordsFetching || isUpgradeRecordsFetching || isFuelRecordsFetching || isTaxRecordsFetching || isReminderRecordsFetching) ? (
         <View style={tw`flex flex-col items-center justify-center h-4/5`}>
-          <Text style={tw`text-lg font-HKGrotesk-Medium`}>Fetching data...</Text>
+          <Text style={[tw`text-lg font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]}>Fetching data...</Text>
           <ActivityIndicator size="large" color={selectedButtonHexColor} />
         </View>
       ) : (
@@ -342,7 +347,7 @@ const CarDetail = () => {
               return (
                 <View>
                   {showYearHeader && (
-                    <Text style={tw`text-sm font-HKGrotesk-Regular bg-[${selectedButtonHexColor}]/5 p-1 text-center w-1/2 mx-auto rounded-tr-xl rounded-tl-xl border-[${selectedButtonHexColor}]/20 border border-b-0`}>
+                    <Text style={[tw`text-sm font-HKGrotesk-Regular bg-[${selectedButtonHexColor}]/5 p-1 text-center w-1/2 mx-auto rounded-tr-xl rounded-tl-xl border-[${selectedButtonHexColor}]/20 border border-b-0`, { color: theme.colors.text.primary }]}>
                       {currentYear}
                     </Text>
                   )}

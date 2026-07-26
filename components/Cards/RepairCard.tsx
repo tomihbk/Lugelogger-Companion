@@ -11,6 +11,7 @@ import DeleteButton from '../DeleteButton'
 import { RepairRecord } from '~/api/index-records.types'
 import Tag from '../TagComponent'
 import NumberHandler from '~/utils/NumberHandler'
+import { useTheme } from '~/hooks/useTheme'
 
 type RepairCardProps = RecordBase[0] & RepairRecord[0]
 
@@ -18,6 +19,7 @@ const RepairCard = ({ item, selectedButtonHexColor, vehicleId }: { item: RepairC
     const { preferredCurrencySymbol, preferredDistanceMeasurement } = GlobalStateStore((state) => state)
     const [showDeleteButton, setShowDeleteButton] = useState(false)
     const { mutateAsync: deleteRepairRecord } = useDeleteRepairRecord()
+    const theme = useTheme()
 
     const handleDelete = async (id: number) => {
         await deleteRepairRecord({ recordID: id, vehicleId })
@@ -26,7 +28,7 @@ const RepairCard = ({ item, selectedButtonHexColor, vehicleId }: { item: RepairC
     return (
         <View style={tw`mb-2`}>
         <Pressable
-            style={tw`p-4 pt-3 pb-0 bg-white dark:bg-green-950 rounded-tr-3xl rounded-tl-3xl ${item.tags ? 'rounded-bl-none' : 'rounded-3xl p-4 pt-3'}`}
+            style={[tw`p-4 pt-3 pb-0 rounded-tr-3xl rounded-tl-3xl ${item.tags ? 'rounded-bl-none' : 'rounded-3xl p-4 pt-3'}`, { backgroundColor: theme.colors.surface.neutral }]}
             onLongPress={() => setShowDeleteButton(prev => !prev)}
             onPress={() => {
                 router.push({
@@ -35,16 +37,16 @@ const RepairCard = ({ item, selectedButtonHexColor, vehicleId }: { item: RepairC
                 })
             }}>
             <View style={tw`flex flex-row flex-wrap justify-between`}>
-                <Text style={tw`font-HKGrotesk-Bold text-lg w-1/2`}>{DateHandler(item.date).toString()}</Text>
-                <Text style={tw`font-HKGrotesk-Bold text-lg text-right w-1/2`}>{preferredCurrencySymbol} {item?.cost}</Text>
-                <Text style={tw`font-HKGrotesk-Regular text-xs text-left`}>{GetWeekday(item.date)}</Text>
-                <Text style={tw`font-HKGrotesk-SemiBold text-xs text-right`}>{NumberHandler(parseInt(item.odometer || '0'))} {preferredDistanceMeasurement}</Text>
+                <Text style={[tw`font-HKGrotesk-Bold text-lg w-1/2`, { color: theme.colors.text.primary }]}>{DateHandler(item.date).toString()}</Text>
+                <Text style={[tw`font-HKGrotesk-Bold text-lg text-right w-1/2`, { color: theme.colors.text.primary }]}>{preferredCurrencySymbol} {item?.cost}</Text>
+                <Text style={[tw`font-HKGrotesk-Regular text-xs text-left`, { color: theme.colors.text.primary }]}>{GetWeekday(item.date)}</Text>
+                <Text style={[tw`font-HKGrotesk-SemiBold text-xs text-right`, { color: theme.colors.text.primary }]}>{NumberHandler(parseInt(item.odometer || '0'))} {preferredDistanceMeasurement}</Text>
             </View>
-            {item.description && <Text style={tw`bg-[${selectedButtonHexColor}]/5 mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`} numberOfLines={item.notes ? 1 : 2} ellipsizeMode="tail">{item.description}</Text>}
+            {item.description && <Text style={[tw`mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`, { color: theme.colors.text.secondary, backgroundColor: selectedButtonHexColor + '20' }]} numberOfLines={item.notes ? 1 : 2} ellipsizeMode="tail">{item.description}</Text>}
 
-            {item.notes && <Text style={tw`bg-[${selectedButtonHexColor}]/5 mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`} numberOfLines={item.description ? 1 : 2} ellipsizeMode="tail">{item.notes}</Text>}
+            {item.notes && <Text style={[tw`mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`, { color: theme.colors.text.secondary, backgroundColor: selectedButtonHexColor + '20' }]} numberOfLines={item.description ? 1 : 2} ellipsizeMode="tail">{item.notes}</Text>}
         </Pressable>
-        {item.tags && <View style={tw`px-4 pb-3 bg-white dark:bg-green-950 rounded-br-3xl rounded-bl-3xl`}>
+        {item.tags && <View style={[tw`px-4 pb-3 rounded-br-3xl rounded-bl-3xl`, { backgroundColor: theme.colors.surface.neutral } ]}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {item.tags && <Tag tags={item.tags} color={selectedButtonHexColor} />}
             </ScrollView>

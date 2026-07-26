@@ -14,7 +14,7 @@ interface SettingRowProps {
 const SettingRow = ({ icon, label, onPress, color, style, children }: SettingRowProps) => (
     <TouchableOpacity
         style={[
-            tw`flex flex-row flex-wrap p-4 pr-2 rounded-xl dark:bg-slate-800 dark:text-gray-200 border-blue-100 items-center`,
+            tw`flex flex-row flex-wrap p-4 pr-2 rounded-3xl dark:bg-slate-800 dark:text-gray-200 border-blue-100 items-center`,
             style,
         ]}
         onPress={onPress}>

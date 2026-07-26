@@ -13,6 +13,8 @@ import { CalendarDays, GaugeCircle, Info, PenSquare, CircleDollarSign, FuelIcon,
 import { tint } from 'polished'
 import DatePicker from 'react-native-date-picker'
 import ModernSwitch from '~/components/ModernSwitch'
+import useThemeStore from '~/stores/themeStore'
+import { useTheme } from '~/hooks/useTheme'
 
 const UpdateRecord = () => {
     const { t } = useTranslation()
@@ -34,6 +36,9 @@ const UpdateRecord = () => {
     const [showMetricFieldDueDate, setShowMetricFieldDueDate] = useState(_data.userMetric === "Date" || _data.userMetric === "Both")
     const [showMetricFieldDueOdometer, setShowMetricFieldDueOdometer] = useState(_data.userMetric === "Odometer" || _data.userMetric === "Both")
     let convertedDate: string
+    const theme = useTheme()
+    const { colorScheme } = useThemeStore()
+    const colorTintValue = colorScheme === 'light' ? 0.6 : 0
 
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
@@ -171,30 +176,29 @@ const UpdateRecord = () => {
     }, [actionType])
 
     return (
-        <SafeAreaView style={tw`flex flex-col p-4 pb-0 w-full h-full dark:bg-slate-900`}>
+        <SafeAreaView style={[tw`flex flex-col p-4 pb-0 w-full h-full`, { backgroundColor: theme.colors.background.default }]}>
             <Stack.Screen options={{
                 headerShadowVisible: false,
                 headerShown: true,
-                headerStyle: { backgroundColor: `transparent` },
-                headerTitle: () => <Text style={tw`text-xl dark:text-white font-HKGrotesk-Medium`} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>,
-                statusBarStyle: 'dark',
-                statusBarColor: '#f2f2f2',
+                headerTintColor: theme.colors.text.primary, // this handles the back arrow color on the header
+                headerStyle: { backgroundColor: theme.colors.background.default },
+                headerTitle: () => <Text style={tw`font-HKGrotesk-Bold text-lg text-center text-[${currentActionType?.buttonColor[colorScheme]}]`}>Update {actionType.toString()} Record</Text>,
+                statusBarStyle: colorScheme == 'light' ? 'dark' : 'light',
+                statusBarColor: theme.colors.background.default,
                 headerTransparent: true,
             }} />
             <View style={tw`mt-9`}>
                 <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={"handled"}
                     style={tw`p-4 pt-0`}>
-                    <Text style={tw`font-HKGrotesk-Bold text-lg text-center mb-2 text-[${currentActionType?.buttonColor}]`}>Update {actionType.toString()} Record</Text>
-
                     <View>
                         {currentActionType?.visibleFields.description && currentActionType?.key === ReminderFunctionStore.key &&
                             <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>{t("Description")}
-                                    {!currentActionType.mandatoryFields.description && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base`, { color: theme.colors.text.primary }]}>{t("Description")}
+                                    {!currentActionType.mandatoryFields.description && <Text style={[tw`font-HKGrotesk-Italic italic text-sm`, { color: theme.colors.text.secondary }]}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control} rules={{ required: currentActionType.mandatoryFields.description }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <TextInput
-                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 h-21 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Description && 'border-red-700' || ''}`}
+                                            style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg h-21 border p-2 mb-2`, { color: theme.colors.text.primary, backgroundColor: theme.colors.background.field, borderColor: errors.Description ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
                                             onBlur={onBlur}
                                             onChangeText={onChange}
                                             returnKeyType='next'
@@ -202,11 +206,11 @@ const UpdateRecord = () => {
                                             textAlignVertical="top"
                                             value={value} />)} name="Description" />
                             </>}
-                        {errors.Description && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
+                        {errors.Description && <Text style={[tw`font-HKGrotesk-Regular text-right`, { color: theme.colors.status.danger }]}>Required Field</Text>}
 
                         {currentActionType?.key === ReminderFunctionStore.key && (
                             <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base mb-1`}>Remind me by:</Text>
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base mb-1`, { color: theme.colors.text.primary }]}>Remind me by:</Text>
                                 <Controller
                                     control={control}
                                     name="Metric"
@@ -221,9 +225,9 @@ const UpdateRecord = () => {
                                                         onChange(option)
                                                         showMetricField(option)
                                                     }}
-                                                    style={tw`flex-row p-2 rounded-lg border flex-grow justify-center ${value === option ? `bg-[${currentActionType?.buttonColor}]/0 border-[${currentActionType?.buttonColor}]` : 'border-gray-300 bg-gray-50'}`}
+                                                    style={[tw`flex-row p-2 rounded-lg border flex-grow justify-center`, { backgroundColor: value === option ? currentActionType?.buttonColor[colorScheme] + '20' : theme.colors.background.field, borderColor: value === option ? currentActionType?.buttonColor[colorScheme] : theme.colors.border.default }]}
                                                 >
-                                                    <Text style={tw`font-HKGrotesk-Medium text-center ${value === option ? `text-[${currentActionType?.buttonColor}]` : 'text-gray-600'}`}>
+                                                    <Text style={[tw`font-HKGrotesk-Medium text-center`, { color: value === option ? currentActionType?.buttonColor[colorScheme] : theme.colors.text.primary, borderColor: value === option ? currentActionType?.buttonColor[colorScheme] : theme.colors.border.default }]}>
                                                         {option}
                                                     </Text>
                                                 </Pressable>
@@ -236,7 +240,8 @@ const UpdateRecord = () => {
 
                         {currentActionType?.visibleFields.dueDate && showMetricFieldDueDate &&
                             <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base mb-1`}>Due {t("Date")}
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base mb-1`, { color: theme.colors.text.primary }]}>
+                                    Due {t("Date")}
                                 </Text>
                                 <Controller control={control} name="DueDate" rules={{ required: currentActionType.mandatoryFields.dueDate || showMetricFieldDueDate }}
                                     render={({ field: { onChange, value } }) => (
@@ -244,9 +249,7 @@ const UpdateRecord = () => {
                                             <Pressable onPress={() => setOpenDatePickerModal(true)}>
                                                 <View>
                                                     <TextInput
-                                                        style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg text-black dark:text-white
-                                                    border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 
-                                                    bg-gray-100 dark:bg-[${currentActionType?.buttonColor}]/40 border p-2 mb-2 pr-10 ${errors.DueDate && 'border-red-700' || ''}`}
+                                                        style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg border p-2 mb-2 pr-10`, { backgroundColor: theme.colors.background.field, color: theme.colors.text.primary, borderColor: errors.DueDate ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
                                                         readOnly={true}
                                                         value={value.toLocaleDateString(Intl.DateTimeFormat().resolvedOptions().locale, {
                                                             weekday: 'long',
@@ -255,11 +258,11 @@ const UpdateRecord = () => {
                                                             day: '2-digit'
                                                         })} />
                                                     <View style={tw`absolute right-4 top-3`}>
-                                                        <CalendarDays size={22} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                        <CalendarDays size={22} color={tint(colorTintValue, currentActionType?.buttonColor[colorScheme])} />
                                                     </View>
                                                 </View>
                                             </Pressable>
-                                            <DatePicker modal locale={Intl.DateTimeFormat().resolvedOptions().locale} mode='date' open={openDatePickerModal} date={value} theme='light' // TODO handle dark mode
+                                            <DatePicker modal locale={Intl.DateTimeFormat().resolvedOptions().locale} mode='date' open={openDatePickerModal} date={value} theme={colorScheme}
                                                 onConfirm={(date) => {
                                                     setOpenDatePickerModal(false)
                                                     onChange(date)
@@ -276,14 +279,14 @@ const UpdateRecord = () => {
 
                         {currentActionType?.visibleFields.dueOdometer && showMetricFieldDueOdometer &&
                             <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base mb-1`}>Due {t("Odometer")}</Text>
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base mb-1`, { color: theme.colors.text.primary }]}>Due {t("Odometer")}</Text>
                                 <Controller control={control} rules={{
                                     required: { value: currentActionType.mandatoryFields.dueOdometer || showMetricFieldDueOdometer, message: "Required Field and must be a number" }
                                 }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <View style={tw`relative flex-row items-center`}>
                                             <TextInput
-                                                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.DueOdometer && showMetricFieldDueOdometer && 'border-red-700' || ''}`}
+                                                style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg border p-2 mb-2`, { backgroundColor: theme.colors.background.field, color: theme.colors.text.primary, borderColor: errors.DueOdometer && showMetricFieldDueOdometer ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
                                                 onBlur={onBlur}
                                                 onChangeText={(text) => {
                                                     // Only allow numbers
@@ -295,13 +298,13 @@ const UpdateRecord = () => {
                                                 keyboardType="numeric"
                                                 inputMode="numeric" />
                                             <View style={tw`absolute right-4 top-3`}>
-                                                <GaugeCircle size={22} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                <GaugeCircle size={22} color={tint(colorTintValue, currentActionType?.buttonColor[colorScheme])} />
                                             </View>
                                         </View>
                                     )}
                                     name="DueOdometer" />
                                 {errors.DueOdometer &&
-                                    <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400 -mt-1 mb-1`}>
+                                    <Text style={[tw`font-HKGrotesk-Regular text-right -mt-1 mb-1`, { color: theme.colors.status.danger }]}>
                                         Required Field
                                     </Text>
                                 }
@@ -310,8 +313,8 @@ const UpdateRecord = () => {
 
                         {currentActionType?.visibleFields.date &&
                             <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base mb-1`}>{t("Date")}
-                                    {!currentActionType.mandatoryFields.date && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base mb-1`, { color: theme.colors.text.primary }]}>{t("Date")}
+                                    {!currentActionType.mandatoryFields.date && <Text style={[tw`font-HKGrotesk-Italic italic text-sm`, { color: theme.colors.text.secondary }]}>{" - " + t("Optional")}</Text>}
                                 </Text>
 
                                 <Controller control={control} name="Date" rules={{ required: currentActionType.mandatoryFields.date }}
@@ -320,9 +323,7 @@ const UpdateRecord = () => {
                                             <Pressable onPress={() => setOpenDatePickerModal(true)}>
                                                 <View>
                                                     <TextInput
-                                                        style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg text-black dark:text-white
-                                                    border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 
-                                                    bg-gray-100 dark:bg-[${currentActionType?.buttonColor}]/40 border p-2 mb-2 pr-10 ${errors.Date && 'border-red-700' || ''}`}
+                                                        style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg border p-2 mb-2 pr-10`, { backgroundColor: theme.colors.background.field, color: theme.colors.text.primary, borderColor: errors.Date ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
                                                         readOnly={true}
                                                         value={value.toLocaleDateString(Intl.DateTimeFormat().resolvedOptions().locale, {
                                                             weekday: 'long',
@@ -331,11 +332,11 @@ const UpdateRecord = () => {
                                                             day: '2-digit'
                                                         })} />
                                                     <View style={tw`absolute right-4 top-3`}>
-                                                        <CalendarDays size={22} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                        <CalendarDays size={22} color={tint(colorTintValue, currentActionType?.buttonColor[colorScheme])} />
                                                     </View>
                                                 </View>
                                             </Pressable>
-                                            <DatePicker modal locale={Intl.DateTimeFormat().resolvedOptions().locale} mode='date' open={openDatePickerModal} date={value} theme='light' // TODO handle dark mode
+                                            <DatePicker modal locale={Intl.DateTimeFormat().resolvedOptions().locale} mode='date' open={openDatePickerModal} date={value} theme={colorScheme}
                                                 onConfirm={(date) => {
                                                     setOpenDatePickerModal(false)
                                                     onChange(date)
@@ -349,26 +350,26 @@ const UpdateRecord = () => {
                                 />
                             </>
                         }
-                        {errors.Date && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
+                        {errors.Date && <Text style={[tw`font-HKGrotesk-Regular text-right`, { color: theme.colors.status.danger }]}>Required Field</Text>}
 
                         {currentActionType?.visibleFields.initialOdometer &&
                             <>
                                 <View style={tw`flex-row items-center gap-2 mb-1 relative`}>
-                                    <Text style={tw`font-HKGrotesk-SemiBold text-base dark:text-gray-100`}>{t("Initial_Odometer")}
-                                        {!currentActionType.mandatoryFields.initialOdometer && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}
+                                    <Text style={[tw`font-HKGrotesk-SemiBold text-base`, { color: theme.colors.text.primary }]}>{t("Initial_Odometer")}
+                                        {!currentActionType.mandatoryFields.initialOdometer && <Text style={[tw`font-HKGrotesk-Italic italic text-sm`, { color: theme.colors.text.secondary }]}>{" - " + t("Optional")}</Text>}
                                     </Text>
                                     <Pressable onPress={() => setShowTooltip(!showTooltip)}>
-                                        <Info size={16} color={tint(0.1, currentActionType?.buttonColor)} />
+                                        <Info size={16} color={tint(0.1, currentActionType?.buttonColor[colorScheme])} />
                                     </Pressable>
                                     {showTooltip && (
-                                        <View style={tw`absolute right-5 top-6 bg-white dark:bg-slate-800 p-3 rounded-lg shadow-sm z-50 w-64 border border-gray-200 dark:border-slate-700`}>
+                                        <View style={[tw`absolute right-5 top-6 p-3 rounded-lg shadow-sm z-50 w-64 border`, { backgroundColor: theme.colors.background.field, borderColor: theme.colors.border.default }]}>
                                             <View style={tw`flex-row justify-between items-start mb-1`}>
-                                                <Text style={tw`font-HKGrotesk-Bold text-sm dark:text-white`}>Initial Odometer</Text>
+                                                <Text style={[tw`font-HKGrotesk-Bold text-sm`, { color: theme.colors.text.primary }]}>Initial Odometer</Text>
                                                 <Pressable onPress={() => setShowTooltip(false)} hitSlop={8}>
-                                                    <X size={16} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                    <X size={16} color={tint(colorTintValue, currentActionType?.buttonColor[colorScheme])} />
                                                 </Pressable>
                                             </View>
-                                            <Text style={tw`text-sm text-gray-600 dark:text-gray-300`}>
+                                            <Text style={[tw`text-sm`, { color: theme.colors.text.secondary }]}>
                                                 This optional field is the reading from your last record. This helps track the distance traveled between records.
                                             </Text>
                                         </View>
@@ -378,10 +379,7 @@ const UpdateRecord = () => {
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <View style={tw`relative flex-row items-center`}>
                                             <TextInput
-                                                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg 
-                                            border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 
-                                                bg-gray-100 dark:bg-[${currentActionType?.buttonColor}]/40 border p-2 mb-2
-                                                dark:text-gray-100 ${errors.InitialOdometer && 'border-red-700' || ''}`}
+                                                style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg border p-2 mb-2`, { color: theme.colors.text.primary, backgroundColor: initialOdometerEditable ? theme.colors.background.field : theme.colors.background.default, borderColor: errors.InitialOdometer ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
                                                 onBlur={onBlur}
                                                 onChangeText={onChange}
                                                 returnKeyType='next'
@@ -390,9 +388,9 @@ const UpdateRecord = () => {
                                             />
                                             <Pressable style={tw`absolute right-1 top-1`}
                                                 onPress={() => setInitialOdometerEditable(!initialOdometerEditable)}>
-                                                <View style={tw`flex flex-row items-center bg-[${currentActionType?.buttonColor}]/10 p-2 rounded-lg gap-2`}>
-                                                    <PenSquare size={22} color={currentActionType?.buttonColor} />
-                                                    <Text style={tw`font-HKGrotesk-Regular text-sm text-gray-500 text-[${currentActionType?.buttonColor}]`}>{t("Edit")}</Text>
+                                                <View style={tw`flex flex-row items-center bg-[${currentActionType?.buttonColor[colorScheme]}]/10 p-2 rounded-lg gap-2`}>
+                                                    <PenSquare size={22} color={currentActionType?.buttonColor[colorScheme]} />
+                                                    <Text style={[tw`font-HKGrotesk-Regular text-sm`, { color: currentActionType?.buttonColor[colorScheme] }]}>{t("Edit")}</Text>
                                                 </View>
                                             </Pressable>
                                         </View>
@@ -401,19 +399,19 @@ const UpdateRecord = () => {
                             </>
                         }
 
-                        {errors.InitialOdometer && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
+                        {errors.InitialOdometer && <Text style={[tw`font-HKGrotesk-Regular text-right`, { color: theme.colors.status.danger }]}>Required Field</Text>}
 
                         {currentActionType?.visibleFields.odometer &&
                             <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>{t("Odometer")}
-                                    {!currentActionType.mandatoryFields.odometer && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base`, { color: theme.colors.text.primary }]}>{t("Odometer")}
+                                    {!currentActionType.mandatoryFields.odometer && <Text style={[tw`font-HKGrotesk-Italic italic text-sm`, { color: theme.colors.text.secondary }]}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control} rules={{
                                     required: { value: currentActionType.mandatoryFields.odometer, message: "Required Field and must be a number" }
                                 }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <View style={tw`relative flex-row items-center`}>
                                             <TextInput
-                                                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Odometer && 'border-red-700' || ''}`}
+                                                style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg border p-2 mb-2`, { color: theme.colors.text.primary, backgroundColor: theme.colors.background.field, borderColor: errors.Odometer ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
                                                 onBlur={onBlur}
                                                 onChangeText={(text) => {
                                                     // Only allow numbers
@@ -425,13 +423,13 @@ const UpdateRecord = () => {
                                                 keyboardType="numeric"
                                                 inputMode="numeric" />
                                             <View style={tw`absolute right-4 top-3`}>
-                                                <GaugeCircle size={22} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                <GaugeCircle size={22} color={tint(colorTintValue, currentActionType?.buttonColor[colorScheme])} />
                                             </View>
                                         </View>
                                     )}
                                     name="Odometer" />
                                 {errors.Odometer &&
-                                    <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400 -mt-1 mb-1`}>
+                                    <Text style={[tw`font-HKGrotesk-Regular text-right -mt-1 mb-1`, { color: theme.colors.status.danger }]}>
                                         {errors.Odometer.type === 'pattern' ? 'Only numbers are allowed' : 'Required Field'}
                                     </Text>
                                 }
@@ -440,13 +438,13 @@ const UpdateRecord = () => {
 
                         {currentActionType?.visibleFields.cost &&
                             <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>{t("Cost")}
-                                    {!currentActionType.mandatoryFields.cost && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base`, { color: theme.colors.text.primary }]}>{t("Cost")}
+                                    {!currentActionType.mandatoryFields.cost && <Text style={[tw`font-HKGrotesk-Italic italic text-sm`, { color: theme.colors.text.secondary }]}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control} rules={{ required: { value: currentActionType.mandatoryFields.cost, message: "Required Field and must be a number" } }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <View style={tw`relative flex-row items-center`}>
                                             <TextInput
-                                                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Cost && 'border-red-700' || ''}`}
+                                                style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg border p-2 mb-2`, { color: theme.colors.text.primary, backgroundColor: theme.colors.background.field, borderColor: errors.Cost ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
                                                 onBlur={onBlur}
                                                 onChangeText={(text) => {
                                                     // Only allow numbers
@@ -456,23 +454,23 @@ const UpdateRecord = () => {
                                                 returnKeyType='next'
                                                 value={value} keyboardType="numeric" inputMode="numeric" />
                                             <View style={tw`absolute right-4 top-3`}>
-                                                <CircleDollarSign size={22} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                <CircleDollarSign size={22} color={tint(colorTintValue, currentActionType?.buttonColor[colorScheme])} />
                                             </View>
                                         </View>
                                     )}
                                     name="Cost" />
                             </>
                         }
-                        {errors.Cost && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
+                        {errors.Cost && <Text style={[tw`font-HKGrotesk-Regular text-right`, { color: theme.colors.status.danger }]}>Required Field</Text>}
 
                         {currentActionType?.visibleFields.description && currentActionType?.key != ReminderFunctionStore.key &&
                             <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>{t("Description")}
-                                    {!currentActionType.mandatoryFields.description && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base`, { color: theme.colors.text.primary }]}>{t("Description")}
+                                    {!currentActionType.mandatoryFields.description && <Text style={[tw`font-HKGrotesk-Italic italic text-sm`, { color: theme.colors.text.secondary }]}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control} rules={{ required: currentActionType.mandatoryFields.description }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <TextInput
-                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 h-30 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Description && 'border-red-700' || ''}`}
+                                            style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg h-30 border p-2 mb-2`, { color: theme.colors.text.primary, backgroundColor: theme.colors.background.field, borderColor: errors.Description ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
                                             onBlur={onBlur}
                                             onChangeText={onChange}
                                             returnKeyType='next'
@@ -480,17 +478,17 @@ const UpdateRecord = () => {
                                             textAlignVertical="top"
                                             value={value} />)} name="Description" />
                             </>}
-                        {errors.Description && currentActionType?.key != ReminderFunctionStore.key && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
+                        {errors.Description && currentActionType?.key != ReminderFunctionStore.key && <Text style={[tw`font-HKGrotesk-Regular text-right`, { color: theme.colors.status.danger }]}>Required Field</Text>}
 
                         {currentActionType?.visibleFields.fuelConsumed &&
                             <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>Amount of Fuel
-                                    {!currentActionType.mandatoryFields.fuelConsumed && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base`, { color: theme.colors.text.primary }]}>Amount of Fuel
+                                    {!currentActionType.mandatoryFields.fuelConsumed && <Text style={[tw`font-HKGrotesk-Italic italic text-sm`, { color: theme.colors.text.secondary }]}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control} rules={{ required: currentActionType.mandatoryFields.fuelConsumed }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <View style={tw`relative flex-row items-center`}>
                                             <TextInput
-                                                style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.ConsumedFuel && 'border-red-700' || ''}`}
+                                                style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg border p-2 mb-2`, { color: theme.colors.text.primary, backgroundColor: theme.colors.background.field, borderColor: errors.ConsumedFuel ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
                                                 onBlur={onBlur}
                                                 onChangeText={(text) => {
                                                     // Only allow numbers
@@ -501,77 +499,77 @@ const UpdateRecord = () => {
                                                 inputMode="numeric"
                                                 value={value} />
                                             <View style={tw`absolute right-4 top-3`}>
-                                                <FuelIcon size={22} color={tint(0.6, currentActionType?.buttonColor)} />
+                                                <FuelIcon size={22} color={tint(colorTintValue, currentActionType?.buttonColor[colorScheme])} />
                                             </View>
                                         </View>
                                     )} name="ConsumedFuel" />
                             </>}
-                        {errors.ConsumedFuel && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
+                        {errors.ConsumedFuel && <Text style={[tw`font-HKGrotesk-Regular text-right`, { color: theme.colors.status.danger }]}>Required Field</Text>}
 
                         {currentActionType?.visibleFields.isFulltoFill &&
                             <View style={tw`flex flex-row items-center justify-between pt-2`}>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>Full Tank ?
-                                    {!currentActionType.mandatoryFields.isFulltoFill && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base`, { color: theme.colors.text.primary }]}>Full Tank ?
+                                    {!currentActionType.mandatoryFields.isFulltoFill && <Text style={[tw`font-HKGrotesk-Italic italic text-sm`, { color: theme.colors.text.secondary }]}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control}
                                     render={({ field: { onChange, value } }) => (
                                         <ModernSwitch
                                             onValueChange={() => onChange(!value)}
                                             value={value}
-                                            activeColor={currentActionType?.buttonColor}
+                                            activeColor={currentActionType?.buttonColor[colorScheme]}
                                         />
                                     )} name="IsFillToFull" />
                             </View>}
 
                         {currentActionType?.visibleFields.missedFuelUp &&
                             <View style={tw`flex flex-row items-center justify-between py-2`}>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>Missed Previous Record ?
-                                    {!currentActionType.mandatoryFields.missedFuelUp && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base`, { color: theme.colors.text.primary }]}>Missed Previous Record ?
+                                    {!currentActionType.mandatoryFields.missedFuelUp && <Text style={[tw`font-HKGrotesk-Italic italic text-sm`, { color: theme.colors.text.secondary }]}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control}
                                     render={({ field: { onChange, value } }) => (
                                         <ModernSwitch
                                             onValueChange={() => onChange(!value)}
                                             value={value}
-                                            activeColor={currentActionType?.buttonColor}
+                                            activeColor={currentActionType?.buttonColor[colorScheme]}
                                         />
                                     )} name="MissedFuelUp" />
                             </View>}
 
                         {currentActionType?.visibleFields.notes &&
                             <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base`}>{t("Notes")}
-                                    {!currentActionType.mandatoryFields.notes && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base`, { color: theme.colors.text.primary }]}>{t("Notes")}
+                                    {!currentActionType.mandatoryFields.notes && <Text style={[tw`font-HKGrotesk-Italic italic text-sm`, { color: theme.colors.text.secondary }]}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control} rules={{ required: currentActionType.mandatoryFields.notes }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <TextInput
-                                            style={tw`font-HKGrotesk-Regular text-base w-full rounded-lg border-[${currentActionType?.buttonColor}]/20 selection:border-[${currentActionType?.buttonColor}]/30 bg-gray-100 border p-2 mb-2 ${errors.Notes && 'border-red-700' || ''}`}
+                                            style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg border p-2 mb-2`, { color: theme.colors.text.primary, backgroundColor: theme.colors.background.field, borderColor: errors.Notes ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
                                             onBlur={onBlur}
                                             onChangeText={onChange}
                                             returnKeyType='next'
                                             value={value} />)} name="Notes" />
                             </>
                         }
-                        {errors.Notes && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
+                        {errors.Notes && <Text style={[tw`font-HKGrotesk-Regular text-right`, { color: theme.colors.status.danger }]}>Required Field</Text>}
 
                         {currentActionType?.visibleFields.tags &&
                             <>
-                                <Text style={tw`font-HKGrotesk-SemiBold text-base pt-1`}>Tags
-                                    {!currentActionType.mandatoryFields.tags && <Text style={tw`font-HKGrotesk-Italic italic text-sm`}>{" - " + t("Optional")}</Text>}</Text>
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base pt-1`, { color: theme.colors.text.primary }]}>Tags
+                                    {!currentActionType.mandatoryFields.tags && <Text style={[tw`font-HKGrotesk-Italic italic text-sm`, { color: theme.colors.text.secondary }]}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control} rules={{ required: currentActionType.mandatoryFields.tags }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <TagInput
                                             value={value}
                                             onChangeText={onChange}
                                             onBlur={onBlur}
-                                            color={currentActionType?.buttonColor}
+                                            color={currentActionType?.buttonColor[colorScheme]}
                                             hasError={!!errors.Tags}
                                         />
                                     )} name="Tags" />
                             </>
                         }
-                        {errors.Tags && <Text style={tw`font-HKGrotesk-Regular text-right text-red-700 dark:text-red-400`}>Required Field</Text>}
+                        {errors.Tags && <Text style={[tw`font-HKGrotesk-Regular text-right`, { color: theme.colors.status.danger }]}>Required Field</Text>}
 
                         <Pressable onPress={handleSubmit(handleForm)} style={tw`mb-4`}>
-                            <Text style={tw`mt-4 p-2 bg-[${currentActionType?.buttonColor}]/60 text-white font-HKGrotesk-Medium rounded-full text-base text-center`}>
+                            <Text style={[tw`mt-4 p-2 font-HKGrotesk-Medium rounded-full text-base text-center`, { backgroundColor: currentActionType?.buttonColor[colorScheme] + '90', color: theme.colors.text.primary }]}>
                                 Update Record
                             </Text>
                         </Pressable>

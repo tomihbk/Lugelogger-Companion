@@ -6,8 +6,8 @@ import {
     TouchableOpacity,
     Modal,
     SafeAreaView,
-    StatusBar,
 } from "react-native"
+import { useTheme } from "~/hooks/useTheme"
 import GlobalStateStore from "~/stores/globalStateStore"
 import tw from "~/tw.config"
 
@@ -50,6 +50,7 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
     savedCurrencyCode,
     onCurrencyChange,
 }) => {
+    const theme = useTheme()
     const { preferredCurrencySymbol, setPreferredCurrencySymbol } = GlobalStateStore((state) => state)
 
     // Find currency from saved code or preferredCurrencySymbol or default to USD
@@ -87,30 +88,30 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
             <View style={tw`flex-row items-center gap-3`}>
                 <Text style={tw`text-[28px]`}>{item.flag}</Text>
                 <View style={tw`gap-0.5`}>
-                    <Text style={tw`text-sm font-HKGrotesk-SemiBold text-black`}>{item.code}</Text>
-                    <Text style={tw`text-xs text-gray-600 font-HKGrotesk-Regular`}>{item.name}</Text>
+                    <Text style={[tw`text-sm font-HKGrotesk-SemiBold`, { color: theme.colors.text.primary }]}>{item.code}</Text>
+                    <Text style={[tw`text-xs font-HKGrotesk-Regular`, { color: theme.colors.text.secondary }]}>{item.name}</Text>
                 </View>
             </View>
             {selectedCurrency.code === item.code && (
-                <Text style={tw`text-xl font-semibold text-[#007AFF]`}>✓</Text>
+                <Text style={[tw`text-xl font-semibold`, { color: theme.colors.text.link }]}>✓</Text>
             )}
         </TouchableOpacity>
     )
 
-    const renderSeparator = () => <View style={tw`h-px bg-gray-50 ml-[68px]`} />
+    const renderSeparator = () => <View style={[tw`h-px ml-[68px]`, { backgroundColor: theme.colors.border.default }]} />
 
     return (
         <View>
             <TouchableOpacity
-                style={tw`h-14 flex-row items-center justify-between bg-white border border-gray-200 rounded-lg px-4`}
+                style={[tw`h-14 flex-row items-center justify-between border rounded-lg px-4`, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.border.default }]}
                 onPress={() => setModalVisible(true)}
                 activeOpacity={0.7}
             >
                 <View style={tw`flex-row items-center gap-3`}>
                     <Text style={tw`text-[28px]`}>{selectedCurrency.flag}</Text>
                     <View style={tw`gap-0.5`}>
-                        <Text style={tw`text-sm text-black font-HKGrotesk-SemiBold`}>{selectedCurrency.code}</Text>
-                        <Text style={tw`text-xs text-gray-600 font-HKGrotesk-Regular`}>{selectedCurrency.name}</Text>
+                        <Text style={[tw`text-sm font-HKGrotesk-SemiBold`, { color: theme.colors.text.primary }]}>{selectedCurrency.code}</Text>
+                        <Text style={[tw`text-xs font-HKGrotesk-Regular`, { color: theme.colors.text.secondary }]}>{selectedCurrency.name}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -121,16 +122,14 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
                 presentationStyle="pageSheet"
                 onRequestClose={() => setModalVisible(false)}
             >
-                <SafeAreaView style={tw`flex-1 bg-white`}>
-                    <StatusBar barStyle="dark-content" />
-                    <View style={tw`flex-row items-center justify-between px-4 py-4 border-b border-gray-200`}>
-                        <Text style={tw`text-lg font-HKGrotesk-SemiBold text-black`}>Select Currency</Text>
+                <SafeAreaView style={[tw`flex-1`, { backgroundColor: theme.colors.background.default }]}>
+                    <View style={[tw`flex-row items-center justify-between px-4 py-4 border-b`, { borderColor: theme.colors.border.default }]}>
+                        <Text style={[tw`text-lg font-HKGrotesk-SemiBold`, { color: theme.colors.text.primary }]}>Select Currency</Text>
                         <TouchableOpacity
                             onPress={() => setModalVisible(false)}
                             style={tw`px-2 py-1`}
                             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                         >
-                            <Text style={tw`text-base font-HKGrotesk-SemiBold text-[#007AFF]`}>Done</Text>
                         </TouchableOpacity>
                     </View>
                     <FlashList

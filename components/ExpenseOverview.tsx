@@ -14,6 +14,8 @@ import {
 import GlobalStateStore from '~/stores/globalStateStore'
 import { useLocalSearchParams } from 'expo-router'
 import { useFuelRecords, useRepairRecords, useServiceRecords, useTaxRecords, useUpgradeRecords } from '~/hooks/api'
+import useThemeStore from '~/stores/themeStore'
+import { useTheme } from '~/hooks/useTheme'
 
 interface ExpenseOverviewProps {
     yearFilter: number | 'all'
@@ -35,6 +37,8 @@ const ExpenseOverview: React.FC<ExpenseOverviewProps> = ({
     const { data: TaxRecords } = useTaxRecords(carId)
     const [dropdownVisible, setDropdownVisible] = useState(false)
     const { preferredCurrencySymbol } = GlobalStateStore((state) => state)
+    const { colorScheme } = useThemeStore()
+    const theme = useTheme()
 
     const sumAmounts = (records?: any[]) =>
         Array.isArray(records)
@@ -86,35 +90,33 @@ const ExpenseOverview: React.FC<ExpenseOverviewProps> = ({
 
     if (total === 0) {
         return (
-            <View style={tw`bg-white rounded-3xl p-4 py-3`}>
-                <Text style={tw`text-lg font-HKGrotesk-Bold`}>Expense Overview</Text>
-                <Text style={tw`text-gray-500 mt-2 font-HKGrotesk-Regular`}>No expenses recorded for this car.</Text>
+            <View style={[tw`rounded-3xl p-4 py-3`, { backgroundColor: theme.colors.background.subtle }]}>
+                <Text style={[tw`text-lg font-HKGrotesk-Bold`, { color: theme.colors.text.primary }]}>Expense Overview</Text>
+                <Text style={[tw`mt-2 font-HKGrotesk-Regular`, { color: theme.colors.text.secondary }]}>No expenses recorded for this car.</Text>
             </View>
         )
     }
 
     return (
-        <View style={tw`bg-white rounded-3xl p-4 py-3`}>
+        <View style={[tw`rounded-3xl p-4 py-3`, { backgroundColor: theme.colors.surface.neutral }]}>
             <View style={tw`flex-row items-center justify-between`}>
-                <Text style={tw`text-lg font-HKGrotesk-Bold`}>Expense Overview</Text>
+                <Text style={[tw`text-lg font-HKGrotesk-Bold`, { color: theme.colors.text.primary }]}>Expense Overview</Text>
                 <View>
                     <Pressable
-                        style={tw`flex-row items-center px-3 py-1 rounded-lg border border-gray-200 bg-gray-50 mt-1`}
-                        onPress={() => setDropdownVisible(true)}
-                    >
-                        <Text style={tw`text-gray-700 mr-1 font-HKGrotesk-Regular`}>
+                        style={[tw`flex-row items-center px-3 py-1 rounded-lg border mt-1`, { backgroundColor: theme.colors.background.field, borderColor: theme.colors.border.default }]}
+                        onPress={() => setDropdownVisible(true)}>
+                        <Text style={[tw`mr-1 font-HKGrotesk-Regular`, { color: theme.colors.text.primary }]}>
                             {yearFilter === 'all' ? 'All Years' : yearFilter}
                         </Text>
-                        <Text style={tw`text-gray-400`}>▼</Text>
+                        <Text style={[tw``, { color: theme.colors.text.secondary }]}>▼</Text>
                     </Pressable>
                     <Modal
                         visible={dropdownVisible}
                         transparent
                         animationType="fade"
-                        onRequestClose={() => setDropdownVisible(false)}
-                    >
+                        onRequestClose={() => setDropdownVisible(false)}>
                         <Pressable style={tw`flex-1`} onPress={() => setDropdownVisible(false)}>
-                            <View style={tw`absolute top-16 right-6 bg-white rounded-lg shadow-md border border-gray-200`}>
+                            <View style={[tw`absolute top-16 right-6 rounded-lg shadow-md border`, { backgroundColor: theme.colors.background.default, borderColor: theme.colors.border.default }]}>
                                 <ScrollView>
                                     <Pressable
                                         style={tw`px-4 py-2`}
@@ -123,7 +125,7 @@ const ExpenseOverview: React.FC<ExpenseOverviewProps> = ({
                                             setDropdownVisible(false)
                                         }}
                                     >
-                                        <Text style={tw`text-black text-base font-HKGrotesk-Regular`}>All Years</Text>
+                                        <Text style={[tw`text-base font-HKGrotesk-Regular`, { color: theme.colors.text.primary }]}>All Years</Text>
                                     </Pressable>
                                     {availableYears.map(year => (
                                         <Pressable
@@ -134,7 +136,7 @@ const ExpenseOverview: React.FC<ExpenseOverviewProps> = ({
                                                 setDropdownVisible(false)
                                             }}
                                         >
-                                            <Text style={tw`text-black text-base font-HKGrotesk-Regular`}>{year}</Text>
+                                            <Text style={[tw`text-base font-HKGrotesk-Regular`, { color: theme.colors.text.primary }]}>{year}</Text>
                                         </Pressable>
                                     ))}
                                 </ScrollView>
@@ -144,15 +146,15 @@ const ExpenseOverview: React.FC<ExpenseOverviewProps> = ({
                 </View>
             </View>
             <View style={tw`flex-row`}>
-                <Text style={tw`text-3xl font-HKGrotesk-Bold mt-3`} numberOfLines={1}>
+                <Text style={[tw`text-3xl font-HKGrotesk-Bold mt-3`, { color: theme.colors.text.primary }]} numberOfLines={1}>
                     {preferredCurrencySymbol} {NumberHandler(total)}
                 </Text>
             </View>
-            <View style={tw`flex-row my-2 h-12 gap-[2px] rounded-[11px] border border-gray-200 p-[3px] font-HKGrotesk-Regular -mx-1 `}>
+            <View style={[tw`flex-row my-2 h-12 gap-[2px] rounded-[11px] border p-[3px] font-HKGrotesk-Regular -mx-1`, { borderColor: theme.colors.border.unselected }]}>
                 {carTotalExpenses.map((item) => (
                     <View
                         key={item.type}
-                        style={[tw`bg-[${lighten(0.1, item.color)}] rounded-lg`, { flex: item.amount }]} />
+                        style={[tw`rounded-lg`, { flex: item.amount, backgroundColor: lighten(0.1, item.color[colorScheme]) }]} />
                 ))}
             </View>
 
@@ -164,12 +166,12 @@ const ExpenseOverview: React.FC<ExpenseOverviewProps> = ({
                     return (
                         <View style={tw`flex-row items-center justify-between mt-2`}>
                             <View style={tw`flex-row items-center`}>
-                                <View style={tw`w-3 h-3 rounded-full mr-2 bg-[${lighten(0.1, item.color)}]`} />
-                                <Text style={tw`text-gray-700 font-HKGrotesk-Medium`}>{item.type}</Text>
-                                <Text style={tw`text-gray-700 text-xs font-HKGrotesk-Regular`}> ({percentage.toFixed(1).replace(/\.0$/, '')}%)</Text>
+                                <View style={[tw`w-3 h-3 rounded-full mr-2`, { backgroundColor: lighten(0.1, item.color[colorScheme]) }]} />
+                                <Text style={[tw`font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]}>{item.type}</Text>
+                                <Text style={[tw`text-xs font-HKGrotesk-Regular`, { color: theme.colors.text.secondary }]}> ({percentage.toFixed(1).replace(/\.0$/, '')}%)</Text>
                             </View>
                             <View style={tw`flex-row items-center`}>
-                                <Text style={tw`font-HKGrotesk-Bold`}>{preferredCurrencySymbol} {NumberHandler(item.amount)}</Text>
+                                <Text style={[tw`font-HKGrotesk-Bold`, { color: theme.colors.text.primary }]}>{preferredCurrencySymbol} {NumberHandler(item.amount)}</Text>
                             </View>
                         </View>
                     )

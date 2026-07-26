@@ -130,8 +130,7 @@ const ServerSettings: React.FC<ServerSettingsProps> = ({
                     control={control}
                     name="password"
                     render={({ field: { onChange, value } }) => (
-                        <>
-
+                        <View style={tw`relative flex-row items-center`}>
                             <TextInput
                                 style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg border p-2 mb-2`, { backgroundColor: theme.colors.background.field, color: theme.colors.text.primary, borderColor: theme.colors.border.default }]}
                                 onChangeText={onChange}
@@ -139,10 +138,10 @@ const ServerSettings: React.FC<ServerSettingsProps> = ({
                                 placeholder="password"
                                 secureTextEntry={hidePass}
                             />
-                            <TouchableOpacity onPress={() => setHidePass(!hidePass)}>
-                                {hidePass ? <EyeOffIcon size={24}/> : <EyeIcon size={24}/>}
+                            <TouchableOpacity onPress={() => setHidePass(!hidePass)} style={tw`absolute right-2 top-1 p-2`}>
+                                {hidePass ? <EyeOffIcon size={22} color={theme.colors.text.secondary} /> : <EyeIcon size={22} color={theme.colors.text.secondary} />}
                             </TouchableOpacity>
-                        </>
+                        </View>
                     )}
                 />
 

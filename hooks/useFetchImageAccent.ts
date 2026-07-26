@@ -30,7 +30,7 @@ export const useFetchImageAccent = (uri: string) => {
         }
 
         const colors = await ImageColors.getColors(localUri, {})
-        console.log("Extracted colors:", colors)
+        //console.log("Extracted colors:", colors)
         if (isMounted) {
           setColor(String(colors.platform === "android" && colors.vibrant || colors.platform === "ios" && colors.background))
         }

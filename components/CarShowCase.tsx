@@ -7,6 +7,9 @@ import { router } from 'expo-router'
 import GlobalStateStore from '~/stores/globalStateStore'
 import { useLastOdometerRecord } from '~/hooks/api/use-get-odometerrecords'
 import AuthenticatedImage from './AuthenticatedImage'
+import { useTheme } from '~/hooks/useTheme'
+import { darken } from 'polished'
+import useThemeStore from '~/stores/themeStore'
 
 type CarShowCaseProps = {
     Year: number
@@ -20,16 +23,19 @@ const CarShowCase = (props: CarShowCaseProps) => {
     const { setFavoriteCar, favoriteCarId } = GlobalStateStore((state) => state)
     const { data: lastOdometerRecord } = useLastOdometerRecord(props.carId)
     const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
+    const theme = useTheme()
+    const { colorScheme } = useThemeStore()
+    const colorTintValue = colorScheme === 'light' ? .4 : .4                        
 
     return (
         <TouchableOpacity style={tw`mb-5 z-50`} onPress={() => router.push({
             pathname: "/car-detail/[id]",
             params: { id: props.carId, actionType: "home" }
         })}>
-            <View style={tw`w-full h-52 rounded-2xl overflow-hidden shadow-sm shadow-gray-800`}>
+            <View style={[tw`h-52 rounded-2xl overflow-hidden`]}>
                 <AuthenticatedImage uri={props.CarPhotoUri} resizeMode="cover" style={tw`absolute w-full h-full`} />
                 <LinearGradient
-                    colors={['rgba(0,5,55,1)', 'transparent']}
+                    colors={[darken(colorTintValue, theme.colors.brand.primary), 'transparent']}
                     style={tw`flex flex-col w-full h-full`}
                     start={{ x: 0, y: 1 }}
                     end={{ x: 0, y: .3 }}>

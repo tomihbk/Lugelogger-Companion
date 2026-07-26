@@ -33,7 +33,7 @@ export default function TabLayout() {
           tabBarBackground: () =>
             <View
               style={[tw`h-full mx-4 rounded-tr-2xl rounded-tl-2xl shadow-2xl shadow-blue-700/80`,
-              { shadowOffset: { width: 0, height: -5 }, elevation: 18, backgroundColor: theme.colors.surface.card }]} />,
+              { shadowOffset: { width: 0, height: -5 }, elevation: colorSchemeStore === 'light' ? 18 : 0, backgroundColor: theme.colors.surface.card }]} />,
           tabBarStyle: {
             position: 'absolute',
             shadowColor: 'transparent',

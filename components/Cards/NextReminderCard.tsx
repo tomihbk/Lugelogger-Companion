@@ -8,6 +8,7 @@ import { useLastOdometerRecord } from '~/hooks/api/use-get-odometerrecords'
 
 import GlobalStateStore from "~/stores/globalStateStore"
 import { useTheme } from "~/hooks/useTheme"
+import useThemeStore from "~/stores/themeStore"
 
 type ReminderCardProps = {
     carId: number
@@ -17,6 +18,7 @@ const NextReminderCard = ({ carId }: ReminderCardProps) => {
     const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
     const { data: lastOdometerRecord } = useLastOdometerRecord(carId)
     const theme = useTheme()   
+    const { colorScheme } = useThemeStore()
 
     const {
         data: ReminderRecords,
@@ -90,7 +92,7 @@ const NextReminderCard = ({ carId }: ReminderCardProps) => {
     if (!nextReminder) {
         return (
             <View style={[tw`rounded-2xl p-4 mt-4 shadow-2xl dark:shadow-none shadow-blue-900/20`, { backgroundColor: theme.colors.background.subtle, shadowColor: theme.colors.surface.card }]}>
-                <Text style={[tw`font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]}>All good, no upcoming reminders 🎉</Text>
+                <Text style={[tw`font-HKGrotesk-Medium`, { color: theme.colors.text.primary, elevation: colorScheme === 'light' ? 18 : 0 }]}>All good, no upcoming reminders 🎉</Text>
             </View>)
     }
 

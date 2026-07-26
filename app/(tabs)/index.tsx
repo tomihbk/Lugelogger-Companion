@@ -12,6 +12,7 @@ import { useGetVehicle } from "~/hooks/api"
 import ServerSettingsStore from "~/stores/serverSettingsStore"
 import NextReminderCard from "~/components/Cards/NextReminderCard"
 import GreetingHeader from "~/components/GreetingHeader"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 
 export default function Home() {
@@ -31,6 +32,7 @@ export default function Home() {
   }, [vehicleWithoutStats, vehicleWithStats])
 
   return (
+    <SafeAreaView edges={['top']}>
     <ScrollView showsVerticalScrollIndicator={false}>
       {/* <Redirect href="/(tabs)/garage" /> */}
       <Stack.Screen options={{ title: 'Home', headerShown: false }} />
@@ -46,5 +48,6 @@ export default function Home() {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
   )
 }

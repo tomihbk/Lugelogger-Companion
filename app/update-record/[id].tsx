@@ -22,7 +22,6 @@ const UpdateRecord = () => {
     const _recordID = parseInt(id)
     const _vehicleID = parseInt(vehicleId)
     const _data = JSON.parse(data)
-    const { colorScheme } = useThemeStore()
     const [currentActionType, setCurrentActionType] = useState<OdometerFunctionStoreProp>(OdometerFunctionStore)
     const { mutateAsync: updateServiceRecord } = useUpdateServiceRecord()
     const { mutateAsync: updateOdometerRecord } = useUpdateOdometerRecord()
@@ -38,6 +37,7 @@ const UpdateRecord = () => {
     const [showMetricFieldDueOdometer, setShowMetricFieldDueOdometer] = useState(_data.userMetric === "Odometer" || _data.userMetric === "Both")
     let convertedDate: string
     const theme = useTheme()
+    const { colorScheme } = useThemeStore()
     const colorTintValue = colorScheme === 'light' ? 0.6 : 0
 
     const { control, handleSubmit, formState: { errors } } = useForm({
@@ -198,7 +198,7 @@ const UpdateRecord = () => {
                                 <Controller control={control} rules={{ required: currentActionType.mandatoryFields.description }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <TextInput
-                                            style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg h-21 border p-2 mb-2`,{ color: theme.colors.text.primary, backgroundColor: theme.colors.background.field, borderColor: errors.Description ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
+                                            style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg h-21 border p-2 mb-2`, { color: theme.colors.text.primary, backgroundColor: theme.colors.background.field, borderColor: errors.Description ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
                                             onBlur={onBlur}
                                             onChangeText={onChange}
                                             returnKeyType='next'
@@ -279,7 +279,7 @@ const UpdateRecord = () => {
 
                         {currentActionType?.visibleFields.dueOdometer && showMetricFieldDueOdometer &&
                             <>
-                                <Text style={[tw`font-HKGrotesk-SemiBold text-base mb-1`,{ color: theme.colors.text.primary }]}>Due {t("Odometer")}</Text>
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base mb-1`, { color: theme.colors.text.primary }]}>Due {t("Odometer")}</Text>
                                 <Controller control={control} rules={{
                                     required: { value: currentActionType.mandatoryFields.dueOdometer || showMetricFieldDueOdometer, message: "Required Field and must be a number" }
                                 }}
@@ -390,7 +390,7 @@ const UpdateRecord = () => {
                                                 onPress={() => setInitialOdometerEditable(!initialOdometerEditable)}>
                                                 <View style={tw`flex flex-row items-center bg-[${currentActionType?.buttonColor[colorScheme]}]/10 p-2 rounded-lg gap-2`}>
                                                     <PenSquare size={22} color={currentActionType?.buttonColor[colorScheme]} />
-                                                    <Text style={[tw`font-HKGrotesk-Regular text-sm`,{ color: currentActionType?.buttonColor[colorScheme] }]}>{t("Edit")}</Text>
+                                                    <Text style={[tw`font-HKGrotesk-Regular text-sm`, { color: currentActionType?.buttonColor[colorScheme] }]}>{t("Edit")}</Text>
                                                 </View>
                                             </Pressable>
                                         </View>
@@ -438,13 +438,13 @@ const UpdateRecord = () => {
 
                         {currentActionType?.visibleFields.cost &&
                             <>
-                                <Text style={[tw`font-HKGrotesk-SemiBold text-base`,{ color: theme.colors.text.primary }]}>{t("Cost")}
-                                    {!currentActionType.mandatoryFields.cost && <Text style={[tw`font-HKGrotesk-Italic italic text-sm`,{ color: theme.colors.text.secondary }]}>{" - " + t("Optional")}</Text>}</Text>
+                                <Text style={[tw`font-HKGrotesk-SemiBold text-base`, { color: theme.colors.text.primary }]}>{t("Cost")}
+                                    {!currentActionType.mandatoryFields.cost && <Text style={[tw`font-HKGrotesk-Italic italic text-sm`, { color: theme.colors.text.secondary }]}>{" - " + t("Optional")}</Text>}</Text>
                                 <Controller control={control} rules={{ required: { value: currentActionType.mandatoryFields.cost, message: "Required Field and must be a number" } }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <View style={tw`relative flex-row items-center`}>
                                             <TextInput
-                                                style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg border p-2 mb-2`,{ color: theme.colors.text.primary, backgroundColor: theme.colors.background.field , borderColor: errors.Cost ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
+                                                style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg border p-2 mb-2`, { color: theme.colors.text.primary, backgroundColor: theme.colors.background.field, borderColor: errors.Cost ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
                                                 onBlur={onBlur}
                                                 onChangeText={(text) => {
                                                     // Only allow numbers

@@ -20,6 +20,7 @@ export default function OnboardingLayout() {
             <Stack.Screen name="index" />
             <Stack.Screen name="server" />
             <Stack.Screen name="sign-in" />
+            <Stack.Screen name="favorite-vehicle" />
             <Stack.Screen name="preferences" />
             <Stack.Screen name="finish" />
         </Stack>

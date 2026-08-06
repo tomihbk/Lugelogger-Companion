@@ -1,4 +1,5 @@
 import { FlashList } from "@shopify/flash-list"
+import { Check } from "lucide-react-native"
 import React, { useState } from "react"
 import {
     View,
@@ -6,6 +7,7 @@ import {
     TouchableOpacity,
     Modal,
     SafeAreaView,
+    Pressable,
 } from "react-native"
 import { useTheme } from "~/hooks/useTheme"
 import GlobalStateStore from "~/stores/globalStateStore"
@@ -80,10 +82,17 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
     }
 
     const renderCurrencyItem = ({ item }: { item: Currency }) => (
-        <TouchableOpacity
-            style={tw`flex-row items-center justify-between px-4 py-3`}
+        <Pressable
+           // style={tw`flex-row items-center justify-between px-4 py-3`}
+            style={({ pressed }) => [
+                tw`flex-row items-center justify-between rounded-xl border p-4 mb-3 mx-5`,
+                {
+                    backgroundColor: selectedCurrency.code === item.code ? theme.colors.brand.primary + "12" : theme.colors.background.field,
+                    borderColor: selectedCurrency.code === item.code ? theme.colors.brand.primary : theme.colors.border.default,
+                    opacity: pressed ? 0.8 : 1,
+                },
+            ]}
             onPress={() => handleSelect(item)}
-            activeOpacity={0.7}
         >
             <View style={tw`flex-row items-center gap-3`}>
                 <Text style={tw`text-[28px]`}>{item.flag}</Text>
@@ -93,17 +102,25 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
                 </View>
             </View>
             {selectedCurrency.code === item.code && (
-                <Text style={[tw`text-xl font-semibold`, { color: theme.colors.text.link }]}>✓</Text>
+                // <Text style={[tw`text-xl font-semibold`, { color: theme.colors.text.link }]}>✓</Text>
+                <View
+                    style={[
+                        tw`w-6 h-6 rounded-full border items-center justify-center`,
+                        {
+                            backgroundColor: theme.colors.brand.primary,
+                            borderColor: theme.colors.brand.primary,
+                        },
+                    ]}>
+                    {<Check size={14} color="white" />}
+                </View>
             )}
-        </TouchableOpacity>
+        </Pressable>
     )
-
-    const renderSeparator = () => <View style={[tw`h-px ml-[68px]`, { backgroundColor: theme.colors.border.default }]} />
 
     return (
         <View>
             <TouchableOpacity
-                style={[tw`h-14 flex-row items-center justify-between border rounded-lg px-4`, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.border.default }]}
+                style={[tw`flex-row items-center justify-between border rounded-lg p-4`, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.border.default }]}
                 onPress={() => setModalVisible(true)}
                 activeOpacity={0.7}
             >
@@ -123,7 +140,7 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
                 onRequestClose={() => setModalVisible(false)}
             >
                 <SafeAreaView style={[tw`flex-1`, { backgroundColor: theme.colors.background.default }]}>
-                    <View style={[tw`flex-row items-center justify-between px-4 py-4 border-b`, { borderColor: theme.colors.border.default }]}>
+                    <View style={[tw`flex-row items-center justify-between px-4 py-4`]}>
                         <Text style={[tw`text-lg font-HKGrotesk-SemiBold`, { color: theme.colors.text.primary }]}>Select Currency</Text>
                         <TouchableOpacity
                             onPress={() => setModalVisible(false)}
@@ -136,7 +153,6 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
                         data={currencies}
                         renderItem={renderCurrencyItem}
                         keyExtractor={(item) => item.code}
-                        ItemSeparatorComponent={renderSeparator}
                         keyboardShouldPersistTaps="handled"
                         estimatedItemSize={20}
                     />

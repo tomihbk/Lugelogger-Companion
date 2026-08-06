@@ -7,6 +7,7 @@ import { Calendar, Gauge } from 'lucide-react-native'
 import AuthenticatedImage from './AuthenticatedImage'
 import { useFetchImageAccent } from '~/hooks/useFetchImageAccent'
 import { router } from 'expo-router'
+import useThemeStore from '~/stores/themeStore'
 
 type FavoriteCarShowCaseProps = {
     CarID: number
@@ -25,13 +26,15 @@ const FavoriteCarShowcase = (props: FavoriteCarShowCaseProps) => {
     const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
     const avgColor = useFetchImageAccent(props.CarPhotoUri)
 
+    const { colorScheme } = useThemeStore()
+
     return (
         <TouchableOpacity style={tw`mb-4`} onPress={() => {
             router.push({
                 pathname, params: { id: props.CarID, actionType: "home" }
             })
         }}>
-            <View style={[tw`relative overflow-hidden rounded-3xl h-[${CARD_HEIGHT}] shadow-xl dark:shadow-none shadow-blue-900/80`]}>
+            <View style={[tw`relative overflow-hidden rounded-3xl h-[${CARD_HEIGHT}] shadow-xl dark:shadow-none shadow-blue-900/80`,{elevation: colorScheme === 'light' ? 10 : 0}]}>
                 <AuthenticatedImage
                     uri={props.CarPhotoUri}
                     style={StyleSheet.absoluteFill}

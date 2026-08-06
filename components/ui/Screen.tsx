@@ -33,7 +33,7 @@ const Screen = ({
             {children}
         </ScrollView>
     ) : (
-        <View style={[tw`flex-1 px-6 py-5`, contentStyle]}>
+        <View style={[tw`flex-1 px-6 py-5 pt-2`, contentStyle]}>
             {children}
         </View>
     )

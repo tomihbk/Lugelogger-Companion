@@ -4,7 +4,7 @@ import { zustandStorage } from "./zustandStorage"
 import { encode as base64Encode, decode as base64Decode } from "base-64"
 
 // Simple XOR encryption with a key
-// Note: This is basic obfuscation. For production, consider expo-crypto with rebuild
+// #TODO Note: This is basic obfuscation. For production, consider expo-crypto with rebuild
 const ENCRYPTION_KEY =
   "your-secure-encryption-key-change-this-to-something-random"
 

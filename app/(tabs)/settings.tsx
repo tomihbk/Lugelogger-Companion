@@ -74,7 +74,6 @@ const Settings = () => {
                     <Text style={[tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`, { color: theme.colors.text.primary }]} numberOfLines={1}>Theme Settings</Text>
                   </View>
                   <ScrollView showsVerticalScrollIndicator={false}>
-
                     <ThemeSetting
                       colorSchemeStore={colorSchemeStore}
                       setColorSchemeStore={setColorSchemeStore}
@@ -121,10 +120,7 @@ const Settings = () => {
                             i18n.language === lang
                               ? "border-2 py-7 mb-4"
                               : "py-7 mb-4",
-                            {
-                              backgroundColor: theme.colors.background.subtle,
-                              borderColor: theme.colors.brand.primary,
-                            }
+                            { backgroundColor: theme.colors.background.subtle, borderColor: theme.colors.brand.primary }
                           )}
                         />
                       ))}
@@ -273,7 +269,7 @@ const Settings = () => {
               icon={<GitBranch size={20} color={theme.colors.text.primary} />}
               label="Github"
               onPress={() => { Linking.openURL("https://github.com/hargata/lubelog") }}
-              // TODO : Add your repo link
+              // #TODO : Add your repo link
               color={theme.colors.text.primary}>
               <ArrowRight size={20} color={theme.colors.text.primary} />
             </SettingRow>
@@ -284,7 +280,7 @@ const Settings = () => {
             Linking.openURL('itms-apps://apps.apple.com/app/idYOUR_APP_ID?action=write-review');
           } else if (Platform.OS === 'android') {
             Linking.openURL('market://details?id=YOUR_PACKAGE_NAME');
-          } {/* // TODO : Add link to app store / play store */}
+          } {/* // #TODO : Add link to app store / play store */ }
         }}>
           <View style={tw`flex flex-row items-center justify-center`}>
             <Text style={[tw`text-lg font-HKGrotesk-Medium text-center`, { color: theme.colors.text.primary }]}>Rate App on {Platform.OS == 'android' ? 'PlayStore' : 'App Store'}</Text>

@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "carmainlogger",
-    "slug": "carmainlogger",
+    "name": "Lugelogger Companion",
+    "slug": "lugelogger-companion",
     "version": "1.0.0",
-    "scheme": "carmainlogger",
+    "scheme": "lugelogger-companion",
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -52,14 +52,14 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.berinfo.carmainlog"
+      "bundleIdentifier": "com.berinfo.lugelogger-companion"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#2d2b55"
       },
-      "package": "com.berinfo.carmainlog"
+      "package": "com.berinfo.lugelogger-companion"
     },
     "extra": {
       "router": {

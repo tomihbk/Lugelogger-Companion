@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useRef } from "react"
 import {
   Href,
   Stack,
@@ -28,25 +28,35 @@ const getResumeRoute = (steps: OnboardingSteps): Href => {
 }
 
 export default function RootLayout() {
-  const { setupVersion, steps } =
-    useOnboardingStore()
-
+  const { setupVersion, steps } = useOnboardingStore()
   const segments = useSegments()
-
-  const setupComplete =
-    setupVersion >= CURRENT_SETUP_VERSION
+  const hasHandledInitialResume = useRef(false)
+  const setupComplete = setupVersion >= CURRENT_SETUP_VERSION
 
   useEffect(() => {
-    const isInsideOnboarding =
-      segments[0] === "(onboarding)"
+    const isInsideOnboarding = segments[0] === "(onboarding)"
 
-    if (!setupComplete && !isInsideOnboarding) {
+    // Setup has been completed: onboarding should no longer be visible.
+    if (setupComplete) {
+      if (isInsideOnboarding) {
+        router.replace("/(tabs)")
+      }
+      return
+    }
+
+    // Setup is incomplete and we're somewhere in the main app.
+    // This also handles your "Reset app setup" button.
+    if (!isInsideOnboarding) {
+      hasHandledInitialResume.current = true
       router.replace(getResumeRoute(steps))
       return
     }
 
-    if (setupComplete && isInsideOnboarding) {
-      router.replace("/(tabs)")
+    // On initial app launch/reload, Expo may mount Welcome first.
+    // Correct it once to the first incomplete step.
+    if (!hasHandledInitialResume.current) {
+      hasHandledInitialResume.current = true
+      router.replace(getResumeRoute(steps))
     }
   }, [setupComplete, steps, segments])
 

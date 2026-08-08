@@ -26,7 +26,7 @@ export default function ServerScreen() {
                     </Text>
 
                     <Text style={[tw`text-sm font-HKGrotesk-Medium`, { color: theme.colors.text.secondary }]}>
-                        2 of 5
+                       Step 2 of 5
                     </Text>
                 </View>
 

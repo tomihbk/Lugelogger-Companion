@@ -167,7 +167,7 @@ export default function PreferencesScreen() {
                     </Text>
 
                     <Text style={[tw`text-sm font-HKGrotesk-Medium`, { color: theme.colors.text.secondary }]}>
-                        4 of 5
+                       Step 4 of 5
                     </Text>
                 </View>
 

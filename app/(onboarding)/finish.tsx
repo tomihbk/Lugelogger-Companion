@@ -93,7 +93,7 @@ export default function FinishScreen() {
                     </Text>
 
                     <Text style={[tw`text-sm font-HKGrotesk-Medium`, { color: theme.colors.text.secondary }]}>
-                        5 of 5
+                       Step 5 of 5
                     </Text>
                 </View>
 

@@ -51,7 +51,7 @@ export default function FavoriteVehicleScreen() {
                     </Text>
 
                     <Text style={[tw`text-sm font-HKGrotesk-Medium`, { color: theme.colors.text.secondary }]}>
-                        3 of 5
+                       Step 3 of 5
                     </Text>
                 </View>
 

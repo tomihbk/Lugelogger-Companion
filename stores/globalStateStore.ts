@@ -10,7 +10,7 @@ interface GlobalStateStoreProp {
   preferredLiquidMeasurement: string
   isUseUSMPG: boolean
   isUseUKMPG: boolean
-  optInCrashReports?: boolean
+  optInCrashReports: boolean
   setFavoriteCar: (carId: number) => void
   setSelectedTabName: (lastSelectedTab: string) => void
   setPreferredCurrencySymbol: (currencyISO4217Symbol: string) => void
@@ -32,6 +32,7 @@ const GlobalStateStore = create<GlobalStateStoreProp>()(
       preferredLiquidMeasurement: "L",
       isUseUSMPG: false,
       isUseUKMPG: false,
+      optInCrashReports: true,
       setFavoriteCar: (carId) => set(() => ({ favoriteCarId: carId })),
       setPreferredCurrencySymbol: (currencyISO4217Symbol) =>
         set(() => ({ preferredCurrencySymbol: currencyISO4217Symbol })),
@@ -43,13 +44,14 @@ const GlobalStateStore = create<GlobalStateStoreProp>()(
         set(() => ({ selectedTabName: lastSelectedTab })),
       setUseUSMPG: (useUSMPG) => set(() => ({ isUseUSMPG: useUSMPG })),
       setUseUKMPG: (useUKMPG) => set(() => ({ isUseUKMPG: useUKMPG })),
-      setOptInCrashReports: (optInCrashReports) => set(() => ({ optInCrashReports })),
+      setOptInCrashReports: (optInCrashReports) =>
+        set(() => ({ optInCrashReports })),
     }),
     {
       name: "global-state-storage", // name of item in the persist store - must be unique
       storage: createJSONStorage(() => zustandStorage),
-    }
-  )
+    },
+  ),
 )
 
 export default GlobalStateStore

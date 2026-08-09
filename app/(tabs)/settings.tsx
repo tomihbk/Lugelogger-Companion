@@ -1,7 +1,7 @@
 import { Stack } from "expo-router"
 import React, { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { View, Text, ScrollView, Modal, Platform, TouchableOpacity, SafeAreaView, Linking } from "react-native"
+import { View, Text, ScrollView, Modal, Platform, TouchableOpacity, SafeAreaView, Linking, Pressable } from "react-native"
 import tw from "~/tw.config"
 import i18n from "~/i18n/i18n.config"
 import { Palette, ArrowRight, Languages, BadgeInfo, Scale, Settings2, Server, GitBranch, ArrowLeft } from 'lucide-react-native'
@@ -17,6 +17,8 @@ import AboutScreen from "~/components/AboutPage"
 import LicensesScreen from "~/components/LicencePage"
 import ThemeSetting from "~/components/ThemeSettings"
 import { useTheme } from "~/hooks/useTheme"
+import ServerSettingsStore from "~/stores/serverSettingsStore"
+import useOnboardingStore from "~/stores/onboardingStore"
 
 const Settings = () => {
   const { t } = useTranslation()
@@ -40,6 +42,17 @@ const Settings = () => {
   const [modalAboutVisible, setModalAboutVisible] = useState(false)
   const [modalLicenseVisible, setModalLicenseVisible] = useState(false)
 
+  const resetAppSetup = () => {
+    useOnboardingStore.getState().reset()
+    ServerSettingsStore.getState().clearSettings()
+    GlobalStateStore.getState().setFavoriteCar(0)
+    GlobalStateStore.getState().setPreferredCurrencySymbol("USD")
+    GlobalStateStore.getState().setPreferredDistanceMeasurement("km")
+    GlobalStateStore.getState().setPreferredDLiquidMeasurement("L")
+    GlobalStateStore.getState().setUseUSMPG(false)
+    GlobalStateStore.getState().setUseUKMPG(false)
+    useThemeStore.getState().setColorScheme("light")
+  }
   // Sync Zustand store with twrnc
   useEffect(() => {
     setColorScheme(colorSchemeStore) // Set the twrnc color scheme whenever Zustand changes
@@ -74,7 +87,6 @@ const Settings = () => {
                     <Text style={[tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`, { color: theme.colors.text.primary }]} numberOfLines={1}>Theme Settings</Text>
                   </View>
                   <ScrollView showsVerticalScrollIndicator={false}>
-
                     <ThemeSetting
                       colorSchemeStore={colorSchemeStore}
                       setColorSchemeStore={setColorSchemeStore}
@@ -121,10 +133,7 @@ const Settings = () => {
                             i18n.language === lang
                               ? "border-2 py-7 mb-4"
                               : "py-7 mb-4",
-                            {
-                              backgroundColor: theme.colors.background.subtle,
-                              borderColor: theme.colors.brand.primary,
-                            }
+                            { backgroundColor: theme.colors.background.subtle, borderColor: theme.colors.brand.primary }
                           )}
                         />
                       ))}
@@ -273,18 +282,25 @@ const Settings = () => {
               icon={<GitBranch size={20} color={theme.colors.text.primary} />}
               label="Github"
               onPress={() => { Linking.openURL("https://github.com/hargata/lubelog") }}
-              // TODO : Add your repo link
+              // #TODO : Add your repo link
               color={theme.colors.text.primary}>
               <ArrowRight size={20} color={theme.colors.text.primary} />
             </SettingRow>
           </View>
         </View>
+
+        {__DEV__ && (
+          <Pressable style={[tw`mt-6 p-2 rounded-full border`, { backgroundColor: theme.colors.background.default, color: theme.colors.text.primary, borderColor: theme.colors.brand.primary + "60" }]} onPress={resetAppSetup}>
+            <Text style={[tw`text-lg font-HKGrotesk-Medium text-center`, { color: theme.colors.text.primary }]}>Reset app setup</Text>
+          </Pressable>
+        )}
+
         <TouchableOpacity style={[tw`mt-6 p-2 rounded-full border`, { backgroundColor: theme.colors.background.default, color: theme.colors.text.primary, borderColor: theme.colors.brand.primary + "60" }]} onPress={() => {
           if (Platform.OS === 'ios') {
             Linking.openURL('itms-apps://apps.apple.com/app/idYOUR_APP_ID?action=write-review');
           } else if (Platform.OS === 'android') {
             Linking.openURL('market://details?id=YOUR_PACKAGE_NAME');
-          } {/* // TODO : Add link to app store / play store */}
+          } {/* // #TODO : Add link to app store / play store */ }
         }}>
           <View style={tw`flex flex-row items-center justify-center`}>
             <Text style={[tw`text-lg font-HKGrotesk-Medium text-center`, { color: theme.colors.text.primary }]}>Rate App on {Platform.OS == 'android' ? 'PlayStore' : 'App Store'}</Text>

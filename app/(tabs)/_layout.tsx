@@ -7,6 +7,7 @@ import useThemeStore from "~/stores/themeStore"
 import tw from "~/tw.config"
 import { useDeviceContext } from "twrnc"
 import { useTheme } from "~/hooks/useTheme"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 export default function TabLayout() {
   const globalStoreThemeColor = useThemeStore((color) => color.colorScheme)
@@ -22,13 +23,13 @@ export default function TabLayout() {
     <>
       <Stack.Screen options={{
         statusBarStyle: colorSchemeStore == 'light' ? 'dark' : 'light',
-        statusBarColor: colorSchemeStore == 'light' ? '#fafafa' : '#121212',
+        // statusBarColor: colorSchemeStore == 'light' ? '#fafafa' : '#121212',
       }} />
       <Tabs
-        sceneContainerStyle={{ backgroundColor: theme.colors.background.default }} // Body background color colorSchemeStore == 'light' ? '#fafafa' : '#121212'
         screenOptions={{
           // tabBarActiveTintColor: '#000',
           // tabBarInactiveTintColor: '#fff',
+          sceneStyle: { backgroundColor: theme.colors.background.default }, // Body background color colorSchemeStore == 'light' ? '#fafafa' : '#121212'
           headerShown: false,
           tabBarBackground: () =>
             <View

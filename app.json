@@ -1,9 +1,9 @@
 {
   "expo": {
     "name": "Lugelogger Companion",
-    "slug": "lugelogger-companion",
+    "slug": "carmainlogger",
     "version": "1.0.0",
-    "scheme": "lugelogger-companion",
+    "scheme": "lugeloggercompanion",
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -35,7 +35,8 @@
             "./assets/fonts/HankenGrotesk-SemiBoldItalic.ttf"
           ]
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -47,19 +48,21 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#2d2b55"
+      "backgroundColor": "#7c2791"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.berinfo.lugelogger-companion"
+      "bundleIdentifier": "com.berinfo.lugeloggercompanion"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#2d2b55"
+        "backgroundColor": "#32a852"
       },
-      "package": "com.berinfo.lugelogger-companion"
+      "package": "com.berinfo.lugeloggercompanion"
     },
     "extra": {
       "router": {

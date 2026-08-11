@@ -58,6 +58,7 @@
       "bundleIdentifier": "com.berinfo.lugeloggercompanion"
     },
     "android": {
+      "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#32a852"

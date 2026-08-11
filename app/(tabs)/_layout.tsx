@@ -1,5 +1,5 @@
 import React from "react"
-import { Stack, Tabs } from "expo-router"
+import { Redirect, Stack, Tabs } from "expo-router"
 import { Home, Warehouse, Settings } from 'lucide-react-native'
 import { View } from 'react-native'
 import "../../i18n/i18n.config"
@@ -8,22 +8,34 @@ import tw from "~/tw.config"
 import { useDeviceContext } from "twrnc"
 import { useTheme } from "~/hooks/useTheme"
 import { SafeAreaView } from "react-native-safe-area-context"
+import useOnboardingStore, { CURRENT_SETUP_VERSION } from "~/stores/onboardingStore"
 
 export default function TabLayout() {
   const globalStoreThemeColor = useThemeStore((color) => color.colorScheme)
   const { colorScheme: colorSchemeStore } = useThemeStore()
   const theme = useTheme()
 
+  const { setupVersion, steps } = useOnboardingStore()
+  const setupComplete = setupVersion >= CURRENT_SETUP_VERSION
+
   useDeviceContext(tw, {
     observeDeviceColorSchemeChanges: false,
     initialColorScheme: globalStoreThemeColor,
   })
 
+  if (!setupComplete) {
+    if (!steps.index) return <Redirect href="/(onboarding)" />
+    if (!steps.server) return <Redirect href="/(onboarding)/server" />
+    if (!steps["favorite-vehicle"]) return <Redirect href="/(onboarding)/favorite-vehicle" />
+    if (!steps.preferences) return <Redirect href="/(onboarding)/preferences" />
+
+    return <Redirect href="/(onboarding)/finish" />
+  }
+
   return (
     <>
       <Stack.Screen options={{
         statusBarStyle: colorSchemeStore == 'light' ? 'dark' : 'light',
-        // statusBarColor: colorSchemeStore == 'light' ? '#fafafa' : '#121212',
       }} />
       <Tabs
         screenOptions={{
@@ -38,12 +50,12 @@ export default function TabLayout() {
           tabBarStyle: {
             position: 'absolute',
             shadowColor: 'transparent',
-            height: 62,
+            height: 68,
             borderColor: 'transparent',
             borderWidth: 0,
           },
           tabBarLabelStyle: {
-            marginBottom: 7,
+            marginBottom: 10,
             fontFamily: "HankenGrotesk-Bold",
             fontSize: 12,
           },

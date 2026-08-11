@@ -275,9 +275,8 @@ const CarDetail = () => {
         headerShown: true,
         headerTintColor: theme.colors.text.primary, // this handles the back arrow color on the header
         headerStyle: { backgroundColor: theme.colors.background.default },
-        headerTitle: () => <Text style={[tw`text-xl font-HKGrotesk-Medium`,{ color: theme.colors.text.primary }]} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>, // TODO: Change to dynamic title based on car details
+        headerTitle: () => <Text style={[tw`text-xl font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>, // TODO: Change to dynamic title based on car details
         statusBarStyle: colorScheme == 'light' ? 'dark' : 'light',
-        statusBarColor: theme.colors.background.default,
         headerTransparent: false,
       }} />
       <ScrollView ref={scrollViewRef} horizontal={true} showsHorizontalScrollIndicator={false}

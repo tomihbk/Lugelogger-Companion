@@ -180,7 +180,6 @@ const NewRecord = () => {
                 headerStyle: { backgroundColor: theme.colors.background.default },
                 headerTitle: () => <Text style={tw`font-HKGrotesk-Bold text-lg text-center text-[${currentActionType?.buttonColor[colorScheme]}]`}>Add New {actionType.toString()} Record</Text>,
                 statusBarStyle: colorScheme == 'light' ? 'dark' : 'light',
-                statusBarColor: theme.colors.background.default,
                 headerTransparent: true,
             }} />
             <View style={tw`mt-9`}>

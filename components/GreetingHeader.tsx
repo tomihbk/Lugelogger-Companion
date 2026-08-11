@@ -53,7 +53,7 @@ const GreetingHeader = ({ brand, userName }: Props) => {
 
     return (
         <View style={tw`mb-4`}>
-            <Text style={[tw`text-xl mt-4 font-HKGrotesk-Bold`, { color: theme.colors.text.primary }]}>
+            <Text style={[tw`text-xl font-HKGrotesk-Bold`, { color: theme.colors.text.primary }]}>
                 {getGreeting(timeOfDay)}, {userName}
             </Text>
             <Text style={[tw`text-sm font-HKGrotesk-Regular`, { color: theme.colors.text.secondary }]}>{phrase}</Text>

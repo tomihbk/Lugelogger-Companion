@@ -36,10 +36,6 @@ const Dashboard = () => {
     ...(TaxRecords || []),
   ]
 
-  LogBox.ignoreLogs([
-    'VirtualizedLists should never be nested', // Ignore nested list warning
-  ])
-
  // const lastEntryDays = DaysSinceLastEntry([...allRecords, OdometerRecords])
   const getYear = (date: string) => {
     const d = DateHandler(date, true) as Date

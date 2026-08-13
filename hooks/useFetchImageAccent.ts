@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import * as FileSystem from "expo-file-system"
+import { File, Paths } from "expo-file-system"
 import ImageColors from "react-native-image-colors"
 import ServerSettingsStore from "~/stores/serverSettingsStore"
 import { encode as base64Encode } from "base-64"
@@ -10,7 +10,7 @@ export const useFetchImageAccent = (uri: string) => {
   const { getSettings } = ServerSettingsStore()
 
   useEffect(() => {
-    if (!uri || !getSettings) return
+    if (!uri) return
 
     let isMounted = true
 
@@ -19,20 +19,28 @@ export const useFetchImageAccent = (uri: string) => {
         const token = base64Encode(
           utf8Encode(`${getSettings()?.username}:${getSettings()?.password}`),
         )
-        const filename = `${btoa(uri)}.jpg`
-        const localUri = FileSystem.cacheDirectory + filename
-        const fileInfo = await FileSystem.getInfoAsync(localUri)
+        const filename = `${base64Encode(uri)
+          .replace(/\//g, "_")
+          .replace(/\+/g, "-")
+          .replace(/=/g, "")}.jpg`
 
-        if (!fileInfo.exists) {
-          await FileSystem.downloadAsync(uri, localUri, {
+        const localFile = new File(Paths.cache, filename)
+
+        if (!localFile.exists) {
+          await File.downloadFileAsync(uri, localFile, {
             headers: { Authorization: `Basic ${token}` },
           })
         }
 
-        const colors = await ImageColors.getColors(localUri, {})
+        const colors = await ImageColors.getColors(localFile.uri, {})
         //console.log("Extracted colors:", colors)
         if (isMounted) {
-          setColor(String(colors.platform === "android" && colors.vibrant || colors.platform === "ios" && colors.background))
+          setColor(
+            String(
+              (colors.platform === "android" && colors.vibrant) ||
+                (colors.platform === "ios" && colors.background),
+            ),
+          )
         }
       } catch (err) {
         console.warn("Image color extraction failed:", err)

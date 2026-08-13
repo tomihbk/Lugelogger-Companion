@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, FlatList, Pressable, Modal, ScrollView } from 'react-native'
+import { View, Text, Pressable, Modal, ScrollView } from 'react-native'
 import tw from '~/tw.config'
 import { lighten } from 'polished'
 import NumberHandler from '~/utils/NumberHandler'
@@ -16,6 +16,7 @@ import { useLocalSearchParams } from 'expo-router'
 import { useFuelRecords, useRepairRecords, useServiceRecords, useTaxRecords, useUpgradeRecords } from '~/hooks/api'
 import useThemeStore from '~/stores/themeStore'
 import { useTheme } from '~/hooks/useTheme'
+import CapitalizeFirstLetter from '~/utils/StringCapitalizer'
 
 interface ExpenseOverviewProps {
     yearFilter: number | 'all'
@@ -158,25 +159,29 @@ const ExpenseOverview: React.FC<ExpenseOverviewProps> = ({
                 ))}
             </View>
 
-            <FlatList
-                data={carTotalExpenses}
-                keyExtractor={(item) => item.type}
-                renderItem={({ item }) => {
+            <View>
+                {carTotalExpenses.map((item) => {
                     const percentage = total > 0 ? (item.amount / total) * 100 : 0
+
                     return (
-                        <View style={tw`flex-row items-center justify-between mt-2`}>
+                        <View key={item.type} style={tw`flex-row items-center justify-between mt-2`}>
                             <View style={tw`flex-row items-center`}>
                                 <View style={[tw`w-3 h-3 rounded-full mr-2`, { backgroundColor: lighten(0.1, item.color[colorScheme]) }]} />
-                                <Text style={[tw`font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]}>{item.type}</Text>
-                                <Text style={[tw`text-xs font-HKGrotesk-Regular`, { color: theme.colors.text.secondary }]}> ({percentage.toFixed(1).replace(/\.0$/, '')}%)</Text>
+                                <Text style={[tw`font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]}>
+                                    {CapitalizeFirstLetter(item.type)}
+                                </Text>
+                                <Text style={[tw`text-xs font-HKGrotesk-Regular`, { color: theme.colors.text.secondary }]}>
+                                    {" "}({percentage.toFixed(1).replace(/\.0$/, "")}%)
+                                </Text>
                             </View>
-                            <View style={tw`flex-row items-center`}>
-                                <Text style={[tw`font-HKGrotesk-Bold`, { color: theme.colors.text.primary }]}>{preferredCurrencySymbol} {NumberHandler(item.amount)}</Text>
-                            </View>
+
+                            <Text style={[tw`font-HKGrotesk-Bold`, { color: theme.colors.text.primary }]}>
+                                {preferredCurrencySymbol} {NumberHandler(item.amount)}
+                            </Text>
                         </View>
                     )
-                }}
-            />
+                })}
+            </View>
         </View>
     )
 }

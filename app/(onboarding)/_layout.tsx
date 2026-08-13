@@ -1,11 +1,17 @@
 import React from "react"
-import { Stack } from "expo-router"
+import { Redirect, Stack } from "expo-router"
 import { useTheme } from "~/hooks/useTheme"
 import useThemeStore from "~/stores/themeStore"
+import useOnboardingStore, { CURRENT_SETUP_VERSION } from "~/stores/onboardingStore"
 
 export default function OnboardingLayout() {
-    const theme = useTheme()
     const { colorScheme } = useThemeStore()
+    const { setupVersion } = useOnboardingStore()
+    const setupComplete = setupVersion >= CURRENT_SETUP_VERSION
+
+    if (setupComplete) {
+        return <Redirect href="/(tabs)" />
+    }
 
     return (
         <Stack
@@ -15,7 +21,6 @@ export default function OnboardingLayout() {
                 fullScreenGestureEnabled: false,
                 animation: "slide_from_right",
                 statusBarStyle: colorScheme == 'light' ? 'dark' : 'light',
-                statusBarColor: theme.colors.background.default,
             }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="server" />

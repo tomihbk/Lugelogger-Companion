@@ -17,7 +17,7 @@ type ReminderCardProps = {
 const NextReminderCard = ({ carId }: ReminderCardProps) => {
     const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
     const { data: lastOdometerRecord } = useLastOdometerRecord(carId)
-    const theme = useTheme()   
+    const theme = useTheme()
     const { colorScheme } = useThemeStore()
 
     const {
@@ -84,7 +84,7 @@ const NextReminderCard = ({ carId }: ReminderCardProps) => {
     if (isReminderRecordsFetching) {
         return (
             <View style={tw`bg-neutral-900 p-4 rounded-2xl items-center`}>
-                <ActivityIndicator color={theme.colors.brand.primary}/>
+                <ActivityIndicator color={theme.colors.brand.primary} />
             </View>
         )
     }

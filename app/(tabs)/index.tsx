@@ -13,6 +13,8 @@ import ServerSettingsStore from "~/stores/serverSettingsStore"
 import NextReminderCard from "~/components/Cards/NextReminderCard"
 import GreetingHeader from "~/components/GreetingHeader"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
+
 
 
 export default function Home() {
@@ -22,6 +24,8 @@ export default function Home() {
   const { data: vehicleData, isPending } = useGetVehicle(favoriteCarId)
   const { getSettings } = ServerSettingsStore()
   const savedSettings = getSettings()
+  const tabBarHeight = useBottomTabBarHeight()
+
 
   const vehicleWithoutStats = vehicleData?.[0]?.vehicleData ?? {}
   const vehicleWithStats = vehicleData?.[0] ?? {}
@@ -32,22 +36,22 @@ export default function Home() {
   }, [vehicleWithoutStats, vehicleWithStats])
 
   return (
-    <SafeAreaView edges={['top']}>
-    <ScrollView showsVerticalScrollIndicator={false}>
-      {/* <Redirect href="/(tabs)/garage" /> */}
-      <Stack.Screen options={{ title: 'Home', headerShown: false }} />
-      <View style={tw`p-5 py-0 mb-16`}>
-        <GreetingHeader brand={vehicleWithoutStats.make} userName={CapitalizeFirstLetter(UserInfo?.username as string)} />
+    <SafeAreaView>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: tabBarHeight + 30 }}>
+        {/* <Redirect href="/(tabs)/garage" /> */}
+        <Stack.Screen options={{ title: 'Home', headerShown: false }} />
+        <View style={tw`p-5 py-0`}>
+          <GreetingHeader brand={vehicleWithoutStats.make} userName={CapitalizeFirstLetter(UserInfo?.username as string)} />
 
-        {!isPending && <FavoriteCarShowcase Name={`${vehicleWithoutStats.make} ${vehicleWithoutStats.model}`} PlateNumber={vehicleWithoutStats.licensePlate} Year={vehicleWithoutStats.year} CarPhotoUri={`${savedSettings?.serverURL}${vehicleWithoutStats.imageLocation}`} Mileage={vehicleWithStats.lastReportedOdometer} CarID={favoriteCarId} />}
+          {!isPending && <FavoriteCarShowcase Name={`${vehicleWithoutStats.make} ${vehicleWithoutStats.model}`} PlateNumber={vehicleWithoutStats.licensePlate} Year={vehicleWithoutStats.year} CarPhotoUri={`${savedSettings?.serverURL}${vehicleWithoutStats.imageLocation}`} Mileage={vehicleWithStats.lastReportedOdometer} CarID={favoriteCarId} />}
 
-        <GroupActionButtons />
+          <GroupActionButtons />
 
-        <View style={tw`-mt-3 mb-4`}>
-          <NextReminderCard carId={favoriteCarId} />
+          <View style={tw`-mt-3`}>
+            <NextReminderCard carId={favoriteCarId} />
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
     </SafeAreaView>
   )
 }

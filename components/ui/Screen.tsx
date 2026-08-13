@@ -2,11 +2,11 @@ import React, { ReactNode } from "react"
 import {
     KeyboardAvoidingView,
     Platform,
-    SafeAreaView,
     ScrollView,
     View,
     ViewStyle,
 } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
 import { useTheme } from "~/hooks/useTheme"
 import tw from "~/tw.config"
 
@@ -29,11 +29,11 @@ const Screen = ({
         <ScrollView
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
-            contentContainerStyle={[tw`flex-grow px-6 py-5`, contentStyle]}>
+            contentContainerStyle={[tw`flex-grow px-5 py-0`, contentStyle]}>
             {children}
         </ScrollView>
     ) : (
-        <View style={[tw`flex-1 px-6 py-5 pt-2`, contentStyle]}>
+        <View style={[tw`flex-1 px-5 py-0`, contentStyle]}>
             {children}
         </View>
     )

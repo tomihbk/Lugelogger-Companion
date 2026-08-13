@@ -6,9 +6,9 @@ import {
     Text,
     TouchableOpacity,
     Modal,
-    SafeAreaView,
     Pressable,
 } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
 import { useTheme } from "~/hooks/useTheme"
 import GlobalStateStore from "~/stores/globalStateStore"
 import tw from "~/tw.config"
@@ -83,7 +83,6 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
 
     const renderCurrencyItem = ({ item }: { item: Currency }) => (
         <Pressable
-           // style={tw`flex-row items-center justify-between px-4 py-3`}
             style={({ pressed }) => [
                 tw`flex-row items-center justify-between rounded-xl border p-4 mb-3 mx-5`,
                 {
@@ -118,7 +117,7 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
     )
 
     return (
-        <View>
+        <SafeAreaView>
             <TouchableOpacity
                 style={[tw`flex-row items-center justify-between border rounded-lg p-4`, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.border.default }]}
                 onPress={() => setModalVisible(true)}
@@ -154,11 +153,10 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
                         renderItem={renderCurrencyItem}
                         keyExtractor={(item) => item.code}
                         keyboardShouldPersistTaps="handled"
-                        estimatedItemSize={20}
                     />
                 </SafeAreaView>
             </Modal>
-        </View>
+        </SafeAreaView>
     )
 }
 

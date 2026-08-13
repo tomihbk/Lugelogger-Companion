@@ -11,11 +11,15 @@ const Tag = ({ tags, color }: TagsProps) => {
     const tagArray = tags ? tags.split(' ').filter(tag => tag !== '') : []
 
     return (
-        <View style={tw`flex flex-row flex-wrap mt-2 gap-2`}>
+        <View style={tw`flex-row flex-wrap mt-2 gap-2`}>
             {tagArray.map((tag, index) => (
-                <Text key={index} style={tw`font-HKGrotesk-Medium text-sm px-2 bg-[${color}]/10 text-[${color}] rounded-full`}>
-                    {tag}
-                </Text>
+                <View
+                    key={index}
+                    style={tw`px-2 py-0.5 bg-[${color}]/10 rounded-full`}>
+                    <Text style={tw`font-HKGrotesk-Medium text-sm text-[${color}]`}>
+                        {tag}
+                    </Text>
+                </View>
             ))}
         </View>
     )

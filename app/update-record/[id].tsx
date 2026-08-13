@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TextInput, Pressable, SafeAreaView } from 'react-native'
+import { View, Text, TextInput, Pressable} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
@@ -15,6 +15,8 @@ import DatePicker from 'react-native-date-picker'
 import ModernSwitch from '~/components/ModernSwitch'
 import useThemeStore from '~/stores/themeStore'
 import { useTheme } from '~/hooks/useTheme'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
 
 const UpdateRecord = () => {
     const { t } = useTranslation()
@@ -182,13 +184,16 @@ const UpdateRecord = () => {
                 headerShown: true,
                 headerTintColor: theme.colors.text.primary, // this handles the back arrow color on the header
                 headerStyle: { backgroundColor: theme.colors.background.default },
-                headerTitle: () => <Text style={tw`font-HKGrotesk-Bold text-lg text-center text-[${currentActionType?.buttonColor[colorScheme]}]`}>Update {actionType.toString()} Record</Text>,
+                headerTitle: () => <Text style={tw`font-HKGrotesk-Bold text-lg text-[${currentActionType?.buttonColor[colorScheme]}]`}>Update {actionType.toString()} Record</Text>,
                 statusBarStyle: colorScheme == 'light' ? 'dark' : 'light',
                 headerTransparent: true,
             }} />
-            <View style={tw`mt-9`}>
-                <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={"handled"}
-                    style={tw`p-4 pt-0`}>
+
+                <KeyboardAwareScrollView
+                    bottomOffset={20}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={tw`px-4 pt-9 pb-6`}>
                     <View>
                         {currentActionType?.visibleFields.description && currentActionType?.key === ReminderFunctionStore.key &&
                             <>
@@ -568,13 +573,12 @@ const UpdateRecord = () => {
                         {errors.Tags && <Text style={[tw`font-HKGrotesk-Regular text-right`, { color: theme.colors.status.danger }]}>Required Field</Text>}
 
                         <Pressable onPress={handleSubmit(handleForm)} style={tw`mb-4`}>
-                            <Text style={[tw`mt-4 p-2 font-HKGrotesk-Medium rounded-full text-base text-center`, { backgroundColor: currentActionType?.buttonColor[colorScheme] + '90', color: theme.colors.text.primary }]}>
+                            <Text style={[tw`mt-4 py-4 px-5 font-HKGrotesk-Medium rounded-full text-base text-center`, { backgroundColor: currentActionType?.buttonColor[colorScheme] + '90', color: theme.colors.text.primary }]}>
                                 Update Record
                             </Text>
                         </Pressable>
                     </View>
-                </ScrollView>
-            </View>
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     )
 }

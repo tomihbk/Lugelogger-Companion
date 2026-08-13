@@ -83,7 +83,7 @@ const Settings = () => {
               onRequestClose={() => {
                 setModalThemeVisible(!modalThemeVisible)
               }}>
-              <View style={[tw`flex flex-col flex-1 p-5`, { backgroundColor: theme.colors.background.default }]}>
+              <SafeAreaView style={[tw`flex flex-col flex-1 p-5`, { backgroundColor: theme.colors.background.default }]}>
                 <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
                   <ArrowLeft color={theme.colors.text.primary} style={tw`w-full p-4 pl-0`}
                     onPress={() => { setModalThemeVisible(!modalThemeVisible) }} />
@@ -97,7 +97,7 @@ const Settings = () => {
                     modalThemeVisible={modalThemeVisible}
                   />
                 </ScrollView>
-              </View>
+              </SafeAreaView>
             </Modal>
           </SettingRow>
 
@@ -114,7 +114,7 @@ const Settings = () => {
               onRequestClose={() => {
                 setModalLanguageVisibile(!modalLanguageVisible)
               }}>
-              <View style={[tw`flex flex-col p-5 h-full`, { backgroundColor: theme.colors.background.default }]}>
+              <SafeAreaView style={[tw`flex flex-col p-5 h-full`, { backgroundColor: theme.colors.background.default }]}>
                 <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
                   <ArrowLeft color={theme.colors.text.primary} style={tw`w-full p-4 pl-0`}
                     onPress={() => { setModalLanguageVisibile(!modalLanguageVisible) }} />
@@ -141,7 +141,7 @@ const Settings = () => {
                       />
                     ))}
                 </ScrollView>
-              </View>
+              </SafeAreaView>
             </Modal>
           </SettingRow>
         </View>
@@ -163,7 +163,7 @@ const Settings = () => {
               onRequestClose={() => {
                 setModalUserPrefVisible(!modalUserPrefVisible)
               }}>
-              <View style={[tw`flex flex-col p-5 h-full`, { backgroundColor: theme.colors.background.default }]}>
+              <SafeAreaView style={[tw`flex flex-col p-5 h-full`, { backgroundColor: theme.colors.background.default }]}>
                 <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
                   <ArrowLeft color={theme.colors.text.primary} style={tw`w-full p-4 pl-0`}
                     onPress={() => { setModalUserPrefVisible(!modalUserPrefVisible) }} />
@@ -194,7 +194,7 @@ const Settings = () => {
                     />
                   </View>
                 </ScrollView>
-              </View>
+              </SafeAreaView>
             </Modal>
           </SettingRow>
 
@@ -212,7 +212,7 @@ const Settings = () => {
                 setModalServerVisible(!modalServerVisible)
               }}>
 
-              <View style={[tw`flex flex-col p-5 h-full`, { backgroundColor: theme.colors.background.default }]}>
+              <SafeAreaView style={[tw`flex flex-col p-5 h-full`, { backgroundColor: theme.colors.background.default }]}>
                 <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
                   <ArrowLeft color={theme.colors.text.primary} style={tw`w-full p-4 pl-0`}
                     onPress={() => { setModalServerVisible(!modalServerVisible) }} />
@@ -221,7 +221,7 @@ const Settings = () => {
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <ServerSettings onSave={() => { setModalServerVisible(!modalServerVisible) }} />
                 </ScrollView>
-              </View>
+              </SafeAreaView>
             </Modal>
           </SettingRow>
         </View>
@@ -242,7 +242,7 @@ const Settings = () => {
               onRequestClose={() => {
                 setModalAboutVisible(!modalAboutVisible)
               }}>
-              <View style={[tw`flex flex-col p-5 pb-0 h-full`, { backgroundColor: theme.colors.background.default }]}>
+              <SafeAreaView style={[tw`flex flex-col p-5 pb-0 h-full`, { backgroundColor: theme.colors.background.default }]}>
                 <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
                   <ArrowLeft color={theme.colors.text.primary} style={tw`w-full p-4 pl-0`}
                     onPress={() => { setModalAboutVisible(!modalAboutVisible) }} />
@@ -251,7 +251,7 @@ const Settings = () => {
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <AboutScreen />
                 </ScrollView>
-              </View>
+              </SafeAreaView>
             </Modal>
           </SettingRow>
           <SettingRow
@@ -267,7 +267,7 @@ const Settings = () => {
               onRequestClose={() => {
                 setModalLicenseVisible(!modalLicenseVisible)
               }}>
-              <View style={[tw`flex flex-col p-5 pb-0 h-full`, { backgroundColor: theme.colors.background.default }]}>
+              <SafeAreaView style={[tw`flex flex-col p-5 pb-0 h-full`, { backgroundColor: theme.colors.background.default }]}>
                 <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
                   <ArrowLeft color={theme.colors.text.primary} style={tw`w-full p-4 pl-0`}
                     onPress={() => { setModalLicenseVisible(!modalLicenseVisible) }} />
@@ -276,7 +276,7 @@ const Settings = () => {
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <LicensesScreen />
                 </ScrollView>
-              </View>
+              </SafeAreaView>
             </Modal>
           </SettingRow>
 

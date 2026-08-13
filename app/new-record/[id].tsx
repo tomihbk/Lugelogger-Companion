@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TextInput, Pressable, SafeAreaView } from 'react-native'
+import { View, Text, ScrollView, TextInput, Pressable } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
@@ -17,6 +17,8 @@ import NumberHandler from '~/utils/NumberHandler'
 import GlobalStateStore from '~/stores/globalStateStore'
 import useThemeStore from '~/stores/themeStore'
 import { useTheme } from '~/hooks/useTheme'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
 
 const NewRecord = () => {
     const { t } = useTranslation()
@@ -178,13 +180,14 @@ const NewRecord = () => {
                 headerShown: true,
                 headerTintColor: theme.colors.text.primary, // this handles the back arrow color on the header
                 headerStyle: { backgroundColor: theme.colors.background.default },
-                headerTitle: () => <Text style={tw`font-HKGrotesk-Bold text-lg text-center text-[${currentActionType?.buttonColor[colorScheme]}]`}>Add New {actionType.toString()} Record</Text>,
+                headerTitle: () => <Text style={tw`font-HKGrotesk-Bold text-lg text-[${currentActionType?.buttonColor[colorScheme]}]`}>Add New {actionType.toString()} Record</Text>,
                 statusBarStyle: colorScheme == 'light' ? 'dark' : 'light',
                 headerTransparent: true,
             }} />
-            <View style={tw`mt-9`}>
-                <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={"handled"}
-                    style={tw`p-4 pt-0`}>
+            <KeyboardAwareScrollView
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={tw`px-4 pt-9 pb-6`}>
                     <View>
                         {currentActionType?.visibleFields.description && currentActionType?.key === ReminderFunctionStore.key &&
                             <>
@@ -366,7 +369,7 @@ const NewRecord = () => {
                                                     <X size={16} color={tint(colorTintValue, currentActionType?.buttonColor[colorScheme])} />
                                                 </Pressable>
                                             </View>
-                                            <Text style={[tw`text-sm`, { color: theme.colors.text.secondary }]}>
+                                            <Text style={[tw`text-sm font-HKGrotesk-Regular`, { color: theme.colors.text.secondary }]}>
                                                 This optional field is the reading from your last record. This helps track the distance traveled between records.
                                             </Text>
                                         </View>
@@ -383,7 +386,7 @@ const NewRecord = () => {
                                                 value={value}
                                                 editable={initialOdometerEditable}
                                             />
-                                            <Pressable style={tw`absolute right-1 top-1`}
+                                            <Pressable style={tw`absolute right-[2px] top-[2px]`}
                                                 onPress={() => setInitialOdometerEditable(!initialOdometerEditable)}>
                                                 <View style={tw`flex flex-row items-center bg-[${currentActionType?.buttonColor[colorScheme]}]/10 p-2 rounded-lg gap-2`}>
                                                     <PenSquare size={22} color={currentActionType?.buttonColor[colorScheme]} />
@@ -568,13 +571,12 @@ const NewRecord = () => {
                         {errors.Tags && <Text style={[tw`font-HKGrotesk-Regular text-right`, { color: theme.colors.status.danger }]}>Required Field</Text>}
 
                         <Pressable onPress={handleSubmit(handleForm)} style={tw`mb-4`}>
-                            <Text style={[tw`mt-4 p-2 font-HKGrotesk-Medium rounded-full text-base text-center`, { backgroundColor: currentActionType?.buttonColor[colorScheme] + '90', color: theme.colors.text.primary }]}>
+                            <Text style={[tw`mt-4 py-4 px-5 font-HKGrotesk-Medium rounded-full text-base text-center`, { backgroundColor: currentActionType?.buttonColor[colorScheme] + '90', color: theme.colors.text.primary }]}>
                                 Add New Record
                             </Text>
                         </Pressable>
                     </View>
-                </ScrollView>
-            </View>
+              </KeyboardAwareScrollView>
         </SafeAreaView>
     )
 }

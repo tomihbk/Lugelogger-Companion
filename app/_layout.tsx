@@ -1,11 +1,16 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { Stack } from "expo-router"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { KeyboardProvider } from "react-native-keyboard-controller"
+import { KeyboardController, KeyboardProvider } from "react-native-keyboard-controller"
 
 export const queryClient = new QueryClient()
 
 export default function RootLayout() {
+
+  useEffect(() => {
+    KeyboardController.preload()
+  }, [])
+
   return (
     <KeyboardProvider>
       <QueryClientProvider client={queryClient}>

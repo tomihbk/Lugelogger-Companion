@@ -1,7 +1,8 @@
-import { View, Text, TextInput, Pressable } from 'react-native'
+import { View, Text, TextInput} from 'react-native'
 import React, { useState } from 'react'
 import tw from '~/tw.config'
 import { useTheme } from '~/hooks/useTheme'
+import AnimatedPressable from './Animations/AnimatedPressable'
 
 type TagInputProps = {
     value: string
@@ -44,14 +45,14 @@ const TagInput = ({ value, onChangeText, onBlur, color, hasError }: TagInputProp
         <View style={tw`flex flex-col`}>
             <View style={tw`flex flex-row flex-wrap gap-2 mb-2`}>
                 {tags.map((tag, index) => (
-                    <Pressable
+                    <AnimatedPressable
                         key={index}
                         onPress={() => removeTag(index)}
                         style={[tw`flex-row items-center rounded-full px-2 py-1`, { backgroundColor: color + '70' }]}
                     >
                         <Text style={tw`font-HKGrotesk-Medium text-sm text-white mr-1`}>{tag}</Text>
                         <Text style={tw`font-HKGrotesk-Medium text-sm text-white`}>×</Text>
-                    </Pressable>
+                     </AnimatedPressable>
                 ))}
             </View>
             <TextInput

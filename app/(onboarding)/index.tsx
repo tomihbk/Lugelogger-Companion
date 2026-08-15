@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { Pressable, Text, View, Image } from "react-native"
+import { Text, View, Image } from "react-native"
 import { Href, router } from "expo-router"
 import { ChevronRight } from "lucide-react-native"
 import Screen from "~/components/ui/Screen"
@@ -8,6 +8,7 @@ import useOnboardingStore from "~/stores/onboardingStore"
 import tw from "~/tw.config"
 import { APP } from "~/constants/app"
 import AppBackground from "~/components/ui/AppBackground"
+import AnimatedPressable from "~/components/Animations/AnimatedPressable"
 
 export default function WelcomeScreen() {
     const theme = useTheme()
@@ -46,7 +47,7 @@ export default function WelcomeScreen() {
                     </Text>
                 </View>
 
-                <Pressable
+                <AnimatedPressable
                     onPress={handleGetStarted}
                     style={({ pressed }) => [
                         tw`w-full rounded-full py-4 px-5 flex-row items-center justify-center`,
@@ -56,7 +57,7 @@ export default function WelcomeScreen() {
                         Get Started
                     </Text>
                     <ChevronRight size={20} color="white" style={tw`ml-2`} />
-                </Pressable>
+                 </AnimatedPressable>
             </View>
         </Screen>
     )

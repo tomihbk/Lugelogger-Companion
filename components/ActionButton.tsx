@@ -4,6 +4,7 @@ import { Construction, ClipboardCheck, Fuel, PackagePlus, NotepadText, Landmark,
 import tw from '~/tw.config'
 import useThemeStore from '~/stores/themeStore'
 import { shade } from 'polished'
+import AnimatedPressable from './Animations/AnimatedPressable'
 
 type ServiceButtonProps = {
     ButtonTitle: string;
@@ -37,14 +38,14 @@ const ServiceButton = (props: ServiceButtonProps) => {
     }
 
     return (
-        <TouchableOpacity onPress={props.OnPress} style={[tw`flex flex-col size-24 p-3 mb-2 rounded-2xl justify-between shadow-lg`, {
+        <AnimatedPressable onPress={props.OnPress} style={[tw`flex flex-col size-24 p-3 mb-2 rounded-2xl justify-between shadow-lg`, {
             backgroundColor: colorSchemeStore === 'dark' ? shade(0.7, props.ThemeHexColor) : 'white',
             elevation: colorSchemeStore === 'light' ? 18 : 0,
             shadowColor: props.ThemeHexColor + "40"
         }]} >
             {IconSet()}
             <Text style={[tw`text-base font-HKGrotesk-Bold`, { color: props.ThemeHexColor }]} >{props.ButtonTitle}</Text>
-        </TouchableOpacity>
+        </AnimatedPressable>
     )
 }
 

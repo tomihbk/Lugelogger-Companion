@@ -1,7 +1,7 @@
 import { Stack } from "expo-router"
 import React, { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { View, Text, ScrollView, Modal, Platform, TouchableOpacity, Linking, Pressable } from "react-native"
+import { View, Text, ScrollView, Modal, Platform, TouchableOpacity, Linking} from "react-native"
 import tw from "~/tw.config"
 import i18n from "~/i18n/i18n.config"
 import { Palette, ArrowRight, Languages, BadgeInfo, Scale, Settings2, Server, GitBranch, ArrowLeft } from 'lucide-react-native'
@@ -21,6 +21,7 @@ import ServerSettingsStore from "~/stores/serverSettingsStore"
 import useOnboardingStore from "~/stores/onboardingStore"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
+import AnimatedPressable from "~/components/Animations/AnimatedPressable"
 
 
 const Settings = () => {
@@ -293,12 +294,12 @@ const Settings = () => {
 
 
         {__DEV__ && (
-          <Pressable style={[tw`mt-6 p-2 rounded-full border`, { backgroundColor: theme.colors.background.default, color: theme.colors.text.primary, borderColor: theme.colors.brand.primary + "60" }]} onPress={resetAppSetup}>
+          <AnimatedPressable style={[tw`mt-6 p-2 rounded-full border`, { backgroundColor: theme.colors.background.default, color: theme.colors.text.primary, borderColor: theme.colors.brand.primary + "60" }]} onPress={resetAppSetup}>
             <Text style={[tw`text-lg font-HKGrotesk-Medium text-center`, { color: theme.colors.text.primary }]}>Reset app setup</Text>
-          </Pressable>
+           </AnimatedPressable>
         )}
 
-        <TouchableOpacity style={[tw`mt-6 p-2 rounded-full border`, { backgroundColor: theme.colors.background.default, color: theme.colors.text.primary, borderColor: theme.colors.brand.primary + "60" }]} onPress={() => {
+        <AnimatedPressable style={[tw`mt-6 p-2 rounded-full border`, { backgroundColor: theme.colors.background.default, color: theme.colors.text.primary, borderColor: theme.colors.brand.primary + "60" }]} onPress={() => {
           if (Platform.OS === 'ios') {
             Linking.openURL('itms-apps://apps.apple.com/app/idYOUR_APP_ID?action=write-review');
           } else if (Platform.OS === 'android') {
@@ -309,7 +310,7 @@ const Settings = () => {
             <Text style={[tw`text-lg font-HKGrotesk-Medium text-center`, { color: theme.colors.text.primary }]}>Rate App on {Platform.OS == 'android' ? 'PlayStore' : 'App Store'}</Text>
             <ArrowRight size={20} color={theme.colors.text.primary} />
           </View>
-        </TouchableOpacity>
+        </AnimatedPressable>
       </ScrollView>
     </SafeAreaView>
   )

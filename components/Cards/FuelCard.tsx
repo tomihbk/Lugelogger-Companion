@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import GlobalStateStore from '~/stores/globalStateStore'
 import tw from '~/tw.config'
@@ -12,6 +12,7 @@ import NumberHandler from '~/utils/NumberHandler'
 import Tag from '../TagComponent'
 import { Droplet } from 'lucide-react-native'
 import { useTheme } from '~/hooks/useTheme'
+import AnimatedPressable from '../Animations/AnimatedPressable'
 
 const FuelCard = ({ item, odometerDelta, selectedButtonHexColor, vehicleId }: { item: RecordBase[0], odometerDelta: number, selectedButtonHexColor: string, vehicleId: number }) => {
     const { preferredCurrencySymbol, preferredDistanceMeasurement, preferredLiquidMeasurement } = GlobalStateStore((state) => state)
@@ -28,7 +29,7 @@ const FuelCard = ({ item, odometerDelta, selectedButtonHexColor, vehicleId }: { 
 
     return (
         <View style={tw`mb-2`}>
-            <Pressable style={[tw`p-4 pt-3 pb-0 rounded-tr-3xl rounded-tl-3xl ${item.tags ? 'rounded-bl-none' : 'rounded-3xl p-4 pt-3'}`, { backgroundColor: theme.colors.surface.neutral }]}
+            <AnimatedPressable style={[tw`p-4 pt-3 pb-0 rounded-tr-3xl rounded-tl-3xl ${item.tags ? 'rounded-bl-none' : 'rounded-3xl p-4 pt-3'}`, { backgroundColor: theme.colors.surface.neutral }]}
                 onLongPress={() => setShowDeleteButton(prev => !prev)}
                 onPress={() => {
                     router.push({
@@ -67,7 +68,7 @@ const FuelCard = ({ item, odometerDelta, selectedButtonHexColor, vehicleId }: { 
 
                     <Text style={[tw`mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`, { color: theme.colors.text.secondary, backgroundColor: selectedButtonHexColor + '20' }]} numberOfLines={item.description ? 1 : 2} ellipsizeMode="tail">{item.notes}</Text>
                 )}
-            </Pressable>
+             </AnimatedPressable>
             {item.tags && <View style={[tw`px-4 pb-3 rounded-br-3xl rounded-bl-3xl`, { backgroundColor: theme.colors.surface.neutral }]}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {item.tags && <Tag tags={item.tags} color={selectedButtonHexColor} />}

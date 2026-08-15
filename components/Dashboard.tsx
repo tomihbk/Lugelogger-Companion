@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { ScrollView, View, LogBox } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import tw from '~/tw.config'
 import { useLocalSearchParams } from 'expo-router'
 import {

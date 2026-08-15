@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { ActivityIndicator, Pressable, Text, View } from "react-native"
+import { ActivityIndicator, Text, View } from "react-native"
 import { Check, ChevronRight, CircleCheckBig, Server, Settings2, Star } from "lucide-react-native"
 
 import Screen from "~/components/ui/Screen"
@@ -11,6 +11,7 @@ import useOnboardingStore from "~/stores/onboardingStore"
 import useThemeStore from "~/stores/themeStore"
 import ServerSettingsStore from "~/stores/serverSettingsStore"
 import tw from "~/tw.config"
+import AnimatedPressable from "~/components/Animations/AnimatedPressable"
 
 type Vehicle = {
     id: number
@@ -141,7 +142,7 @@ export default function FinishScreen() {
                     )}
                 </View>
 
-                <Pressable
+                <AnimatedPressable
                     disabled={isLoading}
                     onPress={finish}
                     style={({ pressed }) => [
@@ -156,7 +157,7 @@ export default function FinishScreen() {
                     </Text>
 
                     <ChevronRight size={20} color="white" style={tw`ml-2`} />
-                </Pressable>
+                 </AnimatedPressable>
             </View>
         </Screen>
     )

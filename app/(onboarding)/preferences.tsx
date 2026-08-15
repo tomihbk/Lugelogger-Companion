@@ -1,7 +1,7 @@
 import React from "react"
 import { Href, router } from "expo-router"
 import { Check, ChevronRight, Moon, Sun } from "lucide-react-native"
-import { Pressable, ScrollView, Text, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 
 import CurrencySelector from "~/components/CurrencySelector"
 import Screen from "~/components/ui/Screen"
@@ -12,6 +12,7 @@ import useThemeStore from "~/stores/themeStore"
 import tw from "~/tw.config"
 import ModernSwitch from "~/components/ModernSwitch"
 import { APP } from "~/constants/app"
+import AnimatedPressable from "~/components/Animations/AnimatedPressable"
 
 export default function PreferencesScreen() {
     const theme = useTheme()
@@ -75,7 +76,7 @@ export default function PreferencesScreen() {
         selected: boolean
         onPress: () => void
     }) => (
-        <Pressable
+        <AnimatedPressable
             onPress={onPress}
             style={({ pressed }) => [
                 tw`w-full flex-row items-center rounded-xl border p-4 mb-3`,
@@ -107,7 +108,7 @@ export default function PreferencesScreen() {
                 ]}>
                 {selected && <Check size={16} color="white" />}
             </View>
-        </Pressable>
+         </AnimatedPressable>
     )
 
     const CompactOption = ({
@@ -123,7 +124,7 @@ export default function PreferencesScreen() {
         onPress: () => void
         showCheckmark?: boolean
     }) => (
-        <Pressable
+        <AnimatedPressable
             onPress={onPress}
             style={({ pressed }) => [
                 tw`flex-1 rounded-xl border p-4 items-center justify-center`,
@@ -155,7 +156,7 @@ export default function PreferencesScreen() {
                     {selected && <Check size={14} color="white" />}
                 </View>)
             }
-        </Pressable>
+         </AnimatedPressable>
     )
 
     return (
@@ -276,7 +277,7 @@ export default function PreferencesScreen() {
                     </View>
                 </ScrollView>
 
-                <Pressable
+                <AnimatedPressable
                     onPress={handleContinue}
                     style={({ pressed }) => [
                         tw`w-full rounded-full py-4 px-5 flex-row items-center justify-center`,
@@ -287,7 +288,7 @@ export default function PreferencesScreen() {
                     </Text>
 
                     <ChevronRight size={20} color="white" style={tw`ml-2`} />
-                </Pressable>
+                 </AnimatedPressable>
             </View>
         </Screen>
     )

@@ -10,6 +10,7 @@ import AuthenticatedImage from './AuthenticatedImage'
 import { useTheme } from '~/hooks/useTheme'
 import { darken } from 'polished'
 import useThemeStore from '~/stores/themeStore'
+import AnimatedPressable from './Animations/AnimatedPressable'
 
 type CarShowCaseProps = {
     Year: number
@@ -28,7 +29,7 @@ const CarShowCase = (props: CarShowCaseProps) => {
     const colorTintValue = colorScheme === 'light' ? .4 : .4                        
 
     return (
-        <TouchableOpacity style={tw`mb-5 z-50`} onPress={() => router.push({
+        <AnimatedPressable style={tw`mb-5 z-50`} onPress={() => router.push({
             pathname: "/car-detail/[id]",
             params: { id: props.carId, actionType: "home" }
         })}>
@@ -40,9 +41,9 @@ const CarShowCase = (props: CarShowCaseProps) => {
                     start={{ x: 0, y: 1 }}
                     end={{ x: 0, y: .3 }}>
                     <View style={tw`flex flex-col h-full justify-between`}>
-                        <TouchableOpacity style={tw`self-end m-5`} onPress={() => setFavoriteCar(props.carId)}>
+                        <AnimatedPressable style={tw`self-end m-5`} onPress={() => setFavoriteCar(props.carId)}>
                             <Heart color={favoriteCarId != props.carId ? "white" : "red"} fill={favoriteCarId != props.carId ? "rgba(0,0,0,0)" : "red"} size={24} />
-                        </TouchableOpacity>
+                        </AnimatedPressable>
                         <View style={tw`flex-row flex-wrap w-full pb-5 px-5`}>
                             <Text style={tw`w-4/6 text-white text-base font-HKGrotesk-Bold`}>{props.Name}</Text>
                             <Text style={tw`w-2/6 text-white text-right pb-1 text-base font-HKGrotesk-Bold`}>{lastOdometerRecord?.toString()} {preferredDistanceMeasurement}</Text>
@@ -53,7 +54,7 @@ const CarShowCase = (props: CarShowCaseProps) => {
 
                 </LinearGradient>
             </View>
-        </TouchableOpacity>
+        </AnimatedPressable>
     )
 }
 

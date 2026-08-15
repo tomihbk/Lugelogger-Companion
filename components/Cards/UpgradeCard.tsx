@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import GlobalStateStore from '~/stores/globalStateStore'
 import tw from '~/tw.config'
@@ -12,6 +12,7 @@ import { UpgradeRecord } from '~/api/index-records.types'
 import Tag from '../TagComponent'
 import NumberHandler from '~/utils/NumberHandler'
 import { useTheme } from '~/hooks/useTheme'
+import AnimatedPressable from '../Animations/AnimatedPressable'
 
 type UpgradeCardProps = RecordBase[0] & UpgradeRecord[0]
 
@@ -27,7 +28,7 @@ const UpgradeCard = ({ item, selectedButtonHexColor, vehicleId }: { item: Upgrad
 
     return (
         <View style={tw`mb-2`}>
-            <Pressable
+            <AnimatedPressable
                 style={[tw`p-4 pt-3 pb-0 rounded-tr-3xl rounded-tl-3xl ${item.tags ? 'rounded-bl-none' : 'rounded-3xl p-4 pt-3'}`, { backgroundColor: theme.colors.surface.neutral }]}
                 onLongPress={() => setShowDeleteButton(prev => !prev)}
                 onPress={() => {
@@ -45,7 +46,7 @@ const UpgradeCard = ({ item, selectedButtonHexColor, vehicleId }: { item: Upgrad
                 {item.description && <Text style={[tw`mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`, { color: theme.colors.text.secondary, backgroundColor: selectedButtonHexColor + '20' }]} numberOfLines={item.notes ? 1 : 2} ellipsizeMode="tail">{item.description}</Text>}
 
                 {item.notes && <Text style={[tw`mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`, { color: theme.colors.text.secondary, backgroundColor: selectedButtonHexColor + '20' }]} numberOfLines={item.description ? 1 : 2} ellipsizeMode="tail">{item.notes}</Text>}
-            </Pressable>
+             </AnimatedPressable>
             {item.tags && <View style={[tw`px-4 pb-3 rounded-br-3xl rounded-bl-3xl`, { backgroundColor: theme.colors.surface.neutral }]}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {item.tags && <Tag tags={item.tags} color={selectedButtonHexColor} />}

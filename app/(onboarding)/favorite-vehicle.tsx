@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react"
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native"
+import { ActivityIndicator, ScrollView, Text, View } from "react-native"
 import { Check, ChevronRight, RefreshCw, TriangleAlert } from "lucide-react-native"
 import { Href, router } from "expo-router"
 
@@ -9,6 +9,7 @@ import { useTheme } from "~/hooks/useTheme"
 import GlobalStateStore from "~/stores/globalStateStore"
 import useOnboardingStore from "~/stores/onboardingStore"
 import tw from "~/tw.config"
+import AnimatedPressable from "~/components/Animations/AnimatedPressable"
 
 type OnboardingVehicle = {
     id: number
@@ -91,7 +92,7 @@ export default function FavoriteVehicleScreen() {
                             {error instanceof Error ? error.message : "Check your server connection and try again."}
                         </Text>
 
-                        <Pressable
+                        <AnimatedPressable
                             disabled={isRefetching}
                             onPress={() => refetch()}
                             style={({ pressed }) => [
@@ -108,7 +109,7 @@ export default function FavoriteVehicleScreen() {
                             <Text style={tw`text-white text-base font-HKGrotesk-Medium ml-2`}>
                                 {isRefetching ? "Retrying..." : "Retry"}
                             </Text>
-                        </Pressable>
+                         </AnimatedPressable>
                     </View>
                 ) : vehicles.length === 0 ? (
                     <View style={tw`flex-1 items-center justify-center px-4`}>
@@ -124,7 +125,7 @@ export default function FavoriteVehicleScreen() {
                             Vehicles cannot currently be created from the mobile app. Create a vehicle using the Lugelogger desktop version, then return here.
                         </Text>
 
-                        <Pressable
+                        <AnimatedPressable
                             disabled={isRefetching}
                             onPress={() => refetch()}
                             style={({ pressed }) => [
@@ -141,7 +142,7 @@ export default function FavoriteVehicleScreen() {
                             <Text style={tw`text-white text-base font-HKGrotesk-Medium ml-2`}>
                                 {isRefetching ? "Checking..." : "Check Again"}
                             </Text>
-                        </Pressable>
+                         </AnimatedPressable>
                     </View>
                 ) : (
                     <>
@@ -158,7 +159,7 @@ export default function FavoriteVehicleScreen() {
                                 const isSelected = vehicleId !== undefined && selectedVehicleId === vehicleId
 
                                 return (
-                                    <Pressable
+                                    <AnimatedPressable
                                         key={vehicleId ?? index}
                                         disabled={vehicleId === undefined}
                                         onPress={() => vehicleId !== undefined && setSelectedVehicleId(vehicleId)}
@@ -196,12 +197,12 @@ export default function FavoriteVehicleScreen() {
                                                 {isSelected && <Check size={18} color="white" />}
                                             </View>
                                         </View>
-                                    </Pressable>
+                                     </AnimatedPressable>
                                 )
                             })}
                         </ScrollView>
 
-                        <Pressable
+                        <AnimatedPressable
                             disabled={selectedVehicleId === null}
                             onPress={handleContinueButton}
                             style={({ pressed }) => [
@@ -216,7 +217,7 @@ export default function FavoriteVehicleScreen() {
                             </Text>
 
                             <ChevronRight size={20} color="white" style={tw`ml-2`} />
-                        </Pressable>
+                         </AnimatedPressable>
                     </>
                 )}
             </View>

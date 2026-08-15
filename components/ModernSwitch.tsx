@@ -1,6 +1,7 @@
-import { Pressable, Animated } from 'react-native'
+import { Animated } from 'react-native'
 import React, { useEffect, useRef } from 'react'
 import tw from '~/tw.config'
+import AnimatedPressable from './Animations/AnimatedPressable'
 
 type ModernSwitchProps = {
     value: boolean
@@ -20,7 +21,7 @@ const ModernSwitch = ({ value, onValueChange, activeColor }: ModernSwitchProps) 
     }, [value])
 
     return (
-        <Pressable
+        <AnimatedPressable
             onPress={() => onValueChange(!value)}
             style={tw`w-12 h-6 rounded-full justify-center ${value ? `bg-[${activeColor}]/60` : 'bg-gray-200 dark:bg-gray-700'}`}
         >
@@ -41,7 +42,7 @@ const ModernSwitch = ({ value, onValueChange, activeColor }: ModernSwitchProps) 
                     },
                 ]}
             />
-        </Pressable>
+         </AnimatedPressable>
     )
 }
 

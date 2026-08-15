@@ -7,7 +7,6 @@ import useThemeStore from "~/stores/themeStore"
 import tw from "~/tw.config"
 import { useDeviceContext } from "twrnc"
 import { useTheme } from "~/hooks/useTheme"
-import { SafeAreaView } from "react-native-safe-area-context"
 import useOnboardingStore, { CURRENT_SETUP_VERSION } from "~/stores/onboardingStore"
 
 export default function TabLayout() {
@@ -41,6 +40,7 @@ export default function TabLayout() {
         screenOptions={{
           // tabBarActiveTintColor: '#000',
           // tabBarInactiveTintColor: '#fff',
+          animation: "shift",
           sceneStyle: { backgroundColor: theme.colors.background.default }, // Body background color colorSchemeStore == 'light' ? '#fafafa' : '#121212'
           headerShown: false,
           tabBarBackground: () =>

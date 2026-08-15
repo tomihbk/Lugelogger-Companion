@@ -17,6 +17,27 @@ export default function RootLayout() {
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(onboarding)" />
           <Stack.Screen name="(tabs)" />
+
+          <Stack.Screen
+            name="car-detail/[id]"
+            options={{
+              animation: "fade",
+            }}
+          />
+
+          <Stack.Screen
+            name="new-record/[id]"
+            options={{
+              animation: "fade",
+            }}
+          />
+
+          <Stack.Screen
+            name="update-record/[id]"
+            options={{
+              animation: "slide_from_bottom",
+            }}
+          />
         </Stack>
       </QueryClientProvider>
     </KeyboardProvider>

@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, ActivityIndicator, Dimensions } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
 import { FlashList } from '@shopify/flash-list'
@@ -22,6 +22,8 @@ import Dashboard from '~/components/Dashboard'
 import ReminderCard from '~/components/Cards/ReminderCard'
 import useThemeStore from '~/stores/themeStore'
 import { useTheme } from '~/hooks/useTheme'
+import AnimatedSection from "~/components/Animations/AnimatedSection"
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
 
 
 const CarDetail = () => {
@@ -53,74 +55,94 @@ const CarDetail = () => {
     // { key: 'notes', label: 'Notes', color: '#BF0296' },
   ]
 
-  const [selectedDataSet, setSelectedDataSet] = useState<RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | ReminderRecord | undefined>([])
+  const calculateOrderedDataByUrgency = (dataSource: ReminderRecord) => {
+    const urgencyGrade = {
+      'PastDue': 0,
+      'VeryUrgent': 1,
+      'Urgent': 2,
+      'NotUrgent': 3
+    } as const
+
+    type UrgencyType = keyof typeof urgencyGrade
+    const reminderData = dataSource as ReminderRecord
+
+    const orderedDataByUrgency = [...reminderData].sort((a, b) => {
+      // First sort by urgency
+      const urgencyA = urgencyGrade[(a.urgency || 'NotUrgent') as UrgencyType]
+      const urgencyB = urgencyGrade[(b.urgency || 'NotUrgent') as UrgencyType]
+
+      if (urgencyA !== urgencyB) {
+        return urgencyA - urgencyB
+      }
+
+      // If urgency is the same, sort by dueDate or dueOdometer
+      if (a.userMetric === 'Date' || a.userMetric === 'Both') {
+        const dateA = DateHandler(a.dueDate, true) as Date
+        const dateB = DateHandler(b.dueDate, true) as Date
+        return dateA.getTime() - dateB.getTime() // Earlier dates first
+      } else if (a.userMetric === 'Odometer') {
+        return parseInt(a.dueOdometer) - parseInt(b.dueOdometer) // Lower odometer first
+      }
+      return 0
+    })
+    return orderedDataByUrgency
+  }
+
+  const selectedDataSet = useMemo<RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | ReminderRecord>(() => {
+    let dataSource
+
+    switch (selectedTabName) {
+      case ServiceFunctionStore.key:
+        dataSource = ServiceRecords
+        break
+
+      case OdometerFunctionStore.key:
+        dataSource = OdometerRecords
+        break
+
+      case RepairFunctionStore.key:
+        dataSource = RepairRecords
+        break
+
+      case UpgradeFunctionStore.key:
+        dataSource = UpgradeRecords
+        break
+
+      case FuelFunctionStore.key:
+        dataSource = FuelRecords
+        break
+
+      case TaxFunctionStore.key:
+        dataSource = TaxRecords
+        break
+
+      case ReminderFunctionStore.key:
+        return calculateOrderedDataByUrgency(
+          ReminderRecords ?? [],
+        )
+
+      default:
+        return []
+    }
+
+    if (!Array.isArray(dataSource)) {
+      return []
+    }
+
+    return [...dataSource].sort((a, b) => {
+      const dateA = DateHandler(a.date, true) as Date
+      const dateB = DateHandler(b.date, true) as Date
+
+      return dateB.getTime() - dateA.getTime()
+    })
+  }, [selectedTabName, ServiceRecords, OdometerRecords, RepairRecords, UpgradeRecords, FuelRecords, TaxRecords, ReminderRecords,
+  ])
+
   const [selectedButtonHexColor, setSelectedButtonHexColor] = useState<string>(ActionButtons.filter((button) => button.key == actionType)[0].color)
-  const [totalExpense, setTotalExpense] = useState<number>(0)
-  const [totalDistance, setTotalDistance] = useState<number>(0)
-  const averageExpense = (Math.round((totalExpense / (selectedDataSet?.length || 1)) * 10) / 10)
-  const odometerDeltas: number[] = []
   const scrollViewRef = useRef<ScrollView>(null)
   const flashListRef = useRef<FlashList<any>>(null)
-  const [odometerDelta, setOdometerDelta] = useState<number[]>([])
-  const [showPlusButton, setShowPlusButton] = useState<boolean>(true)
-  const [daysSinceLastRecord, setDaysSinceLastRecord] = useState<number>(0)
   const [atStart, setAtStart] = useState(true)
-
-  const changeDataSet = async (serviceName: string, options?: { scrollToTop?: boolean }) => {
-
-    const shouldScroll = options?.scrollToTop ?? false
-
-    try {
-      let dataSource: RecordBase | OdometerRecord | FuelRecordAdd | FuelRecordGet | ReminderRecord | undefined;
-      switch (serviceName) {
-        case ServiceFunctionStore.key:
-          dataSource = ServiceRecords
-          break
-        case OdometerFunctionStore.key:
-          dataSource = OdometerRecords
-          break
-        case RepairFunctionStore.key:
-          dataSource = RepairRecords
-          break
-        case UpgradeFunctionStore.key:
-          dataSource = UpgradeRecords
-          break
-        case FuelFunctionStore.key:
-          dataSource = FuelRecords
-          break
-        case TaxFunctionStore.key:
-          dataSource = TaxRecords
-          break
-        case ReminderFunctionStore.key:
-          dataSource = ReminderRecords
-          break
-        default:
-          dataSource = undefined
-          break
-      }
-
-      if (flashListRef.current && shouldScroll) {
-        flashListRef.current.scrollToOffset({ offset: 0, animated: true })
-      }
-
-      if (Array.isArray(dataSource) && !('userMetric' in (dataSource[0] || {}))) {
-        const orderedDataByLatestDate = dataSource
-          .slice()
-          .sort((a, b) => {
-            const dateA = DateHandler(a.date, true) as Date;
-            const dateB = DateHandler(b.date, true) as Date;
-            return dateB.getTime() - dateA.getTime(); // Most recent first
-          })
-        setSelectedDataSet(orderedDataByLatestDate)
-      } else if (Array.isArray(dataSource) && dataSource.length > 0 && 'userMetric' in dataSource[0]) {
-        setSelectedDataSet(calculateOrderedDataByUrgency(dataSource as ReminderRecord))
-      } else {
-        setSelectedDataSet([])
-      }
-    } catch (error) {
-      console.error("Error changing dataset: ", error)
-    }
-  }
+  const plusButtonVisible = useSharedValue(1)
 
   useEffect(() => {
     if (!actionType) return
@@ -134,111 +156,114 @@ const CarDetail = () => {
   }, [actionType])
 
   useEffect(() => {
-    if (!selectedTabName) return
-    changeDataSet(selectedTabName, { scrollToTop: true })
-  }, [selectedTabName, OdometerRecords, ServiceRecords, RepairRecords, UpgradeRecords, FuelRecords, TaxRecords, ReminderRecords]) // TODO Add other records services with time
+    flashListRef.current?.scrollToOffset({
+      offset: 0,
+      animated: false,
+    })
+  }, [selectedTabName])
+
+  const totalExpense = useMemo(() => {
+    if (
+      !Array.isArray(selectedDataSet) ||
+      selectedDataSet.length === 0 ||
+      !("cost" in selectedDataSet[0])
+    ) {
+      return 0
+    }
+
+    return selectedDataSet.reduce(
+      (total, record) => total + (parseFloat(record.cost) || 0),
+      0,
+    )
+  }, [selectedDataSet])
+
+  const totalDistance = useMemo(() => {
+    if (
+      !Array.isArray(selectedDataSet) ||
+      selectedDataSet.length === 0 ||
+      !("odometer" in selectedDataSet[0]) ||
+      !("initialOdometer" in selectedDataSet[0])
+    ) {
+      return 0
+    }
+
+    return selectedDataSet.reduce(
+      (total, record) =>
+        total +
+        (parseFloat(record.odometer) || 0) -
+        (parseFloat(record.initialOdometer) || 0),
+      0,
+    )
+  }, [selectedDataSet])
+
+  const odometerDelta = useMemo(() => {
+    if (!Array.isArray(FuelRecords) || FuelRecords.length < 2) {
+      return []
+    }
+
+    const deltas: number[] = []
+
+    for (let i = 1; i < FuelRecords.length; i++) {
+      const previous = Number(FuelRecords[i - 1].odometer)
+      const current = Number(FuelRecords[i].odometer)
+
+      deltas.push(current - previous)
+    }
+
+    return deltas.reverse()
+  }, [FuelRecords])
+
+  const daysSinceLastRecord = useMemo(() => {
+    if (
+      !Array.isArray(selectedDataSet) ||
+      selectedDataSet.length === 0 ||
+      !("date" in selectedDataSet[0])
+    ) {
+      return 0
+    }
+
+    const lastRecordDate = DateHandler(
+      selectedDataSet[0].date,
+      true,
+    ) as Date
+
+    const today = new Date()
+
+    return (
+      Math.ceil(
+        (today.getTime() - lastRecordDate.getTime()) /
+        (1000 * 60 * 60 * 24),
+      ) - 1
+    )
+  }, [selectedDataSet])
+
+  const averageExpense = (Math.round((totalExpense / (selectedDataSet?.length || 1)) * 10) / 10)
 
   useEffect(() => {
-    if (Array.isArray(selectedDataSet) && selectedDataSet.length > 0 && 'cost' in selectedDataSet[0]) {
-      calculateTotalExpense(selectedDataSet as RecordBase)
-    } else {
-      setTotalExpense(0)
-    }
-    if (Array.isArray(selectedDataSet) && selectedDataSet.length > 0 && 'odometer' in selectedDataSet[0]) {
-      calculateTotalDistance(selectedDataSet as OdometerRecord)
-    } else {
-      setTotalDistance(0)
-    }
-    if (Array.isArray(FuelRecords) && FuelRecords.length > 0 && 'fuelConsumed' in FuelRecords[0]) {
-      calculateDeltaDistance(FuelRecords as FuelRecordAdd)
-    } else {
-      setOdometerDelta([])
-    }
-    if (Array.isArray(selectedDataSet) && selectedDataSet.length > 0 && 'date' in selectedDataSet[0]) {
-      calculateDaysSinceLastRecord()
-    } else {
-      setDaysSinceLastRecord(0)
-    }
+    if (selectedTabName === "home" && scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({
+        x: -100,
+        animated: true,
+      })
 
-    // this section handles when a tab is selected, the tab name is focused and should be shown.
-    if (selectedTabName === 'home' && scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({ x: -100, animated: true })
       return
     }
 
-    const selectedTabIndex = ActionButtons.findIndex(button => button.key === selectedTabName);
+    const selectedTabIndex = ActionButtons.findIndex(
+      button => button.key === selectedTabName,
+    )
+
     if (scrollViewRef.current && selectedTabIndex !== -1) {
-      const scrollPosition = selectedTabIndex * (Dimensions.get('window').width / ActionButtons.length * 2);
-      scrollViewRef.current.scrollTo({ x: scrollPosition, animated: true });
+      const scrollPosition =
+        selectedTabIndex *
+        (Dimensions.get("window").width / ActionButtons.length * 2)
+
+      scrollViewRef.current.scrollTo({
+        x: scrollPosition,
+        animated: true,
+      })
     }
-  }, [selectedDataSet])
-
-  const calculateTotalExpense = (recordDataObject: RecordBase) => {
-    let totalCost = 0
-    for (const record of recordDataObject) totalCost += parseFloat(record.cost)
-    setTotalExpense(totalCost)
-  }
-
-  const calculateTotalDistance = (recordDataObject: OdometerRecord) => {
-    if (recordDataObject.length === 0) return 0;
-    let totalOdometer = 0
-    let initialOdometerTotal = 0
-
-    for (const record of recordDataObject) totalOdometer += parseFloat(record.odometer)
-    for (const record of recordDataObject) initialOdometerTotal += parseFloat(record.initialOdometer)
-    setTotalDistance(totalOdometer - initialOdometerTotal)
-  }
-
-  const calculateDeltaDistance = (recordDataObject: FuelRecordAdd) => {
-    if (recordDataObject.length === 0) return 0;
-    for (let i = 1; i < recordDataObject.length; i++) {
-      const prev = Number(recordDataObject[i - 1].odometer);
-      const current = Number(recordDataObject[i].odometer);
-      odometerDeltas.push(current - prev)
-    }
-    setOdometerDelta(odometerDeltas.reverse())
-  }
-
-  const calculateDaysSinceLastRecord = () => {
-    const lastRecord = selectedDataSet[0]
-    const lastRecordDate = DateHandler(lastRecord.date, true) as Date
-    const today = new Date()
-    const _daysSinceLastRecord = Math.ceil((today.getTime() - lastRecordDate.getTime()) / (1000 * 60 * 60 * 24)) - 1 // -1 because the last record is the current record
-    setDaysSinceLastRecord(_daysSinceLastRecord)
-  }
-
-  const calculateOrderedDataByUrgency = (dataSource: ReminderRecord) => {
-    const urgencyGrade = {
-      'PastDue': 0,
-      'VeryUrgent': 1,
-      'Urgent': 2,
-      'NotUrgent': 3
-    } as const;
-
-    type UrgencyType = keyof typeof urgencyGrade;
-    const reminderData = dataSource as ReminderRecord;
-
-    const orderedDataByUrgency = [...reminderData].sort((a, b) => {
-      // First sort by urgency
-      const urgencyA = urgencyGrade[(a.urgency || 'NotUrgent') as UrgencyType];
-      const urgencyB = urgencyGrade[(b.urgency || 'NotUrgent') as UrgencyType];
-
-      if (urgencyA !== urgencyB) {
-        return urgencyA - urgencyB;
-      }
-
-      // If urgency is the same, sort by dueDate or dueOdometer
-      if (a.userMetric === 'Date' || a.userMetric === 'Both') {
-        const dateA = DateHandler(a.dueDate, true) as Date;
-        const dateB = DateHandler(b.dueDate, true) as Date;
-        return dateA.getTime() - dateB.getTime(); // Earlier dates first
-      } else if (a.userMetric === 'Odometer') {
-        return parseInt(a.dueOdometer) - parseInt(b.dueOdometer); // Lower odometer first
-      }
-      return 0
-    })
-    return orderedDataByUrgency
-  }
+  }, [selectedTabName])
 
   const StatsComponentHandler = (actiontype: string) => {
     switch (actiontype) {
@@ -268,6 +293,15 @@ const CarDetail = () => {
     }
   }
 
+  const plusButtonStyle = useAnimatedStyle(() => ({
+    opacity: plusButtonVisible.value,
+    transform: [
+      {
+        translateY: (1 - plusButtonVisible.value) * 20,
+      },
+    ],
+  }))
+
   return (
     <View style={[tw`flex flex-col px-3 w-full h-full`, { backgroundColor: theme.colors.background.default }]}>
       <Stack.Screen options={{
@@ -279,20 +313,21 @@ const CarDetail = () => {
         statusBarStyle: colorScheme == 'light' ? 'dark' : 'light',
         headerTransparent: false,
       }} />
-      <ScrollView ref={scrollViewRef} horizontal={true} showsHorizontalScrollIndicator={false}
-        style={tw`flex flex-row flex-wrap flex-grow-0 p-2 ${atStart ? "-ml-2 -mr-5" : "-mx-5"} pt-0`}
-        scrollEventThrottle={16}
-        onScroll={handleMarginMenuScroll}>
-        {ActionButtons.map((button) => (
-          <PillRecordNavigation color={button.color} key={button.key} buttonIndex={button.key} label={button.label}
-            onClick={() => {
-              setSelectedTabName(button.key)
-              setSelectedButtonHexColor(button.color)
-              changeDataSet(button.key, { scrollToTop: true })
-            }}
-            selectedTabName={selectedTabName} />
-        ))}
-      </ScrollView>
+      <AnimatedSection delay={60} duration={400} direction='right'>
+        <ScrollView ref={scrollViewRef} horizontal={true} showsHorizontalScrollIndicator={false}
+          style={tw`flex flex-row flex-wrap flex-grow-0 p-2 ${atStart ? "-ml-2 -mr-5" : "-mx-5"} pt-0`}
+          scrollEventThrottle={16}
+          onScroll={handleMarginMenuScroll}>
+          {ActionButtons.map((button) => (
+            <PillRecordNavigation color={button.color} key={button.key} buttonIndex={button.key} label={button.label}
+              onClick={() => {
+                setSelectedTabName(button.key)
+                setSelectedButtonHexColor(button.color)
+              }}
+              selectedTabName={selectedTabName} />
+          ))}
+        </ScrollView>
+      </AnimatedSection>
 
       {(isOdometerRecordsFetching || isServiceRecordsFetching || isRepairRecordsFetching || isUpgradeRecordsFetching || isFuelRecordsFetching || isTaxRecordsFetching || isReminderRecordsFetching) ? (
         <View style={tw`flex flex-col items-center justify-center h-4/5`}>
@@ -307,8 +342,20 @@ const CarDetail = () => {
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={StatsComponentHandler(selectedTabName)}
             data={selectedDataSet}
-            onScrollEndDrag={() => setShowPlusButton(true)}
-            onScrollBeginDrag={() => setShowPlusButton(false)}
+            onMomentumScrollEnd={() => {
+              plusButtonVisible.value = withTiming(1, { duration: 180 })
+            }}
+            onScrollEndDrag={(event) => {
+              const velocity = event.nativeEvent.velocity?.y ?? 0
+
+              // If there is no momentum, show immediately.
+              if (Math.abs(velocity) < 0.1) {
+                plusButtonVisible.value = withTiming(1, { duration: 180 })
+              }
+            }}
+            onScrollBeginDrag={() => {
+              plusButtonVisible.value = withTiming(0, { duration: 150 })
+            }}
             renderItem={({ index, item }) => {
 
               let previousYear, showYearHeader, previousItem, currentYear
@@ -355,13 +402,16 @@ const CarDetail = () => {
               )
             }}
             estimatedItemSize={10} />
-          {showPlusButton &&
+
+          <Animated.View
+            pointerEvents="box-none"
+            style={plusButtonStyle}>
             <NewRecordButton
               selectedButtonHexColor={selectedButtonHexColor}
               selectedTabName={selectedTabName}
               carId={CarId}
             />
-          }
+          </Animated.View>
         </>
       )}
       {selectedTabName === 'home' && <Dashboard />}

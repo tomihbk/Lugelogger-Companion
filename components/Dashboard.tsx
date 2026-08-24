@@ -15,6 +15,7 @@ import DateHandler from '~/utils/DateHandler'
 import MonthlyExpensesChart from './MonthlyExpensesChart'
 import HomeStats from './StatsComponents/HomeStats'
 import { useTheme } from '~/hooks/useTheme'
+import AnimatedSection from "~/components/Animations/AnimatedSection"
 
 const Dashboard = () => {
   const { id: CarId }: { id: string } = useLocalSearchParams()
@@ -28,15 +29,21 @@ const Dashboard = () => {
   const { data: FuelRecords } = useFuelRecords(carId)
   const { data: TaxRecords } = useTaxRecords(carId)
 
-  const allRecords = [
+  const allRecords = useMemo(() => [
     ...(ServiceRecords || []),
     ...(RepairRecords || []),
     ...(UpgradeRecords || []),
     ...(FuelRecords || []),
     ...(TaxRecords || []),
-  ]
+  ], [
+    ServiceRecords,
+    RepairRecords,
+    UpgradeRecords,
+    FuelRecords,
+    TaxRecords,
+  ])
 
- // const lastEntryDays = DaysSinceLastEntry([...allRecords, OdometerRecords])
+  // const lastEntryDays = DaysSinceLastEntry([...allRecords, OdometerRecords])
   const getYear = (date: string) => {
     const d = DateHandler(date, true) as Date
     return d.getFullYear()
@@ -100,13 +107,19 @@ const Dashboard = () => {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={[tw`flex-1 gap-3 mb-3`, { backgroundColor: theme.colors.background.default }]}>
-        <ExpenseOverview
-          yearFilter={yearFilter}
-          setYearFilter={setYearFilter}
-          availableYears={availableYears}
-        />
-        <HomeStats totalExpensesPerMonth={totalExpensesPerMonth} totalRecords={totalRecords}/>
-        <MonthlyExpensesChart data={totalExpensesPerMonth} />
+        <AnimatedSection delay={60}>
+          <ExpenseOverview
+            yearFilter={yearFilter}
+            setYearFilter={setYearFilter}
+            availableYears={availableYears}
+          />
+        </AnimatedSection>
+        <AnimatedSection delay={120}>
+          <HomeStats totalExpensesPerMonth={totalExpensesPerMonth} totalRecords={totalRecords} />
+        </AnimatedSection>
+        <AnimatedSection delay={180}>
+          <MonthlyExpensesChart data={totalExpensesPerMonth} />
+        </AnimatedSection>
       </View>
     </ScrollView>
   )

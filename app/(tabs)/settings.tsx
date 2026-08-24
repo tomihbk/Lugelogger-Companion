@@ -161,6 +161,7 @@ const Settings = () => {
               onPress={() => setModalUserPrefVisible(!modalUserPrefVisible)}
               color={theme.colors.text.primary}>
               <ArrowRight size={20} color={theme.colors.text.primary} />
+            </SettingRow>
 
               <Modal
                 animationType="slide"
@@ -202,7 +203,6 @@ const Settings = () => {
                   </ScrollView>
                 </SafeAreaView>
               </Modal>
-            </SettingRow>
 
             <SettingRow
               icon={<Server size={20} color={theme.colors.text.primary} />}

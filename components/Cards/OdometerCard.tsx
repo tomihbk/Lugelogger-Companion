@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import GlobalStateStore from '~/stores/globalStateStore'
 import tw from '~/tw.config'
@@ -12,7 +12,6 @@ import DeleteButton from '~/components/DeleteButton'
 import Tag from '~/components/TagComponent'
 import NumberHandler from '~/utils/NumberHandler'
 import { useTheme } from '~/hooks/useTheme'
-import AnimatedPressable from '../Animations/AnimatedPressable'
 type OdometerCardProps = RecordBase[0] & OdometerRecord[0]
 
 const OdometerCard = ({ item, selectedButtonHexColor, vehicleId }: { item: OdometerCardProps, selectedButtonHexColor: string, vehicleId: number }) => {
@@ -32,7 +31,7 @@ const OdometerCard = ({ item, selectedButtonHexColor, vehicleId }: { item: Odome
 
     return (
         <View style={tw`mb-2`}>
-            <AnimatedPressable
+            <Pressable
                 style={[tw`p-4 pt-3 pb-0 rounded-tr-3xl rounded-tl-3xl ${item.tags ? 'rounded-bl-none' : 'rounded-3xl p-4 pt-3'}`, { backgroundColor: theme.colors.surface.neutral }]}
                 onLongPress={() => setShowDeleteButton(prev => !prev)}
                 onPress={() => {
@@ -49,7 +48,7 @@ const OdometerCard = ({ item, selectedButtonHexColor, vehicleId }: { item: Odome
                 </View>
 
                 {item.notes && <Text style={[tw`mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`, { color: theme.colors.text.secondary, backgroundColor: selectedButtonHexColor + '20' }]} numberOfLines={2} ellipsizeMode="tail">{item.notes}</Text>}
-             </AnimatedPressable>
+             </Pressable>
             {item.tags && <View style={[tw`px-4 pb-3 rounded-br-3xl rounded-bl-3xl`, { backgroundColor: theme.colors.surface.neutral }]}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {item.tags && <Tag tags={item.tags} color={selectedButtonHexColor} />}

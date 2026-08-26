@@ -18,6 +18,14 @@
         }
       ],
       [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ],
+      [
         "expo-font",
         {
           "fonts": [
@@ -50,9 +58,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#7c2791"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.berinfo.lugeloggercompanion"

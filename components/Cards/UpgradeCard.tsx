@@ -12,6 +12,7 @@ import { UpgradeRecord } from '~/api/index-records.types'
 import Tag from '../TagComponent'
 import NumberHandler from '~/utils/NumberHandler'
 import { useTheme } from '~/hooks/useTheme'
+import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated'
 
 type UpgradeCardProps = RecordBase[0] & UpgradeRecord[0]
 
@@ -45,7 +46,7 @@ const UpgradeCard = ({ item, selectedButtonHexColor, vehicleId }: { item: Upgrad
                 {item.description && <Text style={[tw`mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`, { color: theme.colors.text.secondary, backgroundColor: selectedButtonHexColor + '20' }]} numberOfLines={item.notes ? 1 : 2} ellipsizeMode="tail">{item.description}</Text>}
 
                 {item.notes && <Text style={[tw`mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`, { color: theme.colors.text.secondary, backgroundColor: selectedButtonHexColor + '20' }]} numberOfLines={item.description ? 1 : 2} ellipsizeMode="tail">{item.notes}</Text>}
-             </Pressable>
+            </Pressable>
             {item.tags && <View style={[tw`px-4 pb-3 rounded-br-3xl rounded-bl-3xl`, { backgroundColor: theme.colors.surface.neutral }]}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {item.tags && <Tag tags={item.tags} color={selectedButtonHexColor} />}
@@ -53,11 +54,15 @@ const UpgradeCard = ({ item, selectedButtonHexColor, vehicleId }: { item: Upgrad
             </View>}
 
             {showDeleteButton && (
-                <DeleteButton
-                    onPress={() => {
-                        setShowDeleteButton(false)
-                        if (item.id) handleDelete(parseInt(item.id))
-                    }} />
+                <Animated.View
+                    entering={FadeInDown.duration(180)}
+                    exiting={FadeOutUp.duration(180)}>
+                    <DeleteButton
+                        onPress={() => {
+                            setShowDeleteButton(false)
+                            if (item.id) handleDelete(parseInt(item.id))
+                        }} />
+                </Animated.View>
             )}
         </View>
     )

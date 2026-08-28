@@ -12,6 +12,7 @@ import NumberHandler from '~/utils/NumberHandler'
 import Tag from '../TagComponent'
 import { Droplet } from 'lucide-react-native'
 import { useTheme } from '~/hooks/useTheme'
+import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated'
 
 const FuelCard = ({ item, odometerDelta, selectedButtonHexColor, vehicleId }: { item: RecordBase[0], odometerDelta: number, selectedButtonHexColor: string, vehicleId: number }) => {
     const { preferredCurrencySymbol, preferredDistanceMeasurement, preferredLiquidMeasurement } = GlobalStateStore((state) => state)
@@ -67,7 +68,7 @@ const FuelCard = ({ item, odometerDelta, selectedButtonHexColor, vehicleId }: { 
 
                     <Text style={[tw`mt-2 rounded-xl p-2 font-HKGrotesk-Medium text-base`, { color: theme.colors.text.secondary, backgroundColor: selectedButtonHexColor + '20' }]} numberOfLines={item.description ? 1 : 2} ellipsizeMode="tail">{item.notes}</Text>
                 )}
-             </Pressable>
+            </Pressable>
             {item.tags && <View style={[tw`px-4 pb-3 rounded-br-3xl rounded-bl-3xl`, { backgroundColor: theme.colors.surface.neutral }]}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {item.tags && <Tag tags={item.tags} color={selectedButtonHexColor} />}
@@ -75,11 +76,15 @@ const FuelCard = ({ item, odometerDelta, selectedButtonHexColor, vehicleId }: { 
             </View>}
 
             {showDeleteButton && (
-                <DeleteButton
-                    onPress={() => {
-                        setShowDeleteButton(false)
-                        if (item.id) handleDelete(parseInt(item.id))
-                    }} />
+                <Animated.View
+                    entering={FadeInDown.duration(180)}
+                    exiting={FadeOutUp.duration(180)}>
+                    <DeleteButton
+                        onPress={() => {
+                            setShowDeleteButton(false)
+                            if (item.id) handleDelete(parseInt(item.id))
+                        }} />
+                </Animated.View>
             )}
         </View>
     )

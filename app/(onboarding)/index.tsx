@@ -49,15 +49,15 @@ export default function WelcomeScreen() {
 
                 <AnimatedPressable
                     onPress={handleGetStarted}
-                    style={({ pressed }) => [
+                    style={[
                         tw`w-full rounded-full py-4 px-5 flex-row items-center justify-center`,
-                        { backgroundColor: theme.colors.brand.primary, opacity: pressed ? 0.8 : 1 },
+                        { backgroundColor: theme.colors.brand.primary },
                     ]}>
                     <Text style={tw`text-white text-base font-HKGrotesk-SemiBold`}>
                         Get Started
                     </Text>
                     <ChevronRight size={20} color="white" style={tw`ml-2`} />
-                 </AnimatedPressable>
+                </AnimatedPressable>
             </View>
         </Screen>
     )

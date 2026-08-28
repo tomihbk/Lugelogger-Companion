@@ -1,18 +1,11 @@
 import { FlashList } from "@shopify/flash-list"
 import { Check } from "lucide-react-native"
 import React, { useState } from "react"
-import {
-    View,
-    Text,
-    TouchableOpacity,
-    Modal,
-    Pressable,
-} from "react-native"
+import { View, Text, Modal, Pressable } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useTheme } from "~/hooks/useTheme"
 import GlobalStateStore from "~/stores/globalStateStore"
 import tw from "~/tw.config"
-import AnimatedPressable from "./Animations/AnimatedPressable"
 
 interface Currency {
     code: string
@@ -83,17 +76,15 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
     }
 
     const renderCurrencyItem = ({ item }: { item: Currency }) => (
-        <AnimatedPressable
-            style={({ pressed }) => [
+        <Pressable
+            style={[
                 tw`flex-row items-center justify-between rounded-xl border p-4 mb-3 mx-5`,
                 {
                     backgroundColor: selectedCurrency.code === item.code ? theme.colors.brand.primary + "12" : theme.colors.background.field,
-                    borderColor: selectedCurrency.code === item.code ? theme.colors.brand.primary : theme.colors.border.default,
-                    opacity: pressed ? 0.8 : 1,
+                    borderColor: selectedCurrency.code === item.code ? theme.colors.brand.primary : theme.colors.border.default
                 },
             ]}
-            onPress={() => handleSelect(item)}
-        >
+            onPress={() => handleSelect(item)}>
             <View style={tw`flex-row items-center gap-3`}>
                 <Text style={tw`text-[28px]`}>{item.flag}</Text>
                 <View style={tw`gap-0.5`}>
@@ -114,15 +105,14 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
                     {<Check size={14} color="white" />}
                 </View>
             )}
-         </AnimatedPressable>
+        </Pressable>
     )
 
     return (
         <SafeAreaView>
-            <AnimatedPressable
+            <Pressable
                 style={[tw`flex-row items-center justify-between border rounded-lg p-4`, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.border.default }]}
-                onPress={() => setModalVisible(true)}
-            >
+                onPress={() => setModalVisible(true)}>
                 <View style={tw`flex-row items-center gap-3`}>
                     <Text style={tw`text-[28px]`}>{selectedCurrency.flag}</Text>
                     <View style={tw`gap-0.5`}>
@@ -130,23 +120,21 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
                         <Text style={[tw`text-xs font-HKGrotesk-Regular`, { color: theme.colors.text.secondary }]}>{selectedCurrency.name}</Text>
                     </View>
                 </View>
-            </AnimatedPressable>
+            </Pressable>
 
             <Modal
                 visible={modalVisible}
                 animationType="slide"
                 presentationStyle="pageSheet"
-                onRequestClose={() => setModalVisible(false)}
-            >
+                onRequestClose={() => setModalVisible(false)}>
                 <SafeAreaView style={[tw`flex-1`, { backgroundColor: theme.colors.background.default }]}>
                     <View style={[tw`flex-row items-center justify-between px-4 py-4`]}>
                         <Text style={[tw`text-lg font-HKGrotesk-SemiBold`, { color: theme.colors.text.primary }]}>Select Currency</Text>
-                        <AnimatedPressable
+                        <Pressable
                             onPress={() => setModalVisible(false)}
                             style={tw`px-2 py-1`}
-                            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        >
-                        </AnimatedPressable>
+                            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                        </Pressable>
                     </View>
                     <FlashList
                         data={currencies}

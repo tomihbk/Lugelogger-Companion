@@ -52,7 +52,7 @@ export default function FavoriteVehicleScreen() {
                     </Text>
 
                     <Text style={[tw`text-sm font-HKGrotesk-Medium`, { color: theme.colors.text.secondary }]}>
-                       Step 3 of 5
+                        Step 3 of 5
                     </Text>
                 </View>
 
@@ -95,11 +95,11 @@ export default function FavoriteVehicleScreen() {
                         <AnimatedPressable
                             disabled={isRefetching}
                             onPress={() => refetch()}
-                            style={({ pressed }) => [
+                            style={[
                                 tw`flex-row items-center justify-center rounded-full px-6 py-3 mt-6`,
                                 {
                                     backgroundColor: theme.colors.brand.primary,
-                                    opacity: isRefetching ? 0.4 : pressed ? 0.8 : 1,
+                                    opacity: isRefetching ? 0.4 : 1,
                                 },
                             ]}>
                             {isRefetching
@@ -109,7 +109,7 @@ export default function FavoriteVehicleScreen() {
                             <Text style={tw`text-white text-base font-HKGrotesk-Medium ml-2`}>
                                 {isRefetching ? "Retrying..." : "Retry"}
                             </Text>
-                         </AnimatedPressable>
+                        </AnimatedPressable>
                     </View>
                 ) : vehicles.length === 0 ? (
                     <View style={tw`flex-1 items-center justify-center px-4`}>
@@ -128,11 +128,11 @@ export default function FavoriteVehicleScreen() {
                         <AnimatedPressable
                             disabled={isRefetching}
                             onPress={() => refetch()}
-                            style={({ pressed }) => [
+                            style={[
                                 tw`flex-row items-center justify-center rounded-full px-6 py-3 mt-6`,
                                 {
                                     backgroundColor: theme.colors.brand.primary,
-                                    opacity: isRefetching ? 0.4 : pressed ? 0.8 : 1,
+                                    opacity: isRefetching ? 0.4 : 1,
                                 },
                             ]}>
                             {isRefetching
@@ -142,7 +142,7 @@ export default function FavoriteVehicleScreen() {
                             <Text style={tw`text-white text-base font-HKGrotesk-Medium ml-2`}>
                                 {isRefetching ? "Checking..." : "Check Again"}
                             </Text>
-                         </AnimatedPressable>
+                        </AnimatedPressable>
                     </View>
                 ) : (
                     <>
@@ -163,7 +163,7 @@ export default function FavoriteVehicleScreen() {
                                         key={vehicleId ?? index}
                                         disabled={vehicleId === undefined}
                                         onPress={() => vehicleId !== undefined && setSelectedVehicleId(vehicleId)}
-                                        style={({ pressed }) => [
+                                        style={[
                                             tw`w-full rounded-2xl border p-4 mb-3`,
                                             {
                                                 backgroundColor: isSelected
@@ -172,7 +172,7 @@ export default function FavoriteVehicleScreen() {
                                                 borderColor: isSelected
                                                     ? theme.colors.brand.primary
                                                     : theme.colors.border.default,
-                                                opacity: vehicleId === undefined ? 0.45 : pressed ? 0.8 : 1,
+                                                opacity: vehicleId === undefined ? 0.45 : 1,
                                             },
                                         ]}>
                                         <View style={tw`flex-row items-center`}>
@@ -197,7 +197,7 @@ export default function FavoriteVehicleScreen() {
                                                 {isSelected && <Check size={18} color="white" />}
                                             </View>
                                         </View>
-                                     </AnimatedPressable>
+                                    </AnimatedPressable>
                                 )
                             })}
                         </ScrollView>
@@ -205,11 +205,11 @@ export default function FavoriteVehicleScreen() {
                         <AnimatedPressable
                             disabled={selectedVehicleId === null}
                             onPress={handleContinueButton}
-                            style={({ pressed }) => [
+                            style={[
                                 tw`w-full rounded-full py-4 px-5 flex-row items-center justify-center`,
                                 {
                                     backgroundColor: theme.colors.brand.primary,
-                                    opacity: selectedVehicleId === null ? 0.4 : pressed ? 0.8 : 1,
+                                    opacity: selectedVehicleId === null ? 0.4 : 1,
                                 },
                             ]}>
                             <Text style={tw`text-white text-base font-HKGrotesk-SemiBold`}>
@@ -217,7 +217,7 @@ export default function FavoriteVehicleScreen() {
                             </Text>
 
                             <ChevronRight size={20} color="white" style={tw`ml-2`} />
-                         </AnimatedPressable>
+                        </AnimatedPressable>
                     </>
                 )}
             </View>

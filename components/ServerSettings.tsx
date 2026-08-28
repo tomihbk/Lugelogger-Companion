@@ -305,9 +305,9 @@ const ServerSettings: React.FC<ServerSettingsProps> = ({
                     <AnimatedPressable
                         disabled={!isValid || isTesting}
                         onPress={handleTestConnection}
-                        style={({ pressed }) => [
+                        style={[
                             tw`flex-1`,
-                            { opacity: !isValid || isTesting ? 0.4 : pressed ? 0.75 : 1 },
+                            { opacity: !isValid || isTesting ? 0.4 : 1 },
                         ]}>
                         <View style={[tw`p-3 rounded-full flex-row items-center justify-center`, { borderColor: theme.colors.brand.primary, borderWidth: 2 }]}>
                             {isTesting && <ActivityIndicator color="white" style={tw`mr-3`} />}
@@ -315,19 +315,19 @@ const ServerSettings: React.FC<ServerSettingsProps> = ({
                                 {isTesting ? 'Testing connection...' : 'Test Connection'}
                             </Text>
                         </View>
-                     </AnimatedPressable>
+                    </AnimatedPressable>
 
                     <AnimatedPressable
                         disabled={saveDisabled}
                         onPress={handleSubmit(handleSave)}
-                        style={({ pressed }) => [
+                        style={[
                             tw`flex-1`,
-                            { opacity: saveDisabled ? 0.4 : pressed ? 0.8 : 1 },
+                            { opacity: saveDisabled ? 0.4 : 1 },
                         ]}>
                         <Text style={[tw`py-4 px-5 text-white font-HKGrotesk-Medium rounded-full text-base text-center`, { backgroundColor: theme.colors.brand.primary }]}>
                             {submitLabel}
                         </Text>
-                     </AnimatedPressable>
+                    </AnimatedPressable>
                 </View>
             </View>
 

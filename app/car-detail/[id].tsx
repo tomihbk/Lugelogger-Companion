@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, ActivityIndicator, Dimensions } from 'react-native'
+import { View, Text, ScrollView, Dimensions } from 'react-native'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
@@ -23,20 +23,20 @@ import ReminderCard from '~/components/Cards/ReminderCard'
 import useThemeStore from '~/stores/themeStore'
 import { useTheme } from '~/hooks/useTheme'
 import AnimatedSection from "~/components/Animations/AnimatedSection"
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
+import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
 
 
 const CarDetail = () => {
   const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
 
   const carId = parseInt(CarId)
-  const { data: ServiceRecords, isPending: isServiceRecordsFetching } = useServiceRecords(carId)
-  const { data: OdometerRecords, isPending: isOdometerRecordsFetching } = useOdometerRecords(carId)
-  const { data: RepairRecords, isPending: isRepairRecordsFetching } = useRepairRecords(carId)
-  const { data: UpgradeRecords, isPending: isUpgradeRecordsFetching } = useUpgradeRecords(carId)
-  const { data: FuelRecords, isPending: isFuelRecordsFetching } = useFuelRecords(carId)
-  const { data: TaxRecords, isPending: isTaxRecordsFetching } = useTaxRecords(carId)
-  const { data: ReminderRecords, isPending: isReminderRecordsFetching } = useReminderRecords(carId)
+  const { data: ServiceRecords, isPending: isServiceRecordsFetching, isError: isServiceError } = useServiceRecords(carId)
+  const { data: OdometerRecords, isPending: isOdometerRecordsFetching, isError: isOdometerError } = useOdometerRecords(carId)
+  const { data: RepairRecords, isPending: isRepairRecordsFetching, isError: isRepairError } = useRepairRecords(carId)
+  const { data: UpgradeRecords, isPending: isUpgradeRecordsFetching, isError: isUpgradeError } = useUpgradeRecords(carId)
+  const { data: FuelRecords, isPending: isFuelRecordsFetching, isError: isFuelError } = useFuelRecords(carId)
+  const { data: TaxRecords, isPending: isTaxRecordsFetching, isError: isTaxError } = useTaxRecords(carId)
+  const { data: ReminderRecords, isPending: isReminderRecordsFetching, isError: isReminderError } = useReminderRecords(carId)
 
   const { setSelectedTabName, selectedTabName } = GlobalStateStore((state) => state)
   const currentWorldYear = new Date().getFullYear()
@@ -141,7 +141,6 @@ const CarDetail = () => {
   const [selectedButtonHexColor, setSelectedButtonHexColor] = useState<string>(ActionButtons.filter((button) => button.key == actionType)[0].color)
   const scrollViewRef = useRef<ScrollView>(null)
   const flashListRef = useRef<FlashList<any>>(null)
-  const [atStart, setAtStart] = useState(true)
   const plusButtonVisible = useSharedValue(1)
 
   useEffect(() => {
@@ -239,13 +238,34 @@ const CarDetail = () => {
 
   const averageExpense = (Math.round((totalExpense / (selectedDataSet?.length || 1)) * 10) / 10)
 
+  const menuScrollX = useSharedValue(0)
+
+  const handleMarginMenuScroll = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      menuScrollX.value = event.contentOffset.x
+    },
+  })
+
+  const pillMenuStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX: interpolate(
+          menuScrollX.value,
+          [0, 24],
+          [12, 0],
+          Extrapolation.CLAMP,
+        ),
+      },
+    ],
+  }))
   useEffect(() => {
-    if (selectedTabName === "home" && scrollViewRef.current) {
+    if (!scrollViewRef.current) return
+
+    if (selectedTabName === "home") {
       scrollViewRef.current.scrollTo({
-        x: -100,
+        x: 0,
         animated: true,
       })
-
       return
     }
 
@@ -253,16 +273,16 @@ const CarDetail = () => {
       button => button.key === selectedTabName,
     )
 
-    if (scrollViewRef.current && selectedTabIndex !== -1) {
-      const scrollPosition =
-        selectedTabIndex *
-        (Dimensions.get("window").width / ActionButtons.length * 2)
+    if (selectedTabIndex === -1) return
 
-      scrollViewRef.current.scrollTo({
-        x: scrollPosition,
-        animated: true,
-      })
-    }
+    const scrollPosition =
+      selectedTabIndex *
+      (Dimensions.get("window").width / ActionButtons.length * 2)
+
+    scrollViewRef.current.scrollTo({
+      x: scrollPosition,
+      animated: true,
+    })
   }, [selectedTabName])
 
   const StatsComponentHandler = (actiontype: string) => {
@@ -284,15 +304,6 @@ const CarDetail = () => {
     }
   }
 
-  const handleMarginMenuScroll = (event) => {
-    const offsetX = event.nativeEvent.contentOffset.x
-    const isAtStart = offsetX <= 1
-
-    if (isAtStart !== atStart) {
-      setAtStart(isAtStart)
-    }
-  }
-
   const plusButtonStyle = useAnimatedStyle(() => ({
     opacity: plusButtonVisible.value,
     transform: [
@@ -303,37 +314,66 @@ const CarDetail = () => {
   }))
 
   return (
-    <View style={[tw`flex flex-col px-3 w-full h-full`, { backgroundColor: theme.colors.background.default }]}>
+    <View style={[tw`flex-1 px-3`, { backgroundColor: theme.colors.background.default }]}>
       <Stack.Screen options={{
-        headerShadowVisible: false,
-        headerShown: true,
-        headerTintColor: theme.colors.text.primary, // this handles the back arrow color on the header
-        headerStyle: { backgroundColor: theme.colors.background.default },
         headerTitle: () => <Text style={[tw`text-xl font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>, // TODO: Change to dynamic title based on car details
-        statusBarStyle: colorScheme == 'light' ? 'dark' : 'light',
-        headerTransparent: false,
       }} />
       <AnimatedSection delay={60} duration={400} direction='right'>
-        <ScrollView ref={scrollViewRef} horizontal={true} showsHorizontalScrollIndicator={false}
-          style={tw`flex flex-row flex-wrap flex-grow-0 p-2 ${atStart ? "-ml-2 -mr-5" : "-mx-5"} pt-0`}
+        <Animated.ScrollView
+          ref={scrollViewRef}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={tw`flex-row flex-wrap flex-grow-0 p-2 -mx-5 pt-0`}
           scrollEventThrottle={16}
           onScroll={handleMarginMenuScroll}>
-          {ActionButtons.map((button) => (
-            <PillRecordNavigation color={button.color} key={button.key} buttonIndex={button.key} label={button.label}
-              onClick={() => {
-                setSelectedTabName(button.key)
-                setSelectedButtonHexColor(button.color)
-              }}
-              selectedTabName={selectedTabName} />
-          ))}
-        </ScrollView>
+          <Animated.View style={[tw`flex-row`, pillMenuStyle]}>
+            {ActionButtons.map((button) => (
+              <PillRecordNavigation
+                color={button.color} key={button.key} buttonIndex={button.key} label={button.label}
+                onClick={() => {
+                  setSelectedTabName(button.key)
+                  setSelectedButtonHexColor(button.color)
+                }} selectedTabName={selectedTabName} />
+            ))}
+          </Animated.View>
+        </Animated.ScrollView>
       </AnimatedSection>
 
       {(isOdometerRecordsFetching || isServiceRecordsFetching || isRepairRecordsFetching || isUpgradeRecordsFetching || isFuelRecordsFetching || isTaxRecordsFetching || isReminderRecordsFetching) ? (
-        <View style={tw`flex flex-col items-center justify-center h-4/5`}>
-          <Text style={[tw`text-lg font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]}>Fetching data...</Text>
-          <ActivityIndicator size="large" color={selectedButtonHexColor} />
-        </View>
+        <AnimatedSection direction="fade" duration={200}>
+          <View style={tw`flex-1 items-center justify-center`}>
+            <Text style={{ color: theme.colors.text.secondary }}>
+              Loading records...
+            </Text>
+          </View>
+        </AnimatedSection>
+      ) : isServiceError || isFuelError || isOdometerError || isReminderError || isRepairError || isTaxError || isUpgradeError ? (
+        <AnimatedSection direction="fade" duration={200}>
+          <View style={tw`flex-1 items-center justify-center`}>
+            <Text style={{ color: theme.colors.text.primary }}>
+              Something went wrong
+            </Text>
+          </View>
+        </AnimatedSection>
+      ) : selectedDataSet.length === 0 && selectedTabName != 'home' && selectedTabName != 'notes' ? (
+        <AnimatedSection direction="up" duration={250}>
+          <View style={tw`items-center justify-center h-11/12`}>
+            <Text style={[tw`text-base font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]}>
+              No records yet
+            </Text>
+
+            <Text style={[tw`text-sm font-HKGrotesk-Regular mt-1`, { color: theme.colors.text.secondary }]}>
+              Add your first record to get started
+            </Text>
+            <View style={tw`absolute bottom-1 right-1`}>
+              <NewRecordButton
+                selectedButtonHexColor={selectedButtonHexColor}
+                selectedTabName={selectedTabName}
+                carId={CarId}
+              />
+            </View>
+          </View>
+        </AnimatedSection>
       ) : (
         selectedTabName != 'home' && selectedTabName != 'notes' &&
         <>

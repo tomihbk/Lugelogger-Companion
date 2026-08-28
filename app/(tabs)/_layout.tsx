@@ -35,6 +35,9 @@ export default function TabLayout() {
     <>
       <Stack.Screen options={{
         statusBarStyle: colorSchemeStore == 'light' ? 'dark' : 'light',
+        contentStyle: {
+          backgroundColor: theme.colors.background.default, // Deap layer of UI that was overbleeding when transitioning between pages
+        }
       }} />
       <Tabs
         screenOptions={{
@@ -58,28 +61,8 @@ export default function TabLayout() {
             marginBottom: 10,
             fontFamily: "HankenGrotesk-Bold",
             fontSize: 12,
-          },
+          }
         }}>
-        {/* <Tabs
-        key={tw.memoBuster}
-        screenOptions={{
-          headerShadowVisible: false,
-          tabBarStyle: {
-            height: 58,
-            shadowColor: 'white',
-            borderTopEndRadius: 16,
-            borderTopStartRadius: 16,
-            marginRight: 18,
-            marginLeft: 18,
-            backgroundColor: colorSchemeStore == 'light' ? '#fafafa' : '#0d1117' // Bottom bar color
-          },
-          tabBarLabelStyle: {
-            marginBottom: 7,
-          },
-          headerStyle: { backgroundColor: colorSchemeStore == 'light' ? '#fafafa' : '#0d1117' } // Header background color
-        }}
-        sceneContainerStyle={{ backgroundColor: colorSchemeStore == 'light' ? '#fafafa' : '#0d1117' }} // Body background color
-      > */}
         <Tabs.Screen
           name="index"
           options={{

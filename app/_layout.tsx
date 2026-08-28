@@ -19,7 +19,7 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" />
 
           <Stack.Screen
-            name="car-detail/[id]"
+            name="car-detail"
             options={{
               animation: "fade",
             }}

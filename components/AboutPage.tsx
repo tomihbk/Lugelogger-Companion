@@ -2,6 +2,7 @@ import React from "react"
 import { ScrollView, View, Text, Linking, TouchableOpacity } from "react-native"
 import { useTheme } from "~/hooks/useTheme";
 import tw from "~/tw.config"
+import AnimatedPressable from "./Animations/AnimatedPressable";
 
 export default function AboutScreen() {
         const theme = useTheme()
@@ -94,11 +95,11 @@ export default function AboutScreen() {
             </Text>
 
             {/* About LubeLogger */}
-            <TouchableOpacity onPress={() => Linking.openURL("https://github.com/hargata/lubelog")}>
+            <AnimatedPressable onPress={() => Linking.openURL("https://github.com/hargata/lubelog")}>
                 <Text style={[tw`text-xl font-HKGrotesk-Bold mt-4 mb-3`, { color: theme.colors.text.link }]}>
                     About LubeLogger ↗
                 </Text>
-            </TouchableOpacity>
+            </AnimatedPressable>
             <Text style={[tw`text-base font-HKGrotesk-Regular leading-6 mb-3`, { color: theme.colors.text.secondary }]}>
                 LubeLogger is the powerful, open-source backend that makes all of this
                 possible. Created by Hargata Softworks, it's a self-hosted platform

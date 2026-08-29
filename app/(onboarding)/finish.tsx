@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { ActivityIndicator, Pressable, Text, View } from "react-native"
+import { ActivityIndicator, Text, View } from "react-native"
 import { Check, ChevronRight, CircleCheckBig, Server, Settings2, Star } from "lucide-react-native"
 
 import Screen from "~/components/ui/Screen"
@@ -11,6 +11,7 @@ import useOnboardingStore from "~/stores/onboardingStore"
 import useThemeStore from "~/stores/themeStore"
 import ServerSettingsStore from "~/stores/serverSettingsStore"
 import tw from "~/tw.config"
+import AnimatedPressable from "~/components/Animations/AnimatedPressable"
 
 type Vehicle = {
     id: number
@@ -93,7 +94,7 @@ export default function FinishScreen() {
                     </Text>
 
                     <Text style={[tw`text-sm font-HKGrotesk-Medium`, { color: theme.colors.text.secondary }]}>
-                       Step 5 of 5
+                        Step 5 of 5
                     </Text>
                 </View>
 
@@ -141,14 +142,14 @@ export default function FinishScreen() {
                     )}
                 </View>
 
-                <Pressable
+                <AnimatedPressable
                     disabled={isLoading}
                     onPress={finish}
-                    style={({ pressed }) => [
+                    style={[
                         tw`w-full rounded-full py-4 px-5 flex-row items-center justify-center`,
                         {
                             backgroundColor: theme.colors.brand.primary,
-                            opacity: isLoading ? 0.4 : pressed ? 0.8 : 1,
+                            opacity: isLoading ? 0.4 : 1,
                         },
                     ]}>
                     <Text style={tw`text-white text-base font-HKGrotesk-SemiBold`}>
@@ -156,7 +157,7 @@ export default function FinishScreen() {
                     </Text>
 
                     <ChevronRight size={20} color="white" style={tw`ml-2`} />
-                </Pressable>
+                </AnimatedPressable>
             </View>
         </Screen>
     )

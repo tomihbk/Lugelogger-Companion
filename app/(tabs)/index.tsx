@@ -14,6 +14,7 @@ import NextReminderCard from "~/components/Cards/NextReminderCard"
 import GreetingHeader from "~/components/GreetingHeader"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
+import AnimatedSection from "~/components/Animations/AnimatedSection"
 
 
 
@@ -41,15 +42,24 @@ export default function Home() {
         {/* <Redirect href="/(tabs)/garage" /> */}
         <Stack.Screen options={{ title: 'Home', headerShown: false }} />
         <View style={tw`p-5 py-0`}>
-          <GreetingHeader brand={vehicleWithoutStats.make} userName={CapitalizeFirstLetter(UserInfo?.username as string)} />
 
-          {!isPending && <FavoriteCarShowcase Name={`${vehicleWithoutStats.make} ${vehicleWithoutStats.model}`} PlateNumber={vehicleWithoutStats.licensePlate} Year={vehicleWithoutStats.year} CarPhotoUri={`${savedSettings?.serverURL}${vehicleWithoutStats.imageLocation}`} Mileage={vehicleWithStats.lastReportedOdometer} CarID={favoriteCarId} />}
+          <AnimatedSection>
+            <GreetingHeader brand={vehicleWithoutStats.make} userName={CapitalizeFirstLetter(UserInfo?.username as string)} />
+          </AnimatedSection>
 
-          <GroupActionButtons />
+          <AnimatedSection delay={60}>
+            {!isPending && <FavoriteCarShowcase Name={`${vehicleWithoutStats.make} ${vehicleWithoutStats.model}`} PlateNumber={vehicleWithoutStats.licensePlate} Year={vehicleWithoutStats.year} CarPhotoUri={`${savedSettings?.serverURL}${vehicleWithoutStats.imageLocation}`} Mileage={vehicleWithStats.lastReportedOdometer} CarID={favoriteCarId} />}
+          </AnimatedSection>
 
-          <View style={tw`-mt-3`}>
-            <NextReminderCard carId={favoriteCarId} />
-          </View>
+          <AnimatedSection delay={120}>
+            <GroupActionButtons />
+          </AnimatedSection>
+
+          <AnimatedSection delay={180}>
+            <View style={tw`-mt-3`}>
+              <NextReminderCard carId={favoriteCarId} />
+            </View>
+          </AnimatedSection>
         </View>
       </ScrollView>
     </SafeAreaView>

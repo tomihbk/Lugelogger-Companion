@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView, TextInput, Pressable, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { useForm, Controller } from 'react-hook-form'
 import { encode as base64Encode } from 'base-64'
 import tw from '~/tw.config'
@@ -8,6 +8,7 @@ import { ENDPOINT } from '~/api/user-info'
 import { refreshAllQueries } from '~/hooks/api/reset-queries'
 import { useTheme } from '~/hooks/useTheme'
 import { EyeIcon, EyeOffIcon } from 'lucide-react-native'
+import AnimatedPressable from './Animations/AnimatedPressable'
 
 type ServerSettingsForm = {
     serverURL: string
@@ -285,11 +286,11 @@ const ServerSettings: React.FC<ServerSettingsProps> = ({
                                 autoCorrect={false}
                             />
 
-                            <TouchableOpacity onPress={() => setHidePass(!hidePass)} style={tw`absolute right-2 top-1 p-2`}>
+                            <AnimatedPressable onPress={() => setHidePass(!hidePass)} style={tw`absolute right-2 top-1 p-2`}>
                                 {hidePass
                                     ? <EyeOffIcon size={22} color={theme.colors.text.secondary} />
                                     : <EyeIcon size={22} color={theme.colors.text.secondary} />}
-                            </TouchableOpacity>
+                            </AnimatedPressable>
                         </View>
                     )}
                 />
@@ -301,12 +302,12 @@ const ServerSettings: React.FC<ServerSettingsProps> = ({
                 )}
 
                 <View style={tw`flex-col justify-between mt-4 gap-5`}>
-                    <Pressable
+                    <AnimatedPressable
                         disabled={!isValid || isTesting}
                         onPress={handleTestConnection}
-                        style={({ pressed }) => [
+                        style={[
                             tw`flex-1`,
-                            { opacity: !isValid || isTesting ? 0.4 : pressed ? 0.75 : 1 },
+                            { opacity: !isValid || isTesting ? 0.4 : 1 },
                         ]}>
                         <View style={[tw`p-3 rounded-full flex-row items-center justify-center`, { borderColor: theme.colors.brand.primary, borderWidth: 2 }]}>
                             {isTesting && <ActivityIndicator color="white" style={tw`mr-3`} />}
@@ -314,19 +315,19 @@ const ServerSettings: React.FC<ServerSettingsProps> = ({
                                 {isTesting ? 'Testing connection...' : 'Test Connection'}
                             </Text>
                         </View>
-                    </Pressable>
+                    </AnimatedPressable>
 
-                    <Pressable
+                    <AnimatedPressable
                         disabled={saveDisabled}
                         onPress={handleSubmit(handleSave)}
-                        style={({ pressed }) => [
+                        style={[
                             tw`flex-1`,
-                            { opacity: saveDisabled ? 0.4 : pressed ? 0.8 : 1 },
+                            { opacity: saveDisabled ? 0.4 : 1 },
                         ]}>
                         <Text style={[tw`py-4 px-5 text-white font-HKGrotesk-Medium rounded-full text-base text-center`, { backgroundColor: theme.colors.brand.primary }]}>
                             {submitLabel}
                         </Text>
-                    </Pressable>
+                    </AnimatedPressable>
                 </View>
             </View>
 

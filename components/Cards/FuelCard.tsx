@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { View, Text, ScrollView, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import GlobalStateStore from '~/stores/globalStateStore'
 import tw from '~/tw.config'
@@ -12,6 +12,7 @@ import NumberHandler from '~/utils/NumberHandler'
 import Tag from '../TagComponent'
 import { Droplet } from 'lucide-react-native'
 import { useTheme } from '~/hooks/useTheme'
+import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated'
 
 const FuelCard = ({ item, odometerDelta, selectedButtonHexColor, vehicleId }: { item: RecordBase[0], odometerDelta: number, selectedButtonHexColor: string, vehicleId: number }) => {
     const { preferredCurrencySymbol, preferredDistanceMeasurement, preferredLiquidMeasurement } = GlobalStateStore((state) => state)
@@ -75,11 +76,15 @@ const FuelCard = ({ item, odometerDelta, selectedButtonHexColor, vehicleId }: { 
             </View>}
 
             {showDeleteButton && (
-                <DeleteButton
-                    onPress={() => {
-                        setShowDeleteButton(false)
-                        if (item.id) handleDelete(parseInt(item.id))
-                    }} />
+                <Animated.View
+                    entering={FadeInDown.duration(180)}
+                    exiting={FadeOutUp.duration(180)}>
+                    <DeleteButton
+                        onPress={() => {
+                            setShowDeleteButton(false)
+                            if (item.id) handleDelete(parseInt(item.id))
+                        }} />
+                </Animated.View>
             )}
         </View>
     )

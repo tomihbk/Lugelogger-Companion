@@ -8,6 +8,7 @@ import AuthenticatedImage from './AuthenticatedImage'
 import { useFetchImageAccent } from '~/hooks/useFetchImageAccent'
 import { router } from 'expo-router'
 import useThemeStore from '~/stores/themeStore'
+import AnimatedPressable from './Animations/AnimatedPressable'
 
 type FavoriteCarShowCaseProps = {
     CarID: number
@@ -29,7 +30,7 @@ const FavoriteCarShowcase = (props: FavoriteCarShowCaseProps) => {
     const { colorScheme } = useThemeStore()
 
     return (
-        <TouchableOpacity style={tw`mb-4`} onPress={() => {
+        <AnimatedPressable style={tw`mb-4`} onPress={() => {
             router.push({
                 pathname, params: { id: props.CarID, actionType: "home" }
             })
@@ -73,7 +74,7 @@ const FavoriteCarShowcase = (props: FavoriteCarShowCaseProps) => {
                     </View>
                 </LinearGradient>
             </View>
-        </TouchableOpacity>
+        </AnimatedPressable>
     )
 }
 

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react"
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native"
+import { ActivityIndicator, ScrollView, Text, View } from "react-native"
 import { Check, ChevronRight, RefreshCw, TriangleAlert } from "lucide-react-native"
 import { Href, router } from "expo-router"
 
@@ -9,6 +9,7 @@ import { useTheme } from "~/hooks/useTheme"
 import GlobalStateStore from "~/stores/globalStateStore"
 import useOnboardingStore from "~/stores/onboardingStore"
 import tw from "~/tw.config"
+import AnimatedPressable from "~/components/Animations/AnimatedPressable"
 
 type OnboardingVehicle = {
     id: number
@@ -51,7 +52,7 @@ export default function FavoriteVehicleScreen() {
                     </Text>
 
                     <Text style={[tw`text-sm font-HKGrotesk-Medium`, { color: theme.colors.text.secondary }]}>
-                       Step 3 of 5
+                        Step 3 of 5
                     </Text>
                 </View>
 
@@ -91,14 +92,14 @@ export default function FavoriteVehicleScreen() {
                             {error instanceof Error ? error.message : "Check your server connection and try again."}
                         </Text>
 
-                        <Pressable
+                        <AnimatedPressable
                             disabled={isRefetching}
                             onPress={() => refetch()}
-                            style={({ pressed }) => [
+                            style={[
                                 tw`flex-row items-center justify-center rounded-full px-6 py-3 mt-6`,
                                 {
                                     backgroundColor: theme.colors.brand.primary,
-                                    opacity: isRefetching ? 0.4 : pressed ? 0.8 : 1,
+                                    opacity: isRefetching ? 0.4 : 1,
                                 },
                             ]}>
                             {isRefetching
@@ -108,7 +109,7 @@ export default function FavoriteVehicleScreen() {
                             <Text style={tw`text-white text-base font-HKGrotesk-Medium ml-2`}>
                                 {isRefetching ? "Retrying..." : "Retry"}
                             </Text>
-                        </Pressable>
+                        </AnimatedPressable>
                     </View>
                 ) : vehicles.length === 0 ? (
                     <View style={tw`flex-1 items-center justify-center px-4`}>
@@ -124,14 +125,14 @@ export default function FavoriteVehicleScreen() {
                             Vehicles cannot currently be created from the mobile app. Create a vehicle using the Lugelogger desktop version, then return here.
                         </Text>
 
-                        <Pressable
+                        <AnimatedPressable
                             disabled={isRefetching}
                             onPress={() => refetch()}
-                            style={({ pressed }) => [
+                            style={[
                                 tw`flex-row items-center justify-center rounded-full px-6 py-3 mt-6`,
                                 {
                                     backgroundColor: theme.colors.brand.primary,
-                                    opacity: isRefetching ? 0.4 : pressed ? 0.8 : 1,
+                                    opacity: isRefetching ? 0.4 : 1,
                                 },
                             ]}>
                             {isRefetching
@@ -141,7 +142,7 @@ export default function FavoriteVehicleScreen() {
                             <Text style={tw`text-white text-base font-HKGrotesk-Medium ml-2`}>
                                 {isRefetching ? "Checking..." : "Check Again"}
                             </Text>
-                        </Pressable>
+                        </AnimatedPressable>
                     </View>
                 ) : (
                     <>
@@ -158,11 +159,11 @@ export default function FavoriteVehicleScreen() {
                                 const isSelected = vehicleId !== undefined && selectedVehicleId === vehicleId
 
                                 return (
-                                    <Pressable
+                                    <AnimatedPressable
                                         key={vehicleId ?? index}
                                         disabled={vehicleId === undefined}
                                         onPress={() => vehicleId !== undefined && setSelectedVehicleId(vehicleId)}
-                                        style={({ pressed }) => [
+                                        style={[
                                             tw`w-full rounded-2xl border p-4 mb-3`,
                                             {
                                                 backgroundColor: isSelected
@@ -171,7 +172,7 @@ export default function FavoriteVehicleScreen() {
                                                 borderColor: isSelected
                                                     ? theme.colors.brand.primary
                                                     : theme.colors.border.default,
-                                                opacity: vehicleId === undefined ? 0.45 : pressed ? 0.8 : 1,
+                                                opacity: vehicleId === undefined ? 0.45 : 1,
                                             },
                                         ]}>
                                         <View style={tw`flex-row items-center`}>
@@ -196,19 +197,19 @@ export default function FavoriteVehicleScreen() {
                                                 {isSelected && <Check size={18} color="white" />}
                                             </View>
                                         </View>
-                                    </Pressable>
+                                    </AnimatedPressable>
                                 )
                             })}
                         </ScrollView>
 
-                        <Pressable
+                        <AnimatedPressable
                             disabled={selectedVehicleId === null}
                             onPress={handleContinueButton}
-                            style={({ pressed }) => [
+                            style={[
                                 tw`w-full rounded-full py-4 px-5 flex-row items-center justify-center`,
                                 {
                                     backgroundColor: theme.colors.brand.primary,
-                                    opacity: selectedVehicleId === null ? 0.4 : pressed ? 0.8 : 1,
+                                    opacity: selectedVehicleId === null ? 0.4 : 1,
                                 },
                             ]}>
                             <Text style={tw`text-white text-base font-HKGrotesk-SemiBold`}>
@@ -216,7 +217,7 @@ export default function FavoriteVehicleScreen() {
                             </Text>
 
                             <ChevronRight size={20} color="white" style={tw`ml-2`} />
-                        </Pressable>
+                        </AnimatedPressable>
                     </>
                 )}
             </View>

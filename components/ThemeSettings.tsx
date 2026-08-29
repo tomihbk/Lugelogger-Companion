@@ -3,6 +3,7 @@ import { ScrollView, TouchableOpacity, Text, View } from "react-native"
 import { Sun, Moon, Smartphone, LucideIcon } from "lucide-react-native"
 import tw from "~/tw.config"
 import { useTheme } from "~/hooks/useTheme"
+import AnimatedPressable from "./Animations/AnimatedPressable"
 
 type ThemeSettingProps = {
     colorSchemeStore: 'light' | 'dark' | 'system'
@@ -24,7 +25,7 @@ const ThemeOption = ({ icon: Icon, label, description, isSelected, onPress, icon
     const theme = useTheme()
 
     return (
-        <TouchableOpacity
+        <AnimatedPressable
             onPress={onPress}
             style={[
                 tw`mb-3 rounded-3xl p-5 border-2`,
@@ -62,7 +63,7 @@ const ThemeOption = ({ icon: Icon, label, description, isSelected, onPress, icon
                     </View>
                 )}
             </View>
-        </TouchableOpacity>
+        </AnimatedPressable>
     )
 }
 

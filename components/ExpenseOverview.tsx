@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, Pressable, Modal, ScrollView } from 'react-native'
+import { View, Text, Modal, ScrollView } from 'react-native'
 import tw from '~/tw.config'
 import { lighten } from 'polished'
 import NumberHandler from '~/utils/NumberHandler'
@@ -17,6 +17,7 @@ import { useFuelRecords, useRepairRecords, useServiceRecords, useTaxRecords, use
 import useThemeStore from '~/stores/themeStore'
 import { useTheme } from '~/hooks/useTheme'
 import CapitalizeFirstLetter from '~/utils/StringCapitalizer'
+import AnimatedPressable from './Animations/AnimatedPressable'
 
 interface ExpenseOverviewProps {
     yearFilter: number | 'all'
@@ -103,23 +104,23 @@ const ExpenseOverview: React.FC<ExpenseOverviewProps> = ({
             <View style={tw`flex-row items-center justify-between`}>
                 <Text style={[tw`text-lg font-HKGrotesk-Bold`, { color: theme.colors.text.primary }]}>Expense Overview</Text>
                 <View>
-                    <Pressable
+                    <AnimatedPressable
                         style={[tw`flex-row items-center px-3 py-1 rounded-lg border mt-1`, { backgroundColor: theme.colors.background.field, borderColor: theme.colors.border.default }]}
                         onPress={() => setDropdownVisible(true)}>
                         <Text style={[tw`mr-1 font-HKGrotesk-Regular`, { color: theme.colors.text.primary }]}>
                             {yearFilter === 'all' ? 'All Years' : yearFilter}
                         </Text>
                         <Text style={[tw``, { color: theme.colors.text.secondary }]}>▼</Text>
-                    </Pressable>
+                     </AnimatedPressable>
                     <Modal
                         visible={dropdownVisible}
                         transparent
                         animationType="fade"
                         onRequestClose={() => setDropdownVisible(false)}>
-                        <Pressable style={tw`flex-1`} onPress={() => setDropdownVisible(false)}>
+                        <AnimatedPressable style={tw`flex-1`} onPress={() => setDropdownVisible(false)}>
                             <View style={[tw`absolute top-16 right-6 rounded-lg shadow-md border`, { backgroundColor: theme.colors.background.default, borderColor: theme.colors.border.default }]}>
                                 <ScrollView>
-                                    <Pressable
+                                    <AnimatedPressable
                                         style={tw`px-4 py-2`}
                                         onPress={() => {
                                             setYearFilter('all')
@@ -127,9 +128,9 @@ const ExpenseOverview: React.FC<ExpenseOverviewProps> = ({
                                         }}
                                     >
                                         <Text style={[tw`text-base font-HKGrotesk-Regular`, { color: theme.colors.text.primary }]}>All Years</Text>
-                                    </Pressable>
+                                     </AnimatedPressable>
                                     {availableYears.map(year => (
-                                        <Pressable
+                                        <AnimatedPressable
                                             key={year}
                                             style={tw`px-6 py-3`}
                                             onPress={() => {
@@ -138,11 +139,11 @@ const ExpenseOverview: React.FC<ExpenseOverviewProps> = ({
                                             }}
                                         >
                                             <Text style={[tw`text-base font-HKGrotesk-Regular`, { color: theme.colors.text.primary }]}>{year}</Text>
-                                        </Pressable>
+                                         </AnimatedPressable>
                                     ))}
                                 </ScrollView>
                             </View>
-                        </Pressable>
+                         </AnimatedPressable>
                     </Modal>
                 </View>
             </View>

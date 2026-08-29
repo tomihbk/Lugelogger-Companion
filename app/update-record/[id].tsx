@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Pressable} from 'react-native'
+import { View, Text, TextInput} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import tw from '~/tw.config'
@@ -17,6 +17,7 @@ import useThemeStore from '~/stores/themeStore'
 import { useTheme } from '~/hooks/useTheme'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
+import AnimatedPressable from '~/components/Animations/AnimatedPressable'
 
 const UpdateRecord = () => {
     const { t } = useTranslation()
@@ -222,7 +223,7 @@ const UpdateRecord = () => {
                                     render={({ field: { onChange, value } }) => (
                                         <View style={tw`flex-row flex-wrap gap-2 mb-4`}>
                                             {(['Date', 'Odometer', 'Both'] as const).map((option) => (
-                                                <Pressable
+                                                <AnimatedPressable
                                                     key={option}
                                                     onPress={() => {
                                                         console.log("option : " + option)
@@ -234,7 +235,7 @@ const UpdateRecord = () => {
                                                     <Text style={[tw`font-HKGrotesk-Medium text-center`, { color: value === option ? currentActionType?.buttonColor[colorScheme] : theme.colors.text.primary, borderColor: value === option ? currentActionType?.buttonColor[colorScheme] : theme.colors.border.default }]}>
                                                         {option}
                                                     </Text>
-                                                </Pressable>
+                                                 </AnimatedPressable>
                                             ))}
                                         </View>
                                     )}
@@ -250,7 +251,7 @@ const UpdateRecord = () => {
                                 <Controller control={control} name="DueDate" rules={{ required: currentActionType.mandatoryFields.dueDate || showMetricFieldDueDate }}
                                     render={({ field: { onChange, value } }) => (
                                         <>
-                                            <Pressable onPress={() => setOpenDatePickerModal(true)}>
+                                            <AnimatedPressable onPress={() => setOpenDatePickerModal(true)}>
                                                 <View>
                                                     <TextInput
                                                         style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg border p-2 mb-2 pr-10`, { backgroundColor: theme.colors.background.field, color: theme.colors.text.primary, borderColor: errors.DueDate ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
@@ -265,7 +266,7 @@ const UpdateRecord = () => {
                                                         <CalendarDays size={22} color={tint(colorTintValue, currentActionType?.buttonColor[colorScheme])} />
                                                     </View>
                                                 </View>
-                                            </Pressable>
+                                             </AnimatedPressable>
                                             <DatePicker modal locale={Intl.DateTimeFormat().resolvedOptions().locale} mode='date' open={openDatePickerModal} date={value} theme={colorScheme}
                                                 onConfirm={(date) => {
                                                     setOpenDatePickerModal(false)
@@ -324,7 +325,7 @@ const UpdateRecord = () => {
                                 <Controller control={control} name="Date" rules={{ required: currentActionType.mandatoryFields.date }}
                                     render={({ field: { onChange, value } }) => (
                                         <>
-                                            <Pressable onPress={() => setOpenDatePickerModal(true)}>
+                                            <AnimatedPressable onPress={() => setOpenDatePickerModal(true)}>
                                                 <View>
                                                     <TextInput
                                                         style={[tw`font-HKGrotesk-Regular text-base w-full rounded-lg border p-2 mb-2 pr-10`, { backgroundColor: theme.colors.background.field, color: theme.colors.text.primary, borderColor: errors.Date ? theme.colors.status.danger : currentActionType?.buttonColor[colorScheme] + '40' }]}
@@ -339,7 +340,7 @@ const UpdateRecord = () => {
                                                         <CalendarDays size={22} color={tint(colorTintValue, currentActionType?.buttonColor[colorScheme])} />
                                                     </View>
                                                 </View>
-                                            </Pressable>
+                                             </AnimatedPressable>
                                             <DatePicker modal locale={Intl.DateTimeFormat().resolvedOptions().locale} mode='date' open={openDatePickerModal} date={value} theme={colorScheme}
                                                 onConfirm={(date) => {
                                                     setOpenDatePickerModal(false)
@@ -362,16 +363,16 @@ const UpdateRecord = () => {
                                     <Text style={[tw`font-HKGrotesk-SemiBold text-base`, { color: theme.colors.text.primary }]}>{t("Initial_Odometer")}
                                         {!currentActionType.mandatoryFields.initialOdometer && <Text style={[tw`font-HKGrotesk-Italic italic text-sm`, { color: theme.colors.text.secondary }]}>{" - " + t("Optional")}</Text>}
                                     </Text>
-                                    <Pressable onPress={() => setShowTooltip(!showTooltip)}>
+                                    <AnimatedPressable onPress={() => setShowTooltip(!showTooltip)}>
                                         <Info size={16} color={tint(0.1, currentActionType?.buttonColor[colorScheme])} />
-                                    </Pressable>
+                                     </AnimatedPressable>
                                     {showTooltip && (
                                         <View style={[tw`absolute right-5 top-6 p-3 rounded-lg shadow-sm z-50 w-64 border`, { backgroundColor: theme.colors.background.field, borderColor: theme.colors.border.default }]}>
                                             <View style={tw`flex-row justify-between items-start mb-1`}>
                                                 <Text style={[tw`font-HKGrotesk-Bold text-sm`, { color: theme.colors.text.primary }]}>Initial Odometer</Text>
-                                                <Pressable onPress={() => setShowTooltip(false)} hitSlop={8}>
+                                                <AnimatedPressable onPress={() => setShowTooltip(false)} hitSlop={8}>
                                                     <X size={16} color={tint(colorTintValue, currentActionType?.buttonColor[colorScheme])} />
-                                                </Pressable>
+                                                 </AnimatedPressable>
                                             </View>
                                             <Text style={[tw`text-sm`, { color: theme.colors.text.secondary }]}>
                                                 This optional field is the reading from your last record. This helps track the distance traveled between records.
@@ -390,13 +391,13 @@ const UpdateRecord = () => {
                                                 value={value}
                                                 editable={initialOdometerEditable}
                                             />
-                                            <Pressable style={tw`absolute right-1 top-1`}
+                                            <AnimatedPressable style={tw`absolute right-1 top-1`}
                                                 onPress={() => setInitialOdometerEditable(!initialOdometerEditable)}>
                                                 <View style={tw`flex flex-row items-center bg-[${currentActionType?.buttonColor[colorScheme]}]/10 p-2 rounded-lg gap-2`}>
                                                     <PenSquare size={22} color={currentActionType?.buttonColor[colorScheme]} />
                                                     <Text style={[tw`font-HKGrotesk-Regular text-sm`, { color: currentActionType?.buttonColor[colorScheme] }]}>{t("Edit")}</Text>
                                                 </View>
-                                            </Pressable>
+                                             </AnimatedPressable>
                                         </View>
                                     )}
                                     name="InitialOdometer" />
@@ -572,11 +573,11 @@ const UpdateRecord = () => {
                         }
                         {errors.Tags && <Text style={[tw`font-HKGrotesk-Regular text-right`, { color: theme.colors.status.danger }]}>Required Field</Text>}
 
-                        <Pressable onPress={handleSubmit(handleForm)} style={tw`mb-4`}>
+                        <AnimatedPressable onPress={handleSubmit(handleForm)} style={tw`mb-4`}>
                             <Text style={[tw`mt-4 py-4 px-5 font-HKGrotesk-Medium rounded-full text-base text-center`, { backgroundColor: currentActionType?.buttonColor[colorScheme] + '90', color: theme.colors.text.primary }]}>
                                 Update Record
                             </Text>
-                        </Pressable>
+                         </AnimatedPressable>
                     </View>
             </KeyboardAwareScrollView>
         </SafeAreaView>

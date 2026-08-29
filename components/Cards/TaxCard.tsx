@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { View, Text, ScrollView, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import GlobalStateStore from '~/stores/globalStateStore'
 import tw from '~/tw.config'
@@ -11,6 +11,7 @@ import { useDeleteTaxRecord } from '~/hooks/api/use-get-taxrecords'
 import DeleteButton from '../DeleteButton'
 import Tag from '../TagComponent'
 import { useTheme } from '~/hooks/useTheme'
+import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated'
 
 type TaxCardProps = RecordBase[0] & TaxRecord[0]
 
@@ -51,11 +52,15 @@ const TaxCard = ({ item, selectedButtonHexColor, vehicleId }: { item: TaxCardPro
             </View>}
 
             {showDeleteButton && (
-                <DeleteButton
-                    onPress={() => {
-                        setShowDeleteButton(false)
-                        if (item.id) handleDelete(parseInt(item.id))
-                    }} />
+                <Animated.View
+                    entering={FadeInDown.duration(180)}
+                    exiting={FadeOutUp.duration(180)}>
+                    <DeleteButton
+                        onPress={() => {
+                            setShowDeleteButton(false)
+                            if (item.id) handleDelete(parseInt(item.id))
+                        }} />
+                </Animated.View>
             )}
         </View>
     )

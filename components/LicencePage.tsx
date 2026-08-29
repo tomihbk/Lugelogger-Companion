@@ -3,6 +3,7 @@ import { ScrollView, View, Text, TouchableOpacity, Modal } from "react-native"
 import { X } from "lucide-react-native"
 import tw from "~/tw.config"
 import { useTheme } from "~/hooks/useTheme"
+import AnimatedPressable from "./Animations/AnimatedPressable"
 
 type licenseType = {
     name: string
@@ -226,7 +227,7 @@ export default function LicensesScreen() {
                 </Text>
 
                 {licenses.map((lib, index) => (
-                    <TouchableOpacity
+                    <AnimatedPressable
                         key={index}
                         onPress={() => showLicense(lib)}
                         style={[tw`rounded-xl p-4 mb-3`, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.border.default, borderWidth: 1 }]}>
@@ -246,7 +247,7 @@ export default function LicensesScreen() {
                         <Text style={[tw`text-xs font-HKGrotesk-Regular`, { color: theme.colors.text.secondary }]}>
                             by {lib.author}
                         </Text>
-                    </TouchableOpacity>
+                    </AnimatedPressable>
                 ))}
 
                 <View style={[tw`mt-4 mb-8 p-4 rounded-xl`, { backgroundColor: theme.colors.background.subtle }]}>
@@ -277,11 +278,11 @@ export default function LicensesScreen() {
                                     {selectedLicense?.license} License
                                 </Text>
                             </View>
-                            <TouchableOpacity
+                            <AnimatedPressable
                                 onPress={() => setModalVisible(false)}
                                 style={[tw`rounded-full p-2`, { backgroundColor: theme.colors.background.subtle }]}>
                                 <X size={24} color={theme.colors.text.secondary} />
-                            </TouchableOpacity>
+                            </AnimatedPressable>
                         </View>
 
                         <ScrollView style={tw`flex-1 px-5 py-4`}>

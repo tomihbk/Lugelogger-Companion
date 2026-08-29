@@ -1,7 +1,7 @@
 import React from "react"
 import { Href, router } from "expo-router"
 import { Check, ChevronRight, Moon, Sun } from "lucide-react-native"
-import { Pressable, ScrollView, Text, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 
 import CurrencySelector from "~/components/CurrencySelector"
 import Screen from "~/components/ui/Screen"
@@ -12,6 +12,7 @@ import useThemeStore from "~/stores/themeStore"
 import tw from "~/tw.config"
 import ModernSwitch from "~/components/ModernSwitch"
 import { APP } from "~/constants/app"
+import AnimatedPressable from "~/components/Animations/AnimatedPressable"
 
 export default function PreferencesScreen() {
     const theme = useTheme()
@@ -75,14 +76,13 @@ export default function PreferencesScreen() {
         selected: boolean
         onPress: () => void
     }) => (
-        <Pressable
+        <AnimatedPressable
             onPress={onPress}
-            style={({ pressed }) => [
+            style={[
                 tw`w-full flex-row items-center rounded-xl border p-4 mb-3`,
                 {
                     backgroundColor: selected ? theme.colors.brand.primary + "12" : theme.colors.background.field,
-                    borderColor: selected ? theme.colors.brand.primary : theme.colors.border.default,
-                    opacity: pressed ? 0.8 : 1,
+                    borderColor: selected ? theme.colors.brand.primary : theme.colors.border.default
                 },
             ]}>
             <View style={tw`flex-1`}>
@@ -107,7 +107,7 @@ export default function PreferencesScreen() {
                 ]}>
                 {selected && <Check size={16} color="white" />}
             </View>
-        </Pressable>
+        </AnimatedPressable>
     )
 
     const CompactOption = ({
@@ -123,14 +123,13 @@ export default function PreferencesScreen() {
         onPress: () => void
         showCheckmark?: boolean
     }) => (
-        <Pressable
+        <AnimatedPressable
             onPress={onPress}
-            style={({ pressed }) => [
+            style={[
                 tw`flex-1 rounded-xl border p-4 items-center justify-center`,
                 {
                     backgroundColor: selected ? theme.colors.brand.primary + "12" : theme.colors.background.field,
-                    borderColor: selected ? theme.colors.brand.primary : theme.colors.border.default,
-                    opacity: pressed ? 0.8 : 1,
+                    borderColor: selected ? theme.colors.brand.primary : theme.colors.border.default
                 },
             ]}>
             {icon}
@@ -155,7 +154,7 @@ export default function PreferencesScreen() {
                     {selected && <Check size={14} color="white" />}
                 </View>)
             }
-        </Pressable>
+        </AnimatedPressable>
     )
 
     return (
@@ -167,7 +166,7 @@ export default function PreferencesScreen() {
                     </Text>
 
                     <Text style={[tw`text-sm font-HKGrotesk-Medium`, { color: theme.colors.text.secondary }]}>
-                       Step 4 of 5
+                        Step 4 of 5
                     </Text>
                 </View>
 
@@ -250,7 +249,7 @@ export default function PreferencesScreen() {
                         onPress={() => handleFuelUnitChange("uk-gallons")}
                     />
 
-                    <Text style={[tw`text-lg font-HKGrotesk-Bold mt-5 mb-3`, { color: theme.colors.text.primary }]}>
+                    <Text style={[tw`text-lg font-HKGrotesk-Bold mt-5 -mb-5`, { color: theme.colors.text.primary }]}>
                         Currency
                     </Text>
 
@@ -276,18 +275,18 @@ export default function PreferencesScreen() {
                     </View>
                 </ScrollView>
 
-                <Pressable
+                <AnimatedPressable
                     onPress={handleContinue}
-                    style={({ pressed }) => [
+                    style={[
                         tw`w-full rounded-full py-4 px-5 flex-row items-center justify-center`,
-                        { backgroundColor: theme.colors.brand.primary, opacity: pressed ? 0.8 : 1 },
+                        { backgroundColor: theme.colors.brand.primary },
                     ]}>
                     <Text style={tw`text-white text-base font-HKGrotesk-SemiBold`}>
                         Continue
                     </Text>
 
                     <ChevronRight size={20} color="white" style={tw`ml-2`} />
-                </Pressable>
+                </AnimatedPressable>
             </View>
         </Screen>
     )

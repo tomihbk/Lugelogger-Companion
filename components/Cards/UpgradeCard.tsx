@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { View, Text, ScrollView, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import GlobalStateStore from '~/stores/globalStateStore'
 import tw from '~/tw.config'
@@ -12,6 +12,7 @@ import { UpgradeRecord } from '~/api/index-records.types'
 import Tag from '../TagComponent'
 import NumberHandler from '~/utils/NumberHandler'
 import { useTheme } from '~/hooks/useTheme'
+import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated'
 
 type UpgradeCardProps = RecordBase[0] & UpgradeRecord[0]
 
@@ -53,11 +54,15 @@ const UpgradeCard = ({ item, selectedButtonHexColor, vehicleId }: { item: Upgrad
             </View>}
 
             {showDeleteButton && (
-                <DeleteButton
-                    onPress={() => {
-                        setShowDeleteButton(false)
-                        if (item.id) handleDelete(parseInt(item.id))
-                    }} />
+                <Animated.View
+                    entering={FadeInDown.duration(180)}
+                    exiting={FadeOutUp.duration(180)}>
+                    <DeleteButton
+                        onPress={() => {
+                            setShowDeleteButton(false)
+                            if (item.id) handleDelete(parseInt(item.id))
+                        }} />
+                </Animated.View>
             )}
         </View>
     )

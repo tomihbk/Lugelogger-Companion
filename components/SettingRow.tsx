@@ -1,6 +1,7 @@
 import React from "react"
 import { TouchableOpacity, Text, View } from "react-native"
 import tw from "~/tw.config"
+import AnimatedPressable from "./Animations/AnimatedPressable"
 
 interface SettingRowProps {
     icon: React.ReactNode
@@ -12,7 +13,7 @@ interface SettingRowProps {
 }
 
 const SettingRow = ({ icon, label, onPress, color, style, children }: SettingRowProps) => (
-    <TouchableOpacity
+    <AnimatedPressable
         style={[
             tw`flex flex-row flex-wrap p-4 pr-2 rounded-3xl dark:bg-slate-800 dark:text-gray-200 border-blue-100 items-center`,
             style,
@@ -23,7 +24,7 @@ const SettingRow = ({ icon, label, onPress, color, style, children }: SettingRow
         <View style={tw`mr-3 flex-row items-center`}>
             {children}
         </View>
-    </TouchableOpacity>
+    </AnimatedPressable>
 )
 
 export default SettingRow

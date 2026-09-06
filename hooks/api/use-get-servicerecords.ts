@@ -9,6 +9,7 @@ import { queryClient } from "~/app/_layout"
 import { deleteServiceRecord } from "~/api/service-records"
 import { recordKeys } from "./queryKeys"
 import { ErrorTracking } from "~/utils/ErrorTracking"
+import { useAnalytics } from "~/utils/Analytics"
 
 const _queryClient = queryClient
 
@@ -21,6 +22,7 @@ export const useServiceRecords = (vehicleId: number) => {
 }
 
 export const useAddServiceRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       vehicleId,
@@ -34,6 +36,7 @@ export const useAddServiceRecord = () => {
     },
     onError: (err) => console.error("useAddServiceRecord error : " + err),
     onSuccess: (_, variables) => {
+      analytics.recordCreated("service")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.service.allRecords(vehicleId),
@@ -44,6 +47,7 @@ export const useAddServiceRecord = () => {
 }
 
 export const useUpdateServiceRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -58,6 +62,7 @@ export const useUpdateServiceRecord = () => {
       return await updateServiceRecord(recordID, serviceRecord)
     },
     onSuccess: (_, variables) => {
+      analytics.recordUpdated("service")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.service.allRecords(vehicleId),
@@ -68,6 +73,7 @@ export const useUpdateServiceRecord = () => {
 }
 
 export const useDeleteServiceRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -80,6 +86,7 @@ export const useDeleteServiceRecord = () => {
       return await deleteServiceRecord(recordID)
     },
     onSuccess: (_, variables) => {
+      analytics.recordDeleted("service")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.service.allRecords(vehicleId),

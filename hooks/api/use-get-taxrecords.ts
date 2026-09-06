@@ -9,6 +9,7 @@ import type { TaxRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 import { recordKeys } from "./queryKeys"
 import { ErrorTracking } from "~/utils/ErrorTracking"
+import { useAnalytics } from "~/utils/Analytics"
 
 const _queryClient = queryClient
 
@@ -21,6 +22,7 @@ export const useTaxRecords = (vehicleId: number) => {
 }
 
 export const useAddTaxRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       vehicleId,
@@ -34,6 +36,7 @@ export const useAddTaxRecord = () => {
     },
     onError: (err) => console.error("useAddTaxRecord error : " + err),
     onSuccess: (_, variables) => {
+      analytics.recordCreated("tax")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.tax.allRecords(vehicleId),
@@ -44,6 +47,7 @@ export const useAddTaxRecord = () => {
 }
 
 export const useUpdateTaxRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -58,6 +62,7 @@ export const useUpdateTaxRecord = () => {
       return await updateTaxRecord(recordID, taxRecord)
     },
     onSuccess: (_, variables) => {
+      analytics.recordUpdated("tax")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.tax.allRecords(vehicleId),
@@ -68,6 +73,7 @@ export const useUpdateTaxRecord = () => {
 }
 
 export const useDeleteTaxRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -80,6 +86,7 @@ export const useDeleteTaxRecord = () => {
       return await deleteTaxRecord(recordID)
     },
     onSuccess: (_, variables) => {
+      analytics.recordDeleted("tax")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.tax.allRecords(vehicleId),

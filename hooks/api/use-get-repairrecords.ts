@@ -9,6 +9,8 @@ import type { RepairRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 import { recordKeys } from "./queryKeys"
 import { ErrorTracking } from "~/utils/ErrorTracking"
+import { useAnalytics } from "~/utils/Analytics"
+
 const _queryClient = queryClient
 
 export const useRepairRecords = (vehicleId: number) => {
@@ -20,6 +22,7 @@ export const useRepairRecords = (vehicleId: number) => {
 }
 
 export const useAddRepairRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       vehicleId,
@@ -33,6 +36,7 @@ export const useAddRepairRecord = () => {
     },
     onError: (err) => console.error("useAddRepairRecord error : " + err),
     onSuccess: (_, variables) => {
+      analytics.recordCreated("repair")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.repair.allRecords(vehicleId),
@@ -43,6 +47,7 @@ export const useAddRepairRecord = () => {
 }
 
 export const useUpdateRepairRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -57,6 +62,7 @@ export const useUpdateRepairRecord = () => {
       return await updateRepairRecord(recordID, repairRecord)
     },
     onSuccess: (_, variables) => {
+      analytics.recordUpdated("repair")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.repair.allRecords(vehicleId),
@@ -67,6 +73,7 @@ export const useUpdateRepairRecord = () => {
 }
 
 export const useDeleteRepairRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -79,6 +86,7 @@ export const useDeleteRepairRecord = () => {
       return await deleteRepairRecord(recordID)
     },
     onSuccess: (_, variables) => {
+      analytics.recordDeleted("repair")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.repair.allRecords(vehicleId),

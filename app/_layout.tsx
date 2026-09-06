@@ -3,6 +3,10 @@ import { Stack } from "expo-router"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { KeyboardController, KeyboardProvider } from "react-native-keyboard-controller"
 import * as Sentry from "@sentry/react-native"
+import { Platform } from "react-native"
+import useThemeStore from "~/stores/themeStore"
+import Constants from "expo-constants"
+import ErrorFallback from "~/components/ErrorFallback"
 
 export const queryClient = new QueryClient()
 
@@ -11,40 +15,51 @@ Sentry.init({
   sendDefaultPii: false,
 })
 
+Sentry.setTag("platform", Platform.OS)
+Sentry.setTag("app_version", Constants.expoConfig?.version ?? "unknown")
+
 export default Sentry.wrap(function RootLayout() {
+  const { colorScheme } = useThemeStore()
+
   useEffect(() => {
     KeyboardController.preload()
   }, [])
 
+  useEffect(() => {
+    Sentry.setTag("theme", colorScheme)
+  }, [colorScheme])
+
   return (
-    <KeyboardProvider>
-      <QueryClientProvider client={queryClient}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(onboarding)" />
-          <Stack.Screen name="(tabs)" />
+    <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
+      <KeyboardProvider>
+        <QueryClientProvider client={queryClient}>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(onboarding)" />
+            <Stack.Screen name="(tabs)" />
 
-          <Stack.Screen
-            name="car-detail"
-            options={{
-              animation: "fade",
-            }}
-          />
+            <Stack.Screen
+              name="car-detail"
+              options={{
+                animation: "fade",
+              }}
+            />
 
-          <Stack.Screen
-            name="new-record/[id]"
-            options={{
-              animation: "fade",
-            }}
-          />
+            <Stack.Screen
+              name="new-record/[id]"
+              options={{
+                animation: "fade",
+              }}
+            />
 
-          <Stack.Screen
-            name="update-record/[id]"
-            options={{
-              animation: "slide_from_bottom",
-            }}
-          />
-        </Stack>
-      </QueryClientProvider>
-    </KeyboardProvider>
+            <Stack.Screen
+              name="update-record/[id]"
+              options={{
+                animation: "slide_from_bottom",
+              }}
+            />
+          </Stack>
+        </QueryClientProvider>
+      </KeyboardProvider>
+    </Sentry.ErrorBoundary>
   )
 })

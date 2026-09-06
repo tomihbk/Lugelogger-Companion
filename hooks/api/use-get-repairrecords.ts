@@ -1,11 +1,14 @@
+import { useMutation, useQuery } from "@tanstack/react-query"
 import {
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query"
-import { getRepairRecords, addRepairRecord, updateRepairRecord, deleteRepairRecord } from "~/api/repair-records"
+  getRepairRecords,
+  addRepairRecord,
+  updateRepairRecord,
+  deleteRepairRecord,
+} from "~/api/repair-records"
 import type { RepairRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 import { recordKeys } from "./queryKeys"
+import { ErrorTracking } from "~/utils/ErrorTracking"
 const _queryClient = queryClient
 
 export const useRepairRecords = (vehicleId: number) => {
@@ -24,7 +27,10 @@ export const useAddRepairRecord = () => {
     }: {
       vehicleId: number
       repairRecord: RepairRecord
-    }) => await addRepairRecord(vehicleId, repairRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Adding repair record", "records.repair")
+      return await addRepairRecord(vehicleId, repairRecord)
+    },
     onError: (err) => console.error("useAddRepairRecord error : " + err),
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
@@ -46,7 +52,10 @@ export const useUpdateRepairRecord = () => {
       recordID: number
       vehicleId: number
       repairRecord: RepairRecord
-    }) => await updateRepairRecord(recordID, repairRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Updating repair record", "records.repair")
+      return await updateRepairRecord(recordID, repairRecord)
+    },
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
@@ -65,7 +74,10 @@ export const useDeleteRepairRecord = () => {
     }: {
       recordID: number
       vehicleId: number
-    }) => await deleteRepairRecord(recordID),
+    }) => {
+      ErrorTracking.addBreadcrumb("Deleting repair record", "records.repair")
+      return await deleteRepairRecord(recordID)
+    },
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
       _queryClient.invalidateQueries({

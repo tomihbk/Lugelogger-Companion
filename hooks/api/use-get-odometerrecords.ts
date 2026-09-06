@@ -9,6 +9,7 @@ import {
 import type { OdometerRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 import { recordKeys } from "./queryKeys"
+import { ErrorTracking } from "~/utils/ErrorTracking"
 
 const _queryClient = queryClient
 
@@ -36,7 +37,10 @@ export const useAddOdometerRecord = () => {
     }: {
       vehicleId: number
       odometerRecord: OdometerRecord
-    }) => await addOdometerRecord(vehicleId, odometerRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Adding odometer record", "records.odometer")
+      return await addOdometerRecord(vehicleId, odometerRecord)
+    },
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
@@ -57,7 +61,13 @@ export const useUpdateOdometerRecord = () => {
       recordID: number
       vehicleId: number
       odometerRecord: OdometerRecord
-    }) => await updateOdometerRecord(recordID, odometerRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb(
+        "Updating odometer record",
+        "records.odometer",
+      )
+      return await updateOdometerRecord(recordID, odometerRecord)
+    },
     onSuccess: (_, { vehicleId }) => {
       _queryClient.invalidateQueries({
         queryKey: recordKeys.odometer.allRecords(vehicleId),
@@ -75,7 +85,13 @@ export const useDeleteOdometerRecord = () => {
     }: {
       recordID: number
       vehicleId: number
-    }) => await deleteOdometerRecord(recordID),
+    }) => {
+      ErrorTracking.addBreadcrumb(
+        "Deleting odometer record",
+        "records.odometer",
+      )
+      return await deleteOdometerRecord(recordID)
+    },
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
       _queryClient.invalidateQueries({

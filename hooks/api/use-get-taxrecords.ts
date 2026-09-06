@@ -8,6 +8,7 @@ import {
 import type { TaxRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 import { recordKeys } from "./queryKeys"
+import { ErrorTracking } from "~/utils/ErrorTracking"
 
 const _queryClient = queryClient
 
@@ -27,7 +28,10 @@ export const useAddTaxRecord = () => {
     }: {
       vehicleId: number
       taxRecord: TaxRecord
-    }) => await addTaxRecord(vehicleId, taxRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Adding tax record", "records.tax")
+      return await addTaxRecord(vehicleId, taxRecord)
+    },
     onError: (err) => console.error("useAddTaxRecord error : " + err),
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
@@ -49,7 +53,10 @@ export const useUpdateTaxRecord = () => {
       recordID: number
       vehicleId: number
       taxRecord: TaxRecord
-    }) => await updateTaxRecord(recordID, taxRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Updating tax record", "records.tax")
+      return await updateTaxRecord(recordID, taxRecord)
+    },
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
@@ -68,7 +75,10 @@ export const useDeleteTaxRecord = () => {
     }: {
       recordID: number
       vehicleId: number
-    }) => await deleteTaxRecord(recordID),
+    }) => {
+      ErrorTracking.addBreadcrumb("Deleting tax record", "records.tax")
+      return await deleteTaxRecord(recordID)
+    },
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
       _queryClient.invalidateQueries({

@@ -49,7 +49,7 @@
         "@sentry/react-native/expo",
         {
           "url": "https://sentry.io/",
-          "project": "react-native",
+          "project": "lugelogger-companion",
           "organization": "berinfo"
         }
       ],
@@ -67,9 +67,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#7c2791"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.berinfo.lugeloggercompanion"

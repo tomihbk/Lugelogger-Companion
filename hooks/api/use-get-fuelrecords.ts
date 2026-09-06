@@ -8,6 +8,7 @@ import {
 import type { FuelRecordAdd, FuelRecordGet } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 import { recordKeys } from "./queryKeys"
+import { ErrorTracking } from "~/utils/ErrorTracking"
 
 const _queryClient = queryClient
 
@@ -27,7 +28,10 @@ export const useAddFuelRecord = () => {
     }: {
       vehicleId: number
       fuelRecord: FuelRecordAdd
-    }) => await addFuelRecord(vehicleId, fuelRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Adding fuel record", "records.fuel")
+      return await addFuelRecord(vehicleId, fuelRecord)
+    },
     onError: (err) => console.error("useAddFuelRecord error : " + err),
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
@@ -49,7 +53,10 @@ export const useUpdateFuelRecord = () => {
       recordID: number
       vehicleId: number
       fuelRecord: FuelRecordAdd
-    }) => await updateFuelRecord(recordID, fuelRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Updating fuel record", "records.fuel")
+      return await updateFuelRecord(recordID, fuelRecord)
+    },
     onSuccess: (_, { vehicleId }) => {
       _queryClient.invalidateQueries({
         queryKey: recordKeys.fuel.allRecords(vehicleId),
@@ -67,7 +74,10 @@ export const useDeleteFuelRecord = () => {
     }: {
       recordID: number
       vehicleId: number
-    }) => await deleteFuelRecord(recordID),
+    }) => {
+      ErrorTracking.addBreadcrumb("Deleting fuel record", "records.fuel")
+      return await deleteFuelRecord(recordID)
+    },
     onSuccess: (_, { vehicleId }) => {
       _queryClient.invalidateQueries({
         queryKey: recordKeys.fuel.allRecords(vehicleId),

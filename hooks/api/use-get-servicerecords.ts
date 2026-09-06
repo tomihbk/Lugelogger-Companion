@@ -1,15 +1,16 @@
+import { useMutation, useQuery } from "@tanstack/react-query"
 import {
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query"
-import { getServiceRecords, addServiceRecord, updateServiceRecord } from "~/api/service-records"
+  getServiceRecords,
+  addServiceRecord,
+  updateServiceRecord,
+} from "~/api/service-records"
 import type { ServiceRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 import { deleteServiceRecord } from "~/api/service-records"
 import { recordKeys } from "./queryKeys"
+import { ErrorTracking } from "~/utils/ErrorTracking"
 
 const _queryClient = queryClient
-
 
 export const useServiceRecords = (vehicleId: number) => {
   const query = useQuery<ServiceRecord>({
@@ -27,7 +28,10 @@ export const useAddServiceRecord = () => {
     }: {
       vehicleId: number
       serviceRecord: ServiceRecord
-    }) => await addServiceRecord(vehicleId, serviceRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Adding service record", "records.service")
+      return await addServiceRecord(vehicleId, serviceRecord)
+    },
     onError: (err) => console.error("useAddServiceRecord error : " + err),
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
@@ -49,7 +53,10 @@ export const useUpdateServiceRecord = () => {
       recordID: number
       vehicleId: number
       serviceRecord: ServiceRecord
-    }) => await updateServiceRecord(recordID, serviceRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Updating service record", "records.service")
+      return await updateServiceRecord(recordID, serviceRecord)
+    },
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
@@ -68,7 +75,10 @@ export const useDeleteServiceRecord = () => {
     }: {
       recordID: number
       vehicleId: number
-    }) => await deleteServiceRecord(recordID),
+    }) => {
+      ErrorTracking.addBreadcrumb("Deleting service record", "records.service")
+      return await deleteServiceRecord(recordID)
+    },
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
       _queryClient.invalidateQueries({

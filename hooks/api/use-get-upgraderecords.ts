@@ -8,6 +8,7 @@ import {
 import type { UpgradeRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 import { recordKeys } from "./queryKeys"
+import { ErrorTracking } from "~/utils/ErrorTracking"
 
 const _queryClient = queryClient
 
@@ -27,7 +28,10 @@ export const useAddUpgradeRecord = () => {
     }: {
       vehicleId: number
       upgradeRecord: UpgradeRecord
-    }) => await addUpgradeRecord(vehicleId, upgradeRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Adding upgrade record", "records.upgrade")
+      return await addUpgradeRecord(vehicleId, upgradeRecord)
+    },
     onError: (err) => console.error("useAddUpgradeRecord error : " + err),
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
@@ -49,7 +53,10 @@ export const useUpdateUpgradeRecord = () => {
       recordID: number
       vehicleId: number
       upgradeRecord: UpgradeRecord
-    }) => await updateUpgradeRecord(recordID, upgradeRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Updating upgrade record", "records.upgrade")
+      return await updateUpgradeRecord(recordID, upgradeRecord)
+    },
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
@@ -68,7 +75,10 @@ export const useDeleteUpgradeRecord = () => {
     }: {
       recordID: number
       vehicleId: number
-    }) => await deleteUpgradeRecord(recordID),
+    }) => {
+      ErrorTracking.addBreadcrumb("Deleting upgrade record", "records.upgrade")
+      return await deleteUpgradeRecord(recordID)
+    },
     onSuccess: (_, variables) => {
       const { vehicleId } = variables
       _queryClient.invalidateQueries({

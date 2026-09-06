@@ -10,6 +10,7 @@ import GlobalStateStore from "~/stores/globalStateStore"
 import useOnboardingStore from "~/stores/onboardingStore"
 import tw from "~/tw.config"
 import AnimatedPressable from "~/components/Animations/AnimatedPressable"
+import { useAnalytics } from "~/utils/Analytics"
 
 type OnboardingVehicle = {
     id: number
@@ -24,6 +25,7 @@ export default function FavoriteVehicleScreen() {
     const { setFavoriteCar, favoriteCarId } = GlobalStateStore()
     const { completeStep } = useOnboardingStore()
     const { data: vehicleList, isError, error, isLoading, refetch, isRefetching } = useGetAllVehicles()
+    const analytics = useAnalytics()
 
     const vehicles = useMemo(
         () => Array.isArray(vehicleList) ? vehicleList as OnboardingVehicle[] : [],
@@ -40,6 +42,7 @@ export default function FavoriteVehicleScreen() {
 
         setFavoriteCar(selectedVehicleId)
         completeStep("favorite-vehicle")
+        analytics.onboardingStep("favorite-vehicle_completed")
         router.push("/(onboarding)/preferences" as Href)
     }
 

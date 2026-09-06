@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { Text, View, Image } from "react-native"
 import { Href, router } from "expo-router"
 import { ChevronRight } from "lucide-react-native"
@@ -9,13 +9,16 @@ import tw from "~/tw.config"
 import { APP } from "~/constants/app"
 import AppBackground from "~/components/ui/AppBackground"
 import AnimatedPressable from "~/components/Animations/AnimatedPressable"
+import { useAnalytics } from "~/utils/Analytics"
 
 export default function WelcomeScreen() {
     const theme = useTheme()
     const { completeStep } = useOnboardingStore()
+    const analytics = useAnalytics()
 
     const handleGetStarted = () => {
         completeStep("index")
+        analytics.onboardingStep("onboarding_begun")
         router.push("/(onboarding)/server" as Href)
     }
 

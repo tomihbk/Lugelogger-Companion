@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView, TextInput, ActivityIndicator } from 'react-native'
 import { useForm, Controller } from 'react-hook-form'
 import { encode as base64Encode } from 'base-64'
 import tw from '~/tw.config'
@@ -9,6 +9,7 @@ import { refreshAllQueries } from '~/hooks/api/reset-queries'
 import { useTheme } from '~/hooks/useTheme'
 import { EyeIcon, EyeOffIcon } from 'lucide-react-native'
 import AnimatedPressable from './Animations/AnimatedPressable'
+import { useAnalytics } from '~/utils/Analytics'
 
 type ServerSettingsForm = {
     serverURL: string
@@ -63,6 +64,7 @@ const ServerSettings: React.FC<ServerSettingsProps> = ({
     const [testUser, setTestUser] = useState<any | null>(null)
     const [testedSettings, setTestedSettings] = useState<ServerSettingsForm | null>(null)
     const [hidePass, setHidePass] = useState(true)
+    const analytics = useAnalytics()
 
     const currentValues = watch()
     const normalizedCurrentValues = normalizeSettings({
@@ -152,6 +154,7 @@ const ServerSettings: React.FC<ServerSettingsProps> = ({
         }
 
         setSettings(normalizedValues)
+        analytics.settingChanged("server_settings")
 
         if (refreshQueriesOnSave) {
             refreshAllQueries()

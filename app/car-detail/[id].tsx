@@ -24,6 +24,7 @@ import useThemeStore from '~/stores/themeStore'
 import { useTheme } from '~/hooks/useTheme'
 import AnimatedSection from "~/components/Animations/AnimatedSection"
 import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
+import { useAnalytics } from '~/utils/Analytics'
 
 
 const CarDetail = () => {
@@ -42,6 +43,7 @@ const CarDetail = () => {
   const currentWorldYear = new Date().getFullYear()
   const { colorScheme } = useThemeStore()
   const theme = useTheme()
+  const analytics = useAnalytics()
 
   const ActionButtons = [
     { key: 'home', label: 'Home', color: '#f28900' },
@@ -147,6 +149,7 @@ const CarDetail = () => {
     if (!actionType) return
 
     setSelectedTabName(actionType)
+    analytics.recordTypeViewed(actionType)
 
     const button = ActionButtons.find(b => b.key === actionType)
     if (button) {
@@ -332,6 +335,7 @@ const CarDetail = () => {
                 color={button.color} key={button.key} buttonIndex={button.key} label={button.label}
                 onClick={() => {
                   setSelectedTabName(button.key)
+                  analytics.recordTypeViewed(button.key)
                   setSelectedButtonHexColor(button.color)
                 }} selectedTabName={selectedTabName} />
             ))}

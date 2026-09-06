@@ -22,6 +22,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
 import AnimatedPressable from "~/components/Animations/AnimatedPressable"
 import AnimatedSection from "~/components/Animations/AnimatedSection"
+import { useAnalytics } from "~/utils/Analytics"
 
 
 const Settings = () => {
@@ -32,6 +33,7 @@ const Settings = () => {
   const [, , setColorScheme] = useAppColorScheme(tw)
   const { preferredDistanceMeasurement, setPreferredDistanceMeasurement, setOptInCrashReports, optInCrashReports, preferredCurrencySymbol } = GlobalStateStore((state) => state)
   const tabBarHeight = useBottomTabBarHeight()
+  const analytics = useAnalytics()
 
 
   const languageData: Record<string, string> = {
@@ -133,6 +135,7 @@ const Settings = () => {
                           label={languageData[lang]}
                           onPress={() => {
                             i18n.changeLanguage(lang)
+                            analytics.settingChanged("language", { new_value: lang })
                             setModalLanguageVisibile(!modalLanguageVisible)
                           }}
                           color={i18n.language == lang ? "#2563eb" : "#a6cdff"}
@@ -163,46 +166,52 @@ const Settings = () => {
               <ArrowRight size={20} color={theme.colors.text.primary} />
             </SettingRow>
 
-              <Modal
-                animationType="slide"
-                visible={modalUserPrefVisible}
-                hardwareAccelerated={true}
-                onRequestClose={() => {
-                  setModalUserPrefVisible(!modalUserPrefVisible)
-                }}>
-                <SafeAreaView style={[tw`flex flex-col p-5 h-full`, { backgroundColor: theme.colors.background.default }]}>
-                  <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
-                    <ArrowLeft color={theme.colors.text.primary} style={tw`w-full p-4 pl-0`}
-                      onPress={() => { setModalUserPrefVisible(!modalUserPrefVisible) }} />
-                    <Text style={[tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`, { color: theme.colors.text.primary }]} numberOfLines={1}>User Preferences</Text>
+            <Modal
+              animationType="slide"
+              visible={modalUserPrefVisible}
+              hardwareAccelerated={true}
+              onRequestClose={() => {
+                setModalUserPrefVisible(!modalUserPrefVisible)
+              }}>
+              <SafeAreaView style={[tw`flex flex-col p-5 h-full`, { backgroundColor: theme.colors.background.default }]}>
+                <View style={tw`flex flex-row flex-wrap justify-between items-start`}>
+                  <ArrowLeft color={theme.colors.text.primary} style={tw`w-full p-4 pl-0`}
+                    onPress={() => { setModalUserPrefVisible(!modalUserPrefVisible) }} />
+                  <Text style={[tw`text-2xl font-HKGrotesk-Bold mb-5 w-5/6`, { color: theme.colors.text.primary }]} numberOfLines={1}>User Preferences</Text>
+                </View>
+
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
+                    <Text style={[tw`text-base font-HKGrotesk-Regular `, { color: theme.colors.text.primary }]}>Use Miles</Text>
+                    <ModernSwitch
+                      onValueChange={(val) => {
+                        setPreferredDistanceMeasurement(val ? "mi" : "km")
+                        analytics.settingChanged("distance_measurement", { new_value: val ? "mi" : "km" })
+                      }}
+                      value={preferredDistanceMeasurement === "mi"}
+                      //activeColor={"#2563eb"}
+                      activeColor={theme.colors.brand.primary}
+                    />
+                  </View>
+                  <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
+                    <Text style={[tw`text-base font-HKGrotesk-Regular`, { color: theme.colors.text.primary }]}>Currency</Text>
+                    <CurrencySelector savedCurrencyCode={preferredCurrencySymbol} />
                   </View>
 
-                  <ScrollView showsVerticalScrollIndicator={false}>
-                    <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
-                      <Text style={[tw`text-base font-HKGrotesk-Regular `, { color: theme.colors.text.primary }]}>Use Miles</Text>
-                      <ModernSwitch
-                        onValueChange={(val) => setPreferredDistanceMeasurement(val ? "mi" : "km")}
-                        value={preferredDistanceMeasurement === "mi"}
-                        //activeColor={"#2563eb"}
-                        activeColor={theme.colors.brand.primary}
-                      />
-                    </View>
-                    <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
-                      <Text style={[tw`text-base font-HKGrotesk-Regular`, { color: theme.colors.text.primary }]}>Currency</Text>
-                      <CurrencySelector savedCurrencyCode={preferredCurrencySymbol} />
-                    </View>
-
-                    <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
-                      <Text style={[tw`text-base font-HKGrotesk-Regular`, { color: theme.colors.text.primary }]}>Opt-in Crash log</Text>
-                      <ModernSwitch
-                        onValueChange={() => setOptInCrashReports(!optInCrashReports)}
-                        value={!!optInCrashReports}
-                        activeColor={"#2563eb"}
-                      />
-                    </View>
-                  </ScrollView>
-                </SafeAreaView>
-              </Modal>
+                  <View style={tw`flex flex-row items-center justify-between px-4 py-2`}>
+                    <Text style={[tw`text-base font-HKGrotesk-Regular`, { color: theme.colors.text.primary }]}>Opt-in Crash log</Text>
+                    <ModernSwitch
+                      onValueChange={() => {
+                        setOptInCrashReports(!optInCrashReports)
+                        analytics.settingChanged("crash_reports", { new_value: !optInCrashReports })
+                      }}
+                      value={!!optInCrashReports}
+                      activeColor={"#2563eb"}
+                    />
+                  </View>
+                </ScrollView>
+              </SafeAreaView>
+            </Modal>
 
             <SettingRow
               icon={<Server size={20} color={theme.colors.text.primary} />}
@@ -240,7 +249,10 @@ const Settings = () => {
             <SettingRow
               icon={<BadgeInfo size={20} color={theme.colors.text.primary} />}
               label="About"
-              onPress={() => { setModalAboutVisible(!modalAboutVisible) }}
+              onPress={() => {
+                setModalAboutVisible(!modalAboutVisible)
+                analytics.settingChanged("about_us_consulted")
+              }}
               color={theme.colors.text.primary}>
               <ArrowRight size={20} color={theme.colors.text.primary} />
               <Modal
@@ -265,7 +277,10 @@ const Settings = () => {
             <SettingRow
               icon={<Scale size={20} color={theme.colors.text.primary} />}
               label="Licenses"
-              onPress={() => { setModalLicenseVisible(!modalLicenseVisible) }}
+              onPress={() => {
+                setModalLicenseVisible(!modalLicenseVisible)
+                analytics.settingChanged("licenses_consulted")
+              }}
               color={theme.colors.text.primary}>
               <ArrowRight size={20} color={theme.colors.text.primary} />
               <Modal
@@ -291,7 +306,10 @@ const Settings = () => {
             <SettingRow
               icon={<GitBranch size={20} color={theme.colors.text.primary} />}
               label="Github"
-              onPress={() => { Linking.openURL("https://github.com/hargata/lubelog") }}
+              onPress={() => {
+                analytics.settingChanged("github_consulted")
+                Linking.openURL("https://github.com/hargata/lubelog")
+              }}
               // #TODO : Add your repo link
               color={theme.colors.text.primary}>
               <ArrowRight size={20} color={theme.colors.text.primary} />
@@ -307,6 +325,7 @@ const Settings = () => {
 
         <AnimatedSection delay={240}>
           <AnimatedPressable style={[tw`mt-6 p-2 rounded-full border`, { backgroundColor: theme.colors.background.default, color: theme.colors.text.primary, borderColor: theme.colors.brand.primary + "60" }]} onPress={() => {
+            analytics.settingChanged("rate_app_button_pressed")
             if (Platform.OS === 'ios') {
               Linking.openURL('itms-apps://apps.apple.com/app/idYOUR_APP_ID?action=write-review');
             } else if (Platform.OS === 'android') {

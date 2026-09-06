@@ -1,11 +1,16 @@
+import { useMutation, useQuery } from "@tanstack/react-query"
 import {
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query"
-import { getRepairRecords, addRepairRecord, updateRepairRecord, deleteRepairRecord } from "~/api/repair-records"
+  getRepairRecords,
+  addRepairRecord,
+  updateRepairRecord,
+  deleteRepairRecord,
+} from "~/api/repair-records"
 import type { RepairRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 import { recordKeys } from "./queryKeys"
+import { ErrorTracking } from "~/utils/ErrorTracking"
+import { useAnalytics } from "~/utils/Analytics"
+
 const _queryClient = queryClient
 
 export const useRepairRecords = (vehicleId: number) => {
@@ -17,6 +22,7 @@ export const useRepairRecords = (vehicleId: number) => {
 }
 
 export const useAddRepairRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       vehicleId,
@@ -24,9 +30,13 @@ export const useAddRepairRecord = () => {
     }: {
       vehicleId: number
       repairRecord: RepairRecord
-    }) => await addRepairRecord(vehicleId, repairRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Adding repair record", "records.repair")
+      return await addRepairRecord(vehicleId, repairRecord)
+    },
     onError: (err) => console.error("useAddRepairRecord error : " + err),
     onSuccess: (_, variables) => {
+      analytics.recordCreated("repair")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.repair.allRecords(vehicleId),
@@ -37,6 +47,7 @@ export const useAddRepairRecord = () => {
 }
 
 export const useUpdateRepairRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -46,8 +57,12 @@ export const useUpdateRepairRecord = () => {
       recordID: number
       vehicleId: number
       repairRecord: RepairRecord
-    }) => await updateRepairRecord(recordID, repairRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Updating repair record", "records.repair")
+      return await updateRepairRecord(recordID, repairRecord)
+    },
     onSuccess: (_, variables) => {
+      analytics.recordUpdated("repair")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.repair.allRecords(vehicleId),
@@ -58,6 +73,7 @@ export const useUpdateRepairRecord = () => {
 }
 
 export const useDeleteRepairRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -65,8 +81,12 @@ export const useDeleteRepairRecord = () => {
     }: {
       recordID: number
       vehicleId: number
-    }) => await deleteRepairRecord(recordID),
+    }) => {
+      ErrorTracking.addBreadcrumb("Deleting repair record", "records.repair")
+      return await deleteRepairRecord(recordID)
+    },
     onSuccess: (_, variables) => {
+      analytics.recordDeleted("repair")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.repair.allRecords(vehicleId),

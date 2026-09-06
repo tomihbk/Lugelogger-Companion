@@ -1,9 +1,10 @@
 import React from "react"
-import { ScrollView, TouchableOpacity, Text, View } from "react-native"
-import { Sun, Moon, Smartphone, LucideIcon } from "lucide-react-native"
+import { ScrollView, Text, View } from "react-native"
+import { Sun, Moon, LucideIcon } from "lucide-react-native"
 import tw from "~/tw.config"
 import { useTheme } from "~/hooks/useTheme"
 import AnimatedPressable from "./Animations/AnimatedPressable"
+import { useAnalytics } from "~/utils/Analytics"
 
 type ThemeSettingProps = {
     colorSchemeStore: 'light' | 'dark' | 'system'
@@ -69,6 +70,7 @@ const ThemeOption = ({ icon: Icon, label, description, isSelected, onPress, icon
 
 const ThemeSetting = ({ colorSchemeStore, setColorSchemeStore, setModalThemeVisible, modalThemeVisible }: ThemeSettingProps) => {
     const theme = useTheme()
+    const analytics = useAnalytics()
     const themes = [
         {
             id: 'light',
@@ -108,6 +110,7 @@ const ThemeSetting = ({ colorSchemeStore, setColorSchemeStore, setModalThemeVisi
                     isSelected={colorSchemeStore === theme.id}
                     onPress={() => {
                         setColorSchemeStore(theme.id)
+                        analytics.settingChanged("theme", { new_value: theme })
                         setModalThemeVisible(!modalThemeVisible)
                     }}
                 />

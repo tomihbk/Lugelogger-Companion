@@ -7,13 +7,17 @@ import ServerSettings from "~/components/ServerSettings"
 import { useTheme } from "~/hooks/useTheme"
 import useOnboardingStore from "~/stores/onboardingStore"
 import tw from "~/tw.config"
+import { useAnalytics } from "~/utils/Analytics"
+
 
 export default function ServerScreen() {
     const theme = useTheme()
     const { completeStep } = useOnboardingStore()
+    const analytics = useAnalytics()
 
     const handleSave = () => {
         completeStep("server")
+        analytics.onboardingStep("server_completed")
         router.push("/(onboarding)/favorite-vehicle" as Href)
     }
 
@@ -26,7 +30,7 @@ export default function ServerScreen() {
                     </Text>
 
                     <Text style={[tw`text-sm font-HKGrotesk-Medium`, { color: theme.colors.text.secondary }]}>
-                       Step 2 of 5
+                        Step 2 of 5
                     </Text>
                 </View>
 

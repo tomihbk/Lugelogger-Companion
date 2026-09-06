@@ -16,8 +16,6 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
 import AnimatedSection from "~/components/Animations/AnimatedSection"
 
-
-
 export default function Home() {
   const { t } = useTranslation()
   const { favoriteCarId } = GlobalStateStore((state) => state)
@@ -42,7 +40,6 @@ export default function Home() {
         {/* <Redirect href="/(tabs)/garage" /> */}
         <Stack.Screen options={{ title: 'Home', headerShown: false }} />
         <View style={tw`p-5 py-0`}>
-
           <AnimatedSection>
             <GreetingHeader brand={vehicleWithoutStats.make} userName={CapitalizeFirstLetter(UserInfo?.username as string)} />
           </AnimatedSection>

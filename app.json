@@ -68,9 +68,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#2563EB"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.berinfo.lugeloggercompanion"
@@ -96,7 +94,10 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/9e112d4f-b78c-41c2-9d45-9a33a8db1270"
+      "url": "https://u.expo.dev/9e112d4f-b78c-41c2-9d45-9a33a8db1270",
+      "requestHeaders": {
+        "expo-channel-name": "production"
+      }
     }
   }
 }

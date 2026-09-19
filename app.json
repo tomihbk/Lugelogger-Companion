@@ -89,6 +89,15 @@
         "projectId": "9e112d4f-b78c-41c2-9d45-9a33a8db1270"
       }
     },
-    "owner": "proteinshaker"
+    "owner": "proteinshaker",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/9e112d4f-b78c-41c2-9d45-9a33a8db1270",
+      "requestHeaders": {
+        "expo-channel-name": "production"
+      }
+    }
   }
 }

@@ -62,7 +62,7 @@ export default function garage() {
               <AnimatedSection
                 key={vehicle.id}
                 delay={60 + Math.min(index, 6) * 50}>
-                <CarShowCase key={vehicle.id} Name={`${vehicle.make} ${vehicle.model}`} PlateNumber={vehicle.licensePlate} Year={vehicle.year} CarPhotoUri={`${process.env.EXPO_PUBLIC_API_URL}${vehicle.imageLocation}`} carId={vehicle.id} />
+                <CarShowCase key={vehicle.id} Name={`${vehicle.make} ${vehicle.model}`} PlateNumber={vehicle.licensePlate} Year={vehicle.year} CarPhotoUri={`${process.env.EXPO_PUBLIC_API_URL}${vehicle.imageLocation}`} carId={vehicle.id} vehicleName={`${vehicle.make} ${vehicle.model}`} />
               </AnimatedSection>
               // TODO: Don't forget to modify the process.env in prod for carphotouri and repace the image fetching with other component
             ))}

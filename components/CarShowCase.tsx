@@ -19,6 +19,7 @@ type CarShowCaseProps = {
     Name: string
     CarPhotoUri: string
     carId: number
+    vehicleName: string
 }
 
 const CarShowCase = (props: CarShowCaseProps) => {
@@ -33,7 +34,7 @@ const CarShowCase = (props: CarShowCaseProps) => {
     return (
         <AnimatedPressable style={tw`mb-5 z-50`} onPress={() => router.push({
             pathname: "/car-detail/[id]",
-            params: { id: props.carId, actionType: "home" }
+            params: { id: props.carId, actionType: "home", vehicleName: props.vehicleName }
         })}>
             <View style={[tw`h-52 rounded-2xl overflow-hidden`]}>
                 <AuthenticatedImage uri={props.CarPhotoUri} resizeMode="cover" style={tw`absolute w-full h-full`} />

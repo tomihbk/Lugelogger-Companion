@@ -28,7 +28,7 @@ import { useAnalytics } from '~/utils/Analytics'
 
 
 const CarDetail = () => {
-  const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
+  const { id: CarId, actionType, vehicleName }: { id: string, actionType: string, vehicleName: string } = useLocalSearchParams()
 
   const carId = parseInt(CarId)
   const { data: ServiceRecords, isPending: isServiceRecordsFetching, isError: isServiceError } = useServiceRecords(carId)
@@ -319,7 +319,7 @@ const CarDetail = () => {
   return (
     <View style={[tw`flex-1 px-3`, { backgroundColor: theme.colors.background.default }]}>
       <Stack.Screen options={{
-        headerTitle: () => <Text style={[tw`text-xl font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>, // TODO: Change to dynamic title based on car details
+        headerTitle: () => <Text style={[tw`text-xl font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]} numberOfLines={1}>{vehicleName}</Text>,
       }} />
       <AnimatedSection delay={60} duration={400} direction='right'>
         <Animated.ScrollView

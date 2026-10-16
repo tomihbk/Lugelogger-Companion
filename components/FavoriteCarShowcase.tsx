@@ -17,6 +17,7 @@ type FavoriteCarShowCaseProps = {
     Mileage: string
     Name: string
     CarPhotoUri: string
+    vehicleName: string
 }
 
 const FavoriteCarShowcase = (props: FavoriteCarShowCaseProps) => {
@@ -32,7 +33,7 @@ const FavoriteCarShowcase = (props: FavoriteCarShowCaseProps) => {
     return (
         <AnimatedPressable style={tw`mb-4`} onPress={() => {
             router.push({
-                pathname, params: { id: props.CarID, actionType: "home" }
+                pathname, params: { id: props.CarID, actionType: "home", vehicleName: props.Name }
             })
         }}>
             <View style={[tw`relative overflow-hidden rounded-3xl h-[${CARD_HEIGHT}] shadow-xl dark:shadow-none shadow-blue-900/80`,{elevation: colorScheme === 'light' ? 10 : 0}]}>

@@ -11,6 +11,7 @@ interface GlobalStateStoreProp {
   isUseUSMPG: boolean
   isUseUKMPG: boolean
   optInCrashReports: boolean
+  telemetryUserId: string | null,
   setFavoriteCar: (carId: number) => void
   setSelectedTabName: (lastSelectedTab: string) => void
   setPreferredCurrencySymbol: (currencyISO4217Symbol: string) => void
@@ -19,6 +20,7 @@ interface GlobalStateStoreProp {
   setUseUSMPG: (useUSMPG: boolean) => void
   setUseUKMPG: (useUKMPG: boolean) => void
   setOptInCrashReports: (optInCrashReports: boolean) => void
+  setTelemetryUserId: (telemetryUserId: string | null) => void
 }
 
 const GlobalStateStore = create<GlobalStateStoreProp>()(
@@ -33,6 +35,7 @@ const GlobalStateStore = create<GlobalStateStoreProp>()(
       isUseUSMPG: false,
       isUseUKMPG: false,
       optInCrashReports: true,
+      telemetryUserId: null,
       setFavoriteCar: (carId) => set(() => ({ favoriteCarId: carId })),
       setPreferredCurrencySymbol: (currencyISO4217Symbol) =>
         set(() => ({ preferredCurrencySymbol: currencyISO4217Symbol })),
@@ -44,9 +47,11 @@ const GlobalStateStore = create<GlobalStateStoreProp>()(
         set(() => ({ selectedTabName: lastSelectedTab })),
       setUseUSMPG: (useUSMPG) => set(() => ({ isUseUSMPG: useUSMPG })),
       setUseUKMPG: (useUKMPG) => set(() => ({ isUseUKMPG: useUKMPG })),
+      setTelemetryUserId: (telemetryUserId: string | null) => set(() => ({ telemetryUserId })),
       setOptInCrashReports: (optInCrashReports) =>
         set(() => ({ optInCrashReports })),
     }),
+
     {
       name: "global-state-storage", // name of item in the persist store - must be unique
       storage: createJSONStorage(() => zustandStorage),

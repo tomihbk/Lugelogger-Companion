@@ -9,6 +9,8 @@ import {
 import type { OdometerRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 import { recordKeys } from "./queryKeys"
+import { ErrorTracking } from "~/utils/ErrorTracking"
+import { useAnalytics } from "~/utils/Analytics"
 
 const _queryClient = queryClient
 
@@ -29,6 +31,7 @@ export const useLastOdometerRecord = (vehicleId: number) => {
 }
 
 export const useAddOdometerRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       vehicleId,
@@ -36,8 +39,12 @@ export const useAddOdometerRecord = () => {
     }: {
       vehicleId: number
       odometerRecord: OdometerRecord
-    }) => await addOdometerRecord(vehicleId, odometerRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Adding odometer record", "records.odometer")
+      return await addOdometerRecord(vehicleId, odometerRecord)
+    },
     onSuccess: (_, variables) => {
+      analytics.recordCreated("odometer")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.odometer.allRecords(vehicleId),
@@ -48,6 +55,7 @@ export const useAddOdometerRecord = () => {
 }
 
 export const useUpdateOdometerRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -57,8 +65,15 @@ export const useUpdateOdometerRecord = () => {
       recordID: number
       vehicleId: number
       odometerRecord: OdometerRecord
-    }) => await updateOdometerRecord(recordID, odometerRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb(
+        "Updating odometer record",
+        "records.odometer",
+      )
+      return await updateOdometerRecord(recordID, odometerRecord)
+    },
     onSuccess: (_, { vehicleId }) => {
+      analytics.recordUpdated("odometer")
       _queryClient.invalidateQueries({
         queryKey: recordKeys.odometer.allRecords(vehicleId),
       })
@@ -68,6 +83,7 @@ export const useUpdateOdometerRecord = () => {
 }
 
 export const useDeleteOdometerRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -75,8 +91,15 @@ export const useDeleteOdometerRecord = () => {
     }: {
       recordID: number
       vehicleId: number
-    }) => await deleteOdometerRecord(recordID),
+    }) => {
+      ErrorTracking.addBreadcrumb(
+        "Deleting odometer record",
+        "records.odometer",
+      )
+      return await deleteOdometerRecord(recordID)
+    },
     onSuccess: (_, variables) => {
+      analytics.recordDeleted("odometer")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.odometer.allRecords(vehicleId),

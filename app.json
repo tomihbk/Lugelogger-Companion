@@ -44,7 +44,17 @@
           ]
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "lugelogger-companion",
+          "organization": "berinfo"
+        }
+      ],
+      "@sentry/react-native",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -56,7 +66,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#7c2791"
+      "backgroundColor": "#2563EB"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -67,7 +77,7 @@
       "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#32a852"
+        "backgroundColor": "#2563EB"
       },
       "package": "com.berinfo.lugeloggercompanion"
     },
@@ -79,6 +89,15 @@
         "projectId": "9e112d4f-b78c-41c2-9d45-9a33a8db1270"
       }
     },
-    "owner": "proteinshaker"
+    "owner": "proteinshaker",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/9e112d4f-b78c-41c2-9d45-9a33a8db1270",
+      "requestHeaders": {
+        "expo-channel-name": "production"
+      }
+    }
   }
 }

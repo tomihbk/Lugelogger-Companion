@@ -8,6 +8,8 @@ import {
 import type { UpgradeRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 import { recordKeys } from "./queryKeys"
+import { ErrorTracking } from "~/utils/ErrorTracking"
+import { useAnalytics } from "~/utils/Analytics"
 
 const _queryClient = queryClient
 
@@ -20,6 +22,7 @@ export const useUpgradeRecords = (vehicleId: number) => {
 }
 
 export const useAddUpgradeRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       vehicleId,
@@ -27,9 +30,13 @@ export const useAddUpgradeRecord = () => {
     }: {
       vehicleId: number
       upgradeRecord: UpgradeRecord
-    }) => await addUpgradeRecord(vehicleId, upgradeRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Adding upgrade record", "records.upgrade")
+      return await addUpgradeRecord(vehicleId, upgradeRecord)
+    },
     onError: (err) => console.error("useAddUpgradeRecord error : " + err),
     onSuccess: (_, variables) => {
+      analytics.recordCreated("upgrade")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.upgrade.allRecords(vehicleId),
@@ -40,6 +47,7 @@ export const useAddUpgradeRecord = () => {
 }
 
 export const useUpdateUpgradeRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -49,8 +57,12 @@ export const useUpdateUpgradeRecord = () => {
       recordID: number
       vehicleId: number
       upgradeRecord: UpgradeRecord
-    }) => await updateUpgradeRecord(recordID, upgradeRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Updating upgrade record", "records.upgrade")
+      return await updateUpgradeRecord(recordID, upgradeRecord)
+    },
     onSuccess: (_, variables) => {
+      analytics.recordUpdated("upgrade")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.upgrade.allRecords(vehicleId),
@@ -61,6 +73,7 @@ export const useUpdateUpgradeRecord = () => {
 }
 
 export const useDeleteUpgradeRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -68,8 +81,12 @@ export const useDeleteUpgradeRecord = () => {
     }: {
       recordID: number
       vehicleId: number
-    }) => await deleteUpgradeRecord(recordID),
+    }) => {
+      ErrorTracking.addBreadcrumb("Deleting upgrade record", "records.upgrade")
+      return await deleteUpgradeRecord(recordID)
+    },
     onSuccess: (_, variables) => {
+      analytics.recordDeleted("upgrade")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.upgrade.allRecords(vehicleId),

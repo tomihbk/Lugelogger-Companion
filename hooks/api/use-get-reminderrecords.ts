@@ -8,6 +8,8 @@ import type { ReminderRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 import { deleteReminderRecord } from "~/api/reminder-records"
 import { recordKeys } from "./queryKeys"
+import { ErrorTracking } from "~/utils/ErrorTracking"
+import { useAnalytics } from "~/utils/Analytics"
 
 const _queryClient = queryClient
 
@@ -20,6 +22,7 @@ export const useReminderRecords = (vehicleId: number) => {
 }
 
 export const useAddReminderRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       vehicleId,
@@ -27,9 +30,13 @@ export const useAddReminderRecord = () => {
     }: {
       vehicleId: number
       reminderRecord: ReminderRecord
-    }) => await addReminderRecord(vehicleId, reminderRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Adding reminder record", "records.reminder")
+      return await addReminderRecord(vehicleId, reminderRecord)
+    },
     onError: (err) => console.error("useAddReminderRecord error : " + err),
     onSuccess: (_, variables) => {
+      analytics.recordCreated("reminder")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.reminder.allRecords(vehicleId),
@@ -40,6 +47,7 @@ export const useAddReminderRecord = () => {
 }
 
 export const useUpdateReminderRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -49,8 +57,15 @@ export const useUpdateReminderRecord = () => {
       recordID: number
       vehicleId: number
       reminderRecord: ReminderRecord
-    }) => await updateReminderRecord(recordID, reminderRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb(
+        "Updating reminder record",
+        "records.reminder",
+      )
+      return await updateReminderRecord(recordID, reminderRecord)
+    },
     onSuccess: (_, variables) => {
+      analytics.recordUpdated("reminder")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.reminder.allRecords(vehicleId),
@@ -61,6 +76,7 @@ export const useUpdateReminderRecord = () => {
 }
 
 export const useDeleteReminderRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -68,8 +84,15 @@ export const useDeleteReminderRecord = () => {
     }: {
       recordID: number
       vehicleId: number
-    }) => await deleteReminderRecord(recordID),
+    }) => {
+      ErrorTracking.addBreadcrumb(
+        "Deleting reminder record",
+        "records.reminder",
+      )
+      return await deleteReminderRecord(recordID)
+    },
     onSuccess: (_, variables) => {
+      analytics.recordDeleted("reminder")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.reminder.allRecords(vehicleId),

@@ -1,6 +1,5 @@
 import React from "react"
 import { Redirect, Stack } from "expo-router"
-import { useTheme } from "~/hooks/useTheme"
 import useThemeStore from "~/stores/themeStore"
 import useOnboardingStore, { CURRENT_SETUP_VERSION } from "~/stores/onboardingStore"
 

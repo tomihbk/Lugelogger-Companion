@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { useTheme } from "~/hooks/useTheme"
 import GlobalStateStore from "~/stores/globalStateStore"
 import tw from "~/tw.config"
+import { useAnalytics } from "~/utils/Analytics"
 
 interface Currency {
     code: string
@@ -48,6 +49,7 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
 }) => {
     const theme = useTheme()
     const { preferredCurrencySymbol, setPreferredCurrencySymbol } = GlobalStateStore((state) => state)
+    const analytics = useAnalytics()
 
     // Find currency from saved code or preferredCurrencySymbol or default to USD
     const getInitialCurrency = (): Currency => {
@@ -68,6 +70,7 @@ export const CurrencySelector: React.FC<CurrencySelectorProps> = ({
 
         // Update global state
         setPreferredCurrencySymbol(currency.code)
+        analytics.settingChanged("currency", { new_value: currency.code })
 
         // Call the callback if provided
         if (onCurrencyChange) {

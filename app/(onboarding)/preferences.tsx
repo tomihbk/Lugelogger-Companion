@@ -13,11 +13,14 @@ import tw from "~/tw.config"
 import ModernSwitch from "~/components/ModernSwitch"
 import { APP } from "~/constants/app"
 import AnimatedPressable from "~/components/Animations/AnimatedPressable"
+import { useAnalytics } from "~/utils/Analytics"
+
 
 export default function PreferencesScreen() {
     const theme = useTheme()
     const { colorScheme, setColorScheme } = useThemeStore()
     const { completeStep } = useOnboardingStore()
+    const analytics = useAnalytics()
 
     const {
         preferredCurrencySymbol,
@@ -62,6 +65,7 @@ export default function PreferencesScreen() {
 
     const handleContinue = () => {
         completeStep("preferences")
+        analytics.onboardingStep("preferences_completed")
         router.push("/(onboarding)/finish" as Href)
     }
 

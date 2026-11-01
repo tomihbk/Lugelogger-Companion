@@ -11,6 +11,7 @@ import { useTheme } from '~/hooks/useTheme'
 import { darken } from 'polished'
 import useThemeStore from '~/stores/themeStore'
 import AnimatedPressable from './Animations/AnimatedPressable'
+import { useAnalytics } from '~/utils/Analytics'
 
 type CarShowCaseProps = {
     Year: number
@@ -18,6 +19,7 @@ type CarShowCaseProps = {
     Name: string
     CarPhotoUri: string
     carId: number
+    vehicleName: string
 }
 
 const CarShowCase = (props: CarShowCaseProps) => {
@@ -26,12 +28,13 @@ const CarShowCase = (props: CarShowCaseProps) => {
     const { preferredDistanceMeasurement } = GlobalStateStore((state) => state)
     const theme = useTheme()
     const { colorScheme } = useThemeStore()
-    const colorTintValue = colorScheme === 'light' ? .4 : .4                        
+    const colorTintValue = colorScheme === 'light' ? .4 : .4
+    const analytics = useAnalytics()
 
     return (
         <AnimatedPressable style={tw`mb-5 z-50`} onPress={() => router.push({
             pathname: "/car-detail/[id]",
-            params: { id: props.carId, actionType: "home" }
+            params: { id: props.carId, actionType: "home", vehicleName: props.vehicleName }
         })}>
             <View style={[tw`h-52 rounded-2xl overflow-hidden`]}>
                 <AuthenticatedImage uri={props.CarPhotoUri} resizeMode="cover" style={tw`absolute w-full h-full`} />
@@ -41,7 +44,10 @@ const CarShowCase = (props: CarShowCaseProps) => {
                     start={{ x: 0, y: 1 }}
                     end={{ x: 0, y: .3 }}>
                     <View style={tw`flex flex-col h-full justify-between`}>
-                        <AnimatedPressable style={tw`self-end m-5`} onPress={() => setFavoriteCar(props.carId)}>
+                        <AnimatedPressable style={tw`self-end m-5`} onPress={() => {
+                            setFavoriteCar(props.carId)
+                            analytics.primaryVehicleChanged()
+                        }}>
                             <Heart color={favoriteCarId != props.carId ? "white" : "red"} fill={favoriteCarId != props.carId ? "rgba(0,0,0,0)" : "red"} size={24} />
                         </AnimatedPressable>
                         <View style={tw`flex-row flex-wrap w-full pb-5 px-5`}>

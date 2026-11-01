@@ -12,6 +12,7 @@ import useThemeStore from "~/stores/themeStore"
 import ServerSettingsStore from "~/stores/serverSettingsStore"
 import tw from "~/tw.config"
 import AnimatedPressable from "~/components/Animations/AnimatedPressable"
+import { useAnalytics } from "~/utils/Analytics"
 
 type Vehicle = {
     id: number
@@ -38,6 +39,7 @@ export default function FinishScreen() {
 
     const { data: vehicleList, isLoading } = useGetAllVehicles()
     const savedSettings = getSettings()
+    const analytics = useAnalytics()
 
     const primaryVehicle = useMemo(() => {
         if (!Array.isArray(vehicleList)) return null
@@ -144,7 +146,10 @@ export default function FinishScreen() {
 
                 <AnimatedPressable
                     disabled={isLoading}
-                    onPress={finish}
+                    onPress={() => {
+                        analytics.onboardingCompleted()
+                        finish()
+                    }}
                     style={[
                         tw`w-full rounded-full py-4 px-5 flex-row items-center justify-center`,
                         {

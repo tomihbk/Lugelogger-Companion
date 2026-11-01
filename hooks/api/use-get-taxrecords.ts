@@ -8,6 +8,8 @@ import {
 import type { TaxRecord } from "~/api/index-records.types"
 import { queryClient } from "~/app/_layout"
 import { recordKeys } from "./queryKeys"
+import { ErrorTracking } from "~/utils/ErrorTracking"
+import { useAnalytics } from "~/utils/Analytics"
 
 const _queryClient = queryClient
 
@@ -20,6 +22,7 @@ export const useTaxRecords = (vehicleId: number) => {
 }
 
 export const useAddTaxRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       vehicleId,
@@ -27,9 +30,13 @@ export const useAddTaxRecord = () => {
     }: {
       vehicleId: number
       taxRecord: TaxRecord
-    }) => await addTaxRecord(vehicleId, taxRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Adding tax record", "records.tax")
+      return await addTaxRecord(vehicleId, taxRecord)
+    },
     onError: (err) => console.error("useAddTaxRecord error : " + err),
     onSuccess: (_, variables) => {
+      analytics.recordCreated("tax")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.tax.allRecords(vehicleId),
@@ -40,6 +47,7 @@ export const useAddTaxRecord = () => {
 }
 
 export const useUpdateTaxRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -49,8 +57,12 @@ export const useUpdateTaxRecord = () => {
       recordID: number
       vehicleId: number
       taxRecord: TaxRecord
-    }) => await updateTaxRecord(recordID, taxRecord),
+    }) => {
+      ErrorTracking.addBreadcrumb("Updating tax record", "records.tax")
+      return await updateTaxRecord(recordID, taxRecord)
+    },
     onSuccess: (_, variables) => {
+      analytics.recordUpdated("tax")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.tax.allRecords(vehicleId),
@@ -61,6 +73,7 @@ export const useUpdateTaxRecord = () => {
 }
 
 export const useDeleteTaxRecord = () => {
+  const analytics = useAnalytics()
   const query = useMutation({
     mutationFn: async ({
       recordID,
@@ -68,8 +81,12 @@ export const useDeleteTaxRecord = () => {
     }: {
       recordID: number
       vehicleId: number
-    }) => await deleteTaxRecord(recordID),
+    }) => {
+      ErrorTracking.addBreadcrumb("Deleting tax record", "records.tax")
+      return await deleteTaxRecord(recordID)
+    },
     onSuccess: (_, variables) => {
+      analytics.recordDeleted("tax")
       const { vehicleId } = variables
       _queryClient.invalidateQueries({
         queryKey: recordKeys.tax.allRecords(vehicleId),

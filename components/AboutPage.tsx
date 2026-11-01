@@ -1,15 +1,16 @@
 import React from "react"
-import { ScrollView, View, Text, Linking, TouchableOpacity } from "react-native"
+import { ScrollView, View, Text, Linking, Image } from "react-native"
 import { useTheme } from "~/hooks/useTheme";
 import tw from "~/tw.config"
 import AnimatedPressable from "./Animations/AnimatedPressable";
 
 export default function AboutScreen() {
-        const theme = useTheme()
+    const theme = useTheme()
     return (
         <ScrollView style={tw`flex flex-col`}>
             <View style={tw`mb-3`}>
-                <Text style={[tw`text-2xl font-HKGrotesk-Bold mb-2`, { color: theme.colors.text.primary }  ]}>
+                <Image source={require('~/assets/icon.png')} style={tw`w-[100px] h-[100px] rounded-3xl m-auto`} resizeMode="contain" />
+                <Text style={[tw`text-2xl font-HKGrotesk-Bold mb-2 text-center`, { color: theme.colors.text.primary }]}>
                     LubeLogger Mobile
                     {/* TODO Rename app */}
                 </Text>

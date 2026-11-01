@@ -24,10 +24,11 @@ import useThemeStore from '~/stores/themeStore'
 import { useTheme } from '~/hooks/useTheme'
 import AnimatedSection from "~/components/Animations/AnimatedSection"
 import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
+import { useAnalytics } from '~/utils/Analytics'
 
 
 const CarDetail = () => {
-  const { id: CarId, actionType }: { id: string, actionType: string } = useLocalSearchParams()
+  const { id: CarId, actionType, vehicleName }: { id: string, actionType: string, vehicleName: string } = useLocalSearchParams()
 
   const carId = parseInt(CarId)
   const { data: ServiceRecords, isPending: isServiceRecordsFetching, isError: isServiceError } = useServiceRecords(carId)
@@ -42,6 +43,7 @@ const CarDetail = () => {
   const currentWorldYear = new Date().getFullYear()
   const { colorScheme } = useThemeStore()
   const theme = useTheme()
+  const analytics = useAnalytics()
 
   const ActionButtons = [
     { key: 'home', label: 'Home', color: '#f28900' },
@@ -147,6 +149,7 @@ const CarDetail = () => {
     if (!actionType) return
 
     setSelectedTabName(actionType)
+    analytics.recordTypeViewed(actionType)
 
     const button = ActionButtons.find(b => b.key === actionType)
     if (button) {
@@ -316,7 +319,7 @@ const CarDetail = () => {
   return (
     <View style={[tw`flex-1 px-3`, { backgroundColor: theme.colors.background.default }]}>
       <Stack.Screen options={{
-        headerTitle: () => <Text style={[tw`text-xl font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]} numberOfLines={1}>Porsche 911 Carrera 3.2 2077 dfghsdffas fasfa sfa sfas f</Text>, // TODO: Change to dynamic title based on car details
+        headerTitle: () => <Text style={[tw`text-xl font-HKGrotesk-Medium`, { color: theme.colors.text.primary }]} numberOfLines={1}>{vehicleName}</Text>,
       }} />
       <AnimatedSection delay={60} duration={400} direction='right'>
         <Animated.ScrollView
@@ -332,6 +335,7 @@ const CarDetail = () => {
                 color={button.color} key={button.key} buttonIndex={button.key} label={button.label}
                 onClick={() => {
                   setSelectedTabName(button.key)
+                  analytics.recordTypeViewed(button.key)
                   setSelectedButtonHexColor(button.color)
                 }} selectedTabName={selectedTabName} />
             ))}
